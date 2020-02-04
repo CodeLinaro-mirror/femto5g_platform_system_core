@@ -207,7 +207,24 @@ case "$1" in
 			echo 9060 > /etc/usb/boot_hsusb_comp
 			;;
 		*sdxpoorwills* )
-			if [ -e /dev/mhi_ctrl ]; then
+			# Check if device is standalone ADP
+			if [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "0" ]; then
+				echo 90DB > /etc/usb/boot_hsusb_comp
+			# Check if device is ADP with PCIe fusion
+			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "1" ]; then
+				echo 9104 > /etc/usb/boot_hsusb_comp
+			# Check if device is ADP with USB fusion
+			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "2" ]; then
+				case `cat /etc/usb/boot_hsusb_comp` in
+				    *9102* )
+					# Dual RmNet selected by user, no change required
+				    ;;
+				    * )
+					echo 9106 > /etc/usb/boot_hsusb_comp
+				    ;;
+				esac
+			# Use this for MTP/TTP in PCIe mode
+			elif [ -e /dev/mhi_ctrl ]; then
 				echo 901F > /etc/usb/boot_hsusb_comp
 			fi
 			;;
