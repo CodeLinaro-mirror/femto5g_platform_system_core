@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Copyright (c) 2019, The Linux Foundation. All rights reserved.
+# Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -35,16 +35,12 @@ set_debug_transport()
         #set usb composition to none
         echo none > /etc/usb/boot_hsusb_comp
         echo -n "Debug transport mode is set to pcie. Update /data/debug_transport.conf to usb and reboot to switch" > /dev/kmsg
-        # switch diag to pcie mode
-        /usr/bin/test_diag -p 7
     else
         # set adb tansport to usb mode
         printf "usb\0" > /data/adb.conf
-        #set usb composition to none
+        #set usb composition to 901F
         echo 901F > /etc/usb/boot_hsusb_comp
         echo -n "Debug transport mode is set to usb. Update /data/debug_transport.conf to pcie and reboot to switch" > /dev/kmsg
-        # switch diag to usb mode
-        /usr/bin/test_diag -p 1
     fi
 }
 
