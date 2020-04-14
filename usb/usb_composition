@@ -30,6 +30,21 @@ COMP_DIR="/sbin/usb/compositions"
 symlink_hsusb="/etc/usb/boot_hsusb_comp"
 symlink_hsic="/etc/usb/boot_hsic_comp"
 
+if [ -f /sys/devices/soc0/hw_platform ]; then
+	socplatform=`cat /sys/devices/soc0/machine` 2> /dev/null
+	soc_hwplatform=`cat /sys/devices/soc0/hw_platform`
+	soc_subtypeid=`cat /sys/devices/soc0/platform_subtype_id`
+else
+	socplatform=`cat /sys/devices/system/soc/soc0/machine` 2> /dev/null
+fi
+
+msm_serial=`cat /sys/devices/soc0/serial_number`
+msm_serial_hex=`printf %08X $msm_serial`
+# since product string will be passed to kernel via kernel cmdline compose
+# product string in such a way that there is no space in the string instead
+# have a special character '!'
+cmdline_product_string="$socplatform-$soc_hwplatform!_SN:$msm_serial_hex"
+
 legal_composition() {
 	for c in $( ls $COMP_DIR ); do
 		if [ "$1" = "$c" ]; then
@@ -274,6 +289,13 @@ if [ $persistent = "y" ]; then
 		echo "$local_pid" > $symlink_hsic
 	else
 		echo "$local_pid" > $symlink_hsusb
+		# find mtd number of usb_qti partition
+		usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
+		if [ "$usb_qti_partition=" != "" ]; then
+			flash_erase -q /dev/$usb_qti_partition 0 4
+			printf "USB_COMP!,pid=$local_pid,product_string=$cmdline_product_string\0" > /tmp/data/usb_qti_comp
+			nandwrite -q -p /dev/$usb_qti_partition /tmp/data/usb_qti_comp
+		fi
 	fi
 fi
 
