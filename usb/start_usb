@@ -310,7 +310,16 @@ case "$1" in
 		then
                     pid = "901D"
 		fi
-		/sbin/usb/compositions/$pid n $adbd_params
+
+		# check if more than 1 argument is passed
+		if [ $# -gt 1 ]; then
+			# if second argument is n, do nothing
+			if [ $2 != 'n' ]; then
+				/sbin/usb/compositions/$pid n $adbd_params
+			fi
+		else
+			/sbin/usb/compositions/$pid n $adbd_params
+		fi
 
 		if [ "$SOFTAP_W_DUN" == "Y" ]
 		then

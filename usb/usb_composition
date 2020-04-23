@@ -149,7 +149,7 @@ elif [ "$#" -eq 5 ]; then
 		echo "Illegal from adbd (must be 'y' or 'n')."
 		exit 5
 	fi
-	pid=$1
+	local_pid=$1
 	hsic=$2
 	persistent=$3
 	immediate=$4
@@ -173,7 +173,7 @@ elif [ "$#" -eq 4 ]; then
 		echo "Illegal immediate choice (must be 'y' or 'n')."
 		exit 4
 	fi
-	pid=$1
+	local_pid=$1
 	hsic=$2
 	persistent=$3
 	immediate=$4
@@ -193,7 +193,7 @@ elif [ "$#" -eq 3 ]; then
 		echo "Illegal persistent choice (must be 'y' or 'n')."
 		exit 3
 	fi
-	pid=$1
+	local_pid=$1
 	hsic=$2
 	persistent=$3
 	immediate="y"
@@ -209,7 +209,7 @@ elif [ "$#" -eq 2 ]; then
 		echo "Illegal hsic choice (must be 'y' or 'n')."
 		exit 2
 	fi
-	pid=$1
+	local_pid=$1
 	hsic=$2
 	persistent="n"
 	immediate="y"
@@ -221,7 +221,7 @@ elif [ "$#" -eq 1 ]; then
 		echo "Illegal pid"
 		exit 1
 	fi
-	pid=$1
+	local_pid=$1
 	hsic="n"
 	persistent="n"
 	immediate="y"
@@ -236,7 +236,7 @@ elif [ "$#" -eq 0 ]; then
 		desc=`grep DESCRIPTION: $COMP_DIR/$i | sed 's/.*DESCRIPTION: *//g'`
 		echo "   $i -	$desc"
 	done
-	pid=`read_pid`
+	local_pid=`read_pid`
 	hsic=`read_hsic`
         persistent=`read_persistent`
 	immediate=`read_immediate`
@@ -257,7 +257,7 @@ else
 	other=$hsic_comp
 fi
 
-common=`common_functions $other $pid`
+common=`common_functions $other $local_pid`
 if [ $common != "0" ]; then
 	echo "******************************************************************************"
 	echo "*                        !!!WARNING!!!                                       *"
@@ -271,18 +271,23 @@ fi
 
 if [ $persistent = "y" ]; then
 	if [ $hsic = "y" ]; then
-		echo "$pid" > $symlink_hsic
+		echo "$local_pid" > $symlink_hsic
 	else
-		echo "$pid" > $symlink_hsusb
+		echo "$local_pid" > $symlink_hsusb
 	fi
 fi
 
 if [ $hsic = "n" ]; then
 	if [ $immediate = "y" ]; then
-		$COMP_DIR/$pid n 0.2 $from_adb
+		# disable qcom_gadget and run start_usb script if qcom_gadget is enabled
+		enabled=`cat /sys/bus/platform/devices/qcom_gadget/enabled`
+		if [ "$enabled" == "Y" ]; then
+			echo 0 > /sys/bus/platform/devices/qcom_gadget/enabled
+			# pass n as second argument to avoid switching to default composition
+			source /sbin/start_usb init n
+		fi
+		$COMP_DIR/$local_pid n 0.2 $from_adb
 	fi
 else
 	echo "Please reboot device for HSIC composition to take effect"
 fi
-
-
