@@ -41,14 +41,16 @@ case "$1" in
 	# bail out from script if qcom_gadget is enabled and
 	# SoftAP with DUN is not enabled
 	enabled=`cat /sys/bus/platform/devices/qcom_gadget/enabled`
-	if [ "$enabled" == "Y" ] && [ "$SOFTAP_W_DUN" == "N" ]; then
-		exit 1
-	elif [ "$enabled" == "N" ] && [ "$SOFTAP_W_DUN" == "Y" ]; then
-		echo "SOFTAP + DUN is enabled, disabling qcom_gadget"
-		echo 0 > /sys/bus/platform/devices/qcom_gadget/enabled
-		usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
-		if [ "$usb_qti_partition" != "" ]; then
-			flash_erase -q /dev/$usb_qti_partition 0 4
+	if [ "$enabled" == "Y" ]; then
+		if [ "$SOFTAP_W_DUN" == "N" ]; then
+			exit 1
+		else
+			echo "SOFTAP + DUN is enabled, disabling qcom_gadget" > /dev/kmsg
+			echo 0 > /sys/bus/platform/devices/qcom_gadget/enabled
+			usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
+			if [ "$usb_qti_partition" != "" ]; then
+				flash_erase -q /dev/$usb_qti_partition 0 4
+			fi
 		fi
 	fi
 
@@ -352,12 +354,6 @@ case "$1" in
 			fi
 		else
 			/sbin/usb/compositions/$pid n $adbd_params
-		fi
-
-		if [ "$SOFTAP_W_DUN" == "Y" ]
-		then
-			echo "DUN+SOFTAP mode is enabled."
-			echo 1  > /sys/devices/virtual/android_usb/android0/f_serial/dun_w_softap_enable
 		fi
 	fi
 	;;
