@@ -115,8 +115,6 @@ static void drop_capabilities_bounding_set_if_needed() {
 
 static bool should_drop_privileges() {
 #if defined(ALLOW_ADBD_ROOT)
-    // Always run ADB as root.
-    return false;
     char value[PROPERTY_VALUE_MAX];
 
     // The emulator is never secure, so don't drop privileges there.
