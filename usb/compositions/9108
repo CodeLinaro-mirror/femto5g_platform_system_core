@@ -51,7 +51,7 @@ run_configfs() {
 	if [ $from_adb = "n" ]
 	then
 		pkill adbd
-		/etc/launch_adbd start
+		# Give enough time to restart ADBD and open EP0 file node
 		sleep 1
 	fi
 	cd /sys/kernel/config/usb_gadget/g1
