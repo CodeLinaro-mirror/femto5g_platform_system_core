@@ -34,6 +34,34 @@ else
 	from_adb="n"
 fi
 
+# Run the rules for SA2150P target to create the instances of mdm_data bridge
+run_2150_bridge_func () {
+	echo start > /data/usb_bind_in_progress
+	if [ $from_adb = "n" ]
+	then
+		pkill adbd
+		# Give enough time to restart ADBD and open EP0 file node
+		sleep 1
+	fi
+	cd /sys/kernel/config/usb_gadget/g1
+	rm os_desc/c* 2> /dev/null
+	rm configs/c*/f* 2> /dev/null
+	rm -rf configs/c.2 configs/c.3 2> /dev/null
+	echo 0x05c6 > idVendor
+	echo 0x90DB > idProduct
+	echo "DIAG_SER_RMNET_DPL_QDSS_ADB" > configs/c.1/strings/0x409/configuration
+	ln -s functions/diag.diag_mdm configs/c.1/f1
+	ln -s functions/mdm_data.serial configs/c.1/f2
+	ln -s functions/mdm_data.rmnet configs/c.1/f3
+	ln -s functions/mdm_data.dpl configs/c.1/f4
+	ln -s functions/mdm_data.qdss configs/c.1/f5
+	ln -s functions/ffs.adb configs/c.1/f6
+	rm -f /data/usb_bind_in_progress
+	echo "binding UDC with Gadget..." $1
+	echo $1 > UDC
+	cd /
+}
+
 run_configfs() {
 	echo start > /data/usb_bind_in_progress
 	if [ $from_adb = "n" ]
@@ -74,6 +102,10 @@ case `source /sbin/usb/target` in
 	*sdxpoorwills* | *sdxprairie* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
+		;;
+	*sa2150p* )
+		udcname=`ls -1 /sys/class/udc | head -n 1`
+		run_2150_bridge_func $udcname &
 		;;
 	* )
 		echo "This composition is not supported"
