@@ -43,7 +43,7 @@ case "$1" in
 	enabled=`cat /sys/bus/platform/devices/qcom_gadget/enabled`
 	if [ "$enabled" == "Y" ]; then
 		if [ "$SOFTAP_W_DUN" == "N" ]; then
-			exit 1
+			exit 0
 		else
 			echo "SOFTAP + DUN is enabled, disabling qcom_gadget" > /dev/kmsg
 			echo 0 > /sys/bus/platform/devices/qcom_gadget/enabled
