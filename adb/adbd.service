@@ -29,7 +29,7 @@
 SourcePath=/sbin/launch_adbd
 Description=adbd Service
 Requires=usb.service
-After=usb.service
+After=usb.service leprop.service
 DefaultDependencies=no
 
 [Service]
