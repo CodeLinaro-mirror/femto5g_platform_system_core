@@ -6,8 +6,8 @@ Before=persist-prop.service
 Requires=systemrw-build.prop.service persist-prop.service
 
 [Service]
-User=leprop
-Group=leprop
+User=root
+Group=root
 Restart=always
 ExecStartPre=+/bin/mkdir -p -m 777 /dev/socket
 ExecStart=/sbin/leprop-service
