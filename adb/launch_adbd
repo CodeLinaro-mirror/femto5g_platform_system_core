@@ -54,11 +54,10 @@ else
 fi
 sync
 
+sleep 1
 # If UDC is not set up set it up.
-if [ -z /sys/kernel/config/usb_gadget/g1/UDC ]; then
-   udcname=`ls -1 /sys/class/udc | head -n 1`
-   echo $udcname > /sys/kernel/config/usb_gadget/g1/UDC
-fi
+udcname=`ls -1 /sys/class/udc | head -n 1`
+echo $udcname > /sys/kernel/config/usb_gadget/g1/UDC
 
 echo -n "Started adbd. " > /dev/kmsg
 
