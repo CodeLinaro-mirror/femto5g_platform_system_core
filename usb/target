@@ -78,6 +78,9 @@ case `cat ${TARGET_DIR}` in
 	*8098* )
 		res="8098";
 		;;
+	*sdxnightjar* )
+		res="sdxnightjar";
+		;;
 	*sdxpoorwills* | *sa415m* )
 		res="sdxpoorwills";
 		;;

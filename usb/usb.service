@@ -28,7 +28,7 @@
 [Unit]
 SourcePath=/sbin/start_usb
 Description=usb Service
-After=sysinit.target start_stop_ipa_fws.service etc.mount
+After=sysinit.target start_stop_ipa_fws.service etc.mount pcie.service
 DefaultDependencies=no
 
 [Service]

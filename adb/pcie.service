@@ -1,4 +1,4 @@
-# Copyright (c) 2016, The Linux Foundation. All rights reserved.
+# Copyright (c) 2019 The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -26,15 +26,15 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
 [Unit]
-SourcePath=/sbin/launch_adbd
-Description=adbd Service
-Requires=usb.service
-After=usb.service leprop.service pcie.service
+SourcePath=/etc/start_pcie
+Description=pcie Service
+After=systemrw.mount start_stop_ipa_fws.service data.mount label-data.service
+Requires=systemrw.mount
+RequiresMountsFor=/systemrw
 DefaultDependencies=no
 
 [Service]
-Type=forking
+Type=oneshot
 KillMode=process
-Restart=always
-ExecStart=/sbin/launch_adbd start
-Nice=-5
+ExecStartPre=/sbin/mount-copybind /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp
+ExecStart=/etc/start_pcie

@@ -100,7 +100,7 @@ case `source /sbin/usb/target` in
 	*9650* | *sdx20* )
 		run_comp_90cd &
 		;;
-	*sdxpoorwills* | *sdxprairie* | *sdxlemur* )
+	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sdxnightjar* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
 		;;

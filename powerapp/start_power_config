@@ -391,6 +391,82 @@ case "$1" in
          esac
 
          case "$soc_id" in
+         "458" | "483")
+                echo -n "Starting powerconfig for SDXLEMUR: "
+                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
+
+                echo "++++ $0 -> ENABLE-FTRACE START" > /dev/kmsg
+                #Enable FTRACE_ENABLE on SDXLEMUR
+                #bail out if its perf config
+                if [ ! -d /sys/module/msm_rtb ]
+                then
+                    return
+                fi
+
+                echo mem > /sys/power/autosleep
+                #bail out if coresight isn't present
+                if [ ! -d /sys/bus/coresight ]
+                then
+                    return
+                fi
+
+               #coresight
+                #echo sg > /sys/bus/coresight/devices/coresight-tmc-etr/mem_type
+
+                echo 0 > /sys/kernel/debug/tracing/events/enable
+                echo mem > /sys/bus/coresight/devices/coresight-tmc-etr/out_mode
+                echo 1 > /sys/bus/coresight/devices/coresight-tmc-etr/enable_sink
+                echo 1 > /sys/bus/coresight/devices/coresight-stm/enable_source
+                echo 1 > /sys/kernel/debug/tracing/tracing_on
+
+                #SoftIRQs
+                echo 1 > /sys/kernel/debug/tracing/events/irq/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/softirq_entry/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/softirq_exit/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/softirq_raise/enable
+                #IRQs
+                echo 1 > /sys/kernel/debug/tracing/events/irq/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/irq_handler_entry/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/irq_handler_exit/enable
+                echo 1 > /sys/kernel/debug/tracing/events/workqueue/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/timer_expire_entry/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/timer_expire_exit/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_cancel/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_expire_entry/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_expire_exit/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_init/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_start/enable
+
+                echo 1 > /sys/kernel/debug/tracing/tracing_on
+                echo "++++ $0 -> ENABLE-FTRACE END" > /dev/kmsg
+
+                echo "++++ $0 -> ENABLE-DCC START" > /dev/kmsg
+                DCC_PATH="/sys/bus/platform/devices/117f000.dcc_v2"
+                if [ ! -d $DCC_PATH ];
+                then
+                    echo "DCC does not exist on this build."
+                        return
+                fi
+
+                echo 0 > $DCC_PATH/enable
+                echo 2 > $DCC_PATH/curr_list
+                echo cap > $DCC_PATH/func_type
+                echo sram > $DCC_PATH/data_sink
+                echo 1 > $DCC_PATH/config_reset
+
+                #Registers add space
+                echo 0xb204520 1 > $DCC_PATH/config #RPMH_PDC_APPS_SEQ_START_ADDR
+                echo 0xb201020 1 > $DCC_PATH/config #RPMH_PDC_APPS_SEQ_BUSY_DRV0
+                echo 0xb201024 1 > $DCC_PATH/config #RPMH_PDC_APPS_SEQ_DBG_PROGRAM_COUNTER_DRV0
+                echo 0xb204524 1 > $DCC_PATH/config #RPMH_PDC_APPS_SEQ_OVERRIDE_START_ADDR
+
+                echo 1 > $DCC_PATH/enable
+                echo "++++ $0 -> ENABLE-DCC END" > /dev/kmsg
+                echo "done";
+                ;;
+         esac
+
+         case "$soc_id" in
          "116" | "142" | "154")
                 echo -n "Starting powerconfig for 8x30: "
                 echo 1 > /sys/module/pm_8x60/modes/cpu0/power_collapse/suspend_enabled

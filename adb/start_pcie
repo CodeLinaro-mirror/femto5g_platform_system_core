@@ -1,4 +1,6 @@
-# Copyright (c) 2016, The Linux Foundation. All rights reserved.
+#! /bin/sh
+#
+# Copyright (c) 2019, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -25,16 +27,33 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-[Unit]
-SourcePath=/sbin/launch_adbd
-Description=adbd Service
-Requires=usb.service
-After=usb.service leprop.service pcie.service
-DefaultDependencies=no
+set_debug_transport()
+{
+    if [ "$1" == "pcie" ]; then
+        # set adb to pcie mode
+        printf "pcie=true\0" > /data/adb.conf
+        #set usb composition to none
+        echo none > /etc/usb/boot_hsusb_comp
+        echo -n "Debug transport mode is set to pcie. Update /data/debug_transport.conf to usb and reboot to switch" > /dev/kmsg
+        # switch diag to pcie mode
+        /usr/bin/test_diag -p 7
+    else
+        # set adb tansport to usb mode
+        printf "usb\0" > /data/adb.conf
+        #set usb composition to none
+        echo 901F > /etc/usb/boot_hsusb_comp
+        echo -n "Debug transport mode is set to usb. Update /data/debug_transport.conf to pcie and reboot to switch" > /dev/kmsg
+        # switch diag to usb mode
+        /usr/bin/test_diag -p 1
+    fi
+}
 
-[Service]
-Type=forking
-KillMode=process
-Restart=always
-ExecStart=/sbin/launch_adbd start
-Nice=-5
+# Check for PCIe support
+if [ -e /dev/mhi_ctrl ]; then
+    if [ -e /data/debug_transport.conf ]; then
+        set_debug_transport `cat /data/debug_transport.conf`
+    else
+        printf "pcie\0" > /data/debug_transport.conf
+        set_debug_transport "pcie"
+    fi
+fi
