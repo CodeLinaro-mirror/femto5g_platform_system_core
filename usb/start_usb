@@ -133,7 +133,7 @@ case "$1" in
 
 	if [ -e /sys/kernel/config/usb_gadget/g1/functions/ffs.diag ]; then
 		mkdir -p /dev/ffs-diag
-		mount -o uid=2000,gid=2000,no_disconnect=1 -t functionfs diag /dev/ffs-diag
+		mount -o uid=system,gid=system,no_disconnect=1,rmode=0550,fmode=0660 -t functionfs diag /dev/ffs-diag
 	fi
 
 	mount -o remount,gid=5,mode=620 /dev/pts
