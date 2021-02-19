@@ -64,31 +64,59 @@ void *service_bootstrap_func(void *x)
 #if !ADB_HOST
 
 void restart_root_service(int fd, void *cookie) {
+#if defined(ALLOW_ADBD_ROOT)
+    int f;
+#endif
     if (getuid() == 0) {
         WriteFdExactly(fd, "adbd is already running as root\n");
         adb_close(fd);
     } else {
-        char value[PROPERTY_VALUE_MAX];
-        property_get("ro.debuggable", value, "");
-        if (strcmp(value, "1") != 0) {
-            WriteFdExactly(fd, "adbd cannot run as root in production builds\n");
-            adb_close(fd);
-            return;
+#if defined(ALLOW_ADBD_ROOT)
+        f = unix_open("/tmp/.adb.root", O_RDWR | O_CLOEXEC);
+        if (f > 0) {
+            if (unix_write(f, ROOT_MAGIC, ROOT_MAGIC_SIZE) == -1) {
+                D("Failed to write to /tmp/.adb.root \n");
+                unix_close(f);
+                adb_close(fd);
+                return;
+            }
         }
-
-        property_set("service.adb.root", "1");
+        unix_close(f);
         WriteFdExactly(fd, "restarting adbd as root\n");
+#else
+        WriteFdExactly(fd, "adbd cannot run as root in production builds\n");
+#endif
         adb_close(fd);
     }
 }
 
 void restart_unroot_service(int fd, void *cookie) {
+#if defined(ALLOW_ADBD_ROOT)
+    int f;
+#endif
     if (getuid() != 0) {
         WriteFdExactly(fd, "adbd not running as root\n");
         adb_close(fd);
     } else {
-        property_set("service.adb.root", "0");
-        WriteFdExactly(fd, "restarting adbd as non root\n");
+#if defined(ALLOW_ADBD_ROOT)
+        f = unix_open("/tmp/.adb.root", O_RDWR | O_CLOEXEC);
+        if (f > 0) {
+            char buf[ROOT_MAGIC_SIZE];
+            if (unix_read(f, buf, sizeof(buf)) != -1) {
+                if (strcmp(buf, ROOT_MAGIC) == 0) {
+                   adb_lseek(f, 0 , SEEK_SET);
+                   if (unix_write(f, "#NOROOT#", 8) == -1) {
+                       D("failed to update /tmp/.adb.root \n");
+                       unix_close(f);
+                       adb_close(fd);
+                       return;
+                   }
+                   WriteFdExactly(fd, "restarting adbd as non root\n");
+                }
+            }
+#endif
+        }
+        unix_close(f);
         adb_close(fd);
     }
 }

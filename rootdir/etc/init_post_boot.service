@@ -34,7 +34,7 @@ After=multi-user.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart= /bin/sh -c '/etc/init.post_boot.sh'
+ExecStart=/etc/init.post_boot.sh
 
 [Install]
 WantedBy=multi-user.target
