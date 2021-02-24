@@ -21,6 +21,7 @@ libbase_la_LDFLAGS  := @LIBCUTILS_LIBS@
 base_includedir=$(includedir)/base
 base_include_HEADERS := $(srcdir)/include/base/file.h
 base_include_HEADERS += $(srcdir)/include/base/logging.h
+base_include_HEADERS += $(srcdir)/include/base/macros.h
 base_include_HEADERS += $(srcdir)/include/base/memory.h
 base_include_HEADERS += $(srcdir)/include/base/strings.h
 base_include_HEADERS += $(srcdir)/include/base/stringprintf.h
