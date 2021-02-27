@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2012-2015,2017-2020, The Linux Foundation. All rights reserved.
+# Copyright (c) 2012-2015,2017-2021, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -129,7 +129,8 @@ run_configfs() {
 	cd /sys/kernel/config/usb_gadget/g1
 	rm os_desc/c* 2> /dev/null
 	rm configs/c*/f* 2> /dev/null
-	rm -rf configs/c.2 configs/c.3 2> /dev/null
+	rmdir configs/c.2/strings/* configs/c.3/strings/* 2> /dev/null
+	rmdir configs/c.2 configs/c.3 2> /dev/null
 	echo 0x05c6 > idVendor
 	echo 0x9021 > idProduct
 	if [ -e functions/diag.diag/pid ]; then
