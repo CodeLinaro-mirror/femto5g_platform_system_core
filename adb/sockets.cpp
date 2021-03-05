@@ -423,11 +423,12 @@ asocket *create_local_service_socket(const char *name)
     D("LS(%d): bound to '%s' via %d\n", s->id, name, fd);
 
 #if !ADB_HOST
-    char debug[PROPERTY_VALUE_MAX];
-    if (!strncmp(name, "root:", 5))
-        property_get("ro.debuggable", debug, "");
+    char debug = '0';
 
-    if ((!strncmp(name, "root:", 5) && getuid() != 0 && strcmp(debug, "1") == 0)
+    if (!strncmp(name, "root:", 5))
+        debug = '1';
+
+    if ((!strncmp(name, "root:", 5) && getuid() != 0 && debug == '1')
         || (!strncmp(name, "unroot:", 7) && getuid() == 0)
         || !strncmp(name, "usb:", 4)
         || !strncmp(name, "tcpip:", 6)) {

@@ -90,10 +90,11 @@ bool adb_use_pcie;
 
 static void drop_capabilities_bounding_set_if_needed() {
 #ifdef ALLOW_ADBD_ROOT
-    char value[PROPERTY_VALUE_MAX];
-    property_get("ro.debuggable", value, "");
-    if (strcmp(value, "1") == 0) {
-        return;
+    int f = unix_open("/tmp/.adb.root", O_WRONLY | O_CREAT, 0666);
+    if (f > 0) {
+        if (unix_write(f, "#NOROOT#", 8) == -1)
+            D("adb_main(): failed to create /tmp/.adb.root \n");
+        unix_close(f);
     }
 #endif
     int i;
@@ -114,53 +115,28 @@ static void drop_capabilities_bounding_set_if_needed() {
 }
 
 static bool should_drop_privileges() {
+    // Drop privileges by default...
+    bool drop = true;
+
 #if defined(ALLOW_ADBD_ROOT)
-    char value[PROPERTY_VALUE_MAX];
-
-    // The emulator is never secure, so don't drop privileges there.
-    // TODO: this seems like a bug --- shouldn't the emulator behave like a device?
-    property_get("ro.kernel.qemu", value, "");
-    if (strcmp(value, "1") == 0) {
-        return false;
-    }
-
-    // The properties that affect `adb root` and `adb unroot` are ro.secure and
-    // ro.debuggable. In this context the names don't make the expected behavior
-    // particularly obvious.
-    //
-    // ro.debuggable:
-    //   Allowed to become root, but not necessarily the default. Set to 1 on
-    //   eng and userdebug builds.
-    //
-    // ro.secure:
-    //   Drop privileges by default. Set to 1 on userdebug and user builds.
-    property_get("ro.secure", value, "1");
-    bool ro_secure = (strcmp(value, "1") == 0);
-
-    property_get("ro.debuggable", value, "");
-    bool ro_debuggable = (strcmp(value, "1") == 0);
-
-    // Drop privileges if ro.secure is set...
-    bool drop = ro_secure;
-
-    property_get("service.adb.root", value, "");
-    bool adb_root = (strcmp(value, "1") == 0);
-    bool adb_unroot = (strcmp(value, "0") == 0);
-
+    // In Android the properties that affect `adb root` and `adb unroot` are
+    // ro.secure and ro.debuggable. But using these to allow root is not scalable
+    // as properties are not supported by other linux distributions. Instead use a
+    // shared memory variable and stop 'adb root' support in production builds.
     // ...except "adb root" lets you keep privileges in a debuggable build.
-    if (ro_debuggable && adb_root) {
-        drop = false;
-    }
-
     // ...and "adb unroot" lets you explicitly drop privileges.
-    if (adb_unroot) {
-        drop = true;
+    int f = unix_open("/tmp/.adb.root", O_RDONLY);
+    if (f > 0) {
+        char buf[ROOT_MAGIC_SIZE];
+        if (unix_read(f, buf, sizeof(buf)) != -1) {
+            if(!strncmp(buf, ROOT_MAGIC, ROOT_MAGIC_SIZE))
+                drop = false;
+        }
+	unix_close(f);
     }
+#endif
 
     return drop;
-#else
-    return true; // "adb root" not allowed, always drop privileges.
-#endif /* ALLOW_ADBD_ROOT */
 }
 #endif /* ADB_HOST */
 

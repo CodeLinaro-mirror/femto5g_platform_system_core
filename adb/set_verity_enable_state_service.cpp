@@ -325,18 +325,6 @@ void set_verity_enabled_state_service(int fd, void* cookie)
         int i;
         bool any_changed = false;
 
-        property_get("ro.secure", propbuf, "0");
-        if (strcmp(propbuf, "1")) {
-            WriteFdFmt(fd, "verity not enabled - ENG build\n");
-            goto errout;
-        }
-
-        property_get("ro.debuggable", propbuf, "0");
-        if (strcmp(propbuf, "1")) {
-            WriteFdFmt(fd, "verity cannot be disabled/enabled - USER build\n");
-            goto errout;
-        }
-
         property_get("ro.hardware", propbuf, "");
         snprintf(fstab_filename, sizeof(fstab_filename), FSTAB_PREFIX"%s",
                  propbuf);

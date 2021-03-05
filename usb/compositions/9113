@@ -53,6 +53,7 @@ run_configfs() {
 	ln -s functions/uac1.uac1 configs/c.1/f2
 	ln -s functions/uvc.0 configs/c.1/f3
 	ln -s functions/ffs.adb configs/c.1/f4
+	echo 0x80 > configs/c.1/bmAttributes
 	rm -f /data/usb_bind_in_progress
 	echo "binding UDC with Gadget..." $1
 	echo $1 > UDC

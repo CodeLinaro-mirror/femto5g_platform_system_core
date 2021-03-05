@@ -374,6 +374,11 @@ enum subproc_mode {
 #define USB_FFS_ADB_EP0   USB_FFS_ADB_EP(ep0)
 #define USB_FFS_ADB_OUT   USB_FFS_ADB_EP(ep1)
 #define USB_FFS_ADB_IN    USB_FFS_ADB_EP(ep2)
+
+#if ALLOW_ADBD_ROOT
+#define ROOT_MAGIC "#ROOT###"
+#define ROOT_MAGIC_SIZE 8
+#endif
 #endif
 
 /* Differentiating macro for the targets which supports adb non root */

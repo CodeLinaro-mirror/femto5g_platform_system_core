@@ -71,6 +71,7 @@ run_configfs() {
 	ln -s functions/gsi.dpl configs/c.1/f4
 	ln -s functions/qdss.qdss configs/c.1/f5
 	ln -s functions/ffs.adb configs/c.1/f6
+	echo 0x80 > configs/c.1/bmAttributes
 	rm -f /tmp/usb_bind_in_progress
 	echo "binding UDC with Gadget..." $1
 	echo $1 > UDC
