@@ -233,9 +233,12 @@ int main(int argc, char **argv) {
 	int nevents;
 
 	nevents = epoll_wait(epollfd, events, 1, -1);
-	if (nevents == -1) {
-	    msg("epoll wait failed\n");
-	    break;
+	if (nevents < 0 && errno == EINTR)
+		continue;
+
+	if (nevents < 0 && errno != EINTR) {
+	    msg("epoll wait failed, errno:%d\n", errno);
+	    exit(EXIT_FAILURE);
 	}
 
         for (int n = 0; n < nevents; ++n) {
