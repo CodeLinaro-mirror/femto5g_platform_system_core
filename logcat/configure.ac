@@ -32,7 +32,7 @@ AC_SUBST([LIBLOG_CFLAGS])
 AC_SUBST([LIBLOG_LIBS])
 
 AC_ARG_WITH([glib],
-      AC_HELP_STRING([--with-glib],
+      AS_HELP_STRING([--with-glib],
          [enable glib, building HLOS systems which use glib]))
 
 if (test "x${with_glib}" = "xyes"); then
