@@ -48,7 +48,10 @@ run_9x35() {
 run_configfs() {
 	pkill adbd
 	cd /sys/kernel/config/usb_gadget/g1
-	rm configs/c*/f*
+	rm os_desc/c* 2> /dev/null
+	rm configs/c*/f* 2> /dev/null
+	rmdir configs/c.2/strings/* configs/c.3/strings/* 2> /dev/null
+	rmdir configs/c.2 configs/c.3 2> /dev/null
 	echo 0x05c6 > idVendor
 	echo 0xF000 > idProduct
 	echo "MS" > configs/c.1/strings/0x409/configuration

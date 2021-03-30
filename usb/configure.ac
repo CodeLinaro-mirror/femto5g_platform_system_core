@@ -23,7 +23,5 @@ AC_ARG_WITH(sanitized-headers,
          [Specify the location of the sanitized Linux headers]),
       [CPPFLAGS="$CPPFLAGS -idirafter $withval"])
 
-AC_CONFIG_FILES([ \
-    Makefile \
-])
+AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
