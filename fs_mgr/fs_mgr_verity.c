@@ -66,6 +66,10 @@
 #define __STRINGIFY(x) #x
 #define STRINGIFY(x) __STRINGIFY(x)
 
+#define VERITY_TABLE_OPT_RESTART "restart_on_corruption"
+#define VERITY_TABLE_OPT_LOGGING "ignore_corruption"
+#define VERITY_TABLE_OPT_IGNZERO "ignore_zero_blocks"
+
 struct verity_state {
     uint32_t header;
     uint32_t version;
@@ -405,16 +409,24 @@ static int load_verity_table(struct dm_ioctl *io, char *name, uint64_t device_si
     // build the verity params here
     verity_params = buffer + sizeof(struct dm_ioctl) + sizeof(struct dm_target_spec);
     bufsize = DM_BUF_SIZE - (verity_params - buffer);
-
     if (mode == VERITY_MODE_EIO) {
         // allow operation with older dm-verity drivers that are unaware
         // of the mode parameter by omitting it; this also means that we
         // cannot use logging mode with these drivers, they always cause
         // an I/O error for corrupted blocks
         strcpy(verity_params, table);
-    } else if (snprintf(verity_params, bufsize, "%s %d", table, mode) < 0) {
-        return -1;
-    }
+   }else if (mode == VERITY_MODE_LOGGING) {
+	if( snprintf(verity_params, bufsize, "%s %d %s %s", table,
+		mode,VERITY_TABLE_OPT_IGNZERO,VERITY_TABLE_OPT_LOGGING) < 0) {
+		return -1;
+	}
+   } else {
+	// By default VERITY_MODE_RESTART will be supported
+	if (snprintf(verity_params, bufsize, "%s %d %s %s", table,
+		mode,VERITY_TABLE_OPT_IGNZERO,VERITY_TABLE_OPT_RESTART) < 0) {
+		return -1;
+	}
+   }
 
     // set next target boundary
     verity_params += strlen(verity_params) + 1;
