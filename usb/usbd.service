@@ -1,6 +1,4 @@
-#! /bin/sh
-#
-# Copyright (c) 2016, The Linux Foundation. All rights reserved.
+# Copyright (c) 2021 The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -27,37 +25,13 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
 
-# debuggerd       init.d script to start the debuggerd daemon
+[Unit]
+Description=USB daemon Service
+SourcePath=/usr/bin/usbd
 
-set -e
-
-case "$1" in
-  start)
-        echo -n "Starting debuggerd: "
-        # /data/tombstones
-        if [ ! -d /data/tombstones ]; then
-           mkdir /data/tombstones
-           chgrp users /data/tombstones
-           chmod g+w /data/tombstones
-        fi
-        start-stop-daemon -S -b -a /usr/bin/debuggerd64
-        start-stop-daemon -S -b -a /usr/bin/debuggerd
-        echo "done"
-        ;;
-   stop)
-        echo -n "stopping debuggerd"
-        start-stop-daemon -K -n debuggerd64
-        start-stop-daemon -K -n debuggerd
-        echo "done"
-        ;;
-   restart)
-        $0 stop
-        $0 start
-        ;;
-  *)
-        echo "Usage debuggerd { start | stop | restart}" >&2
-        exit 1
-        ;;
-esac
-
-exit 0
+[Service]
+Type=simple
+RemainAfterExit=yes
+Restart=always
+ExecStart=/usr/bin/usbd
+Nice=-5

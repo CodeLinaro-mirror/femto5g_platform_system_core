@@ -32,10 +32,17 @@ AC_SUBST([LIBLOG_CFLAGS])
 AC_SUBST([LIBLOG_LIBS])
 
 AC_ARG_ENABLE(prop-trig,
-      AC_HELP_STRING([--enable-property-triggers], [Enable property trigger scripts]),
+      AS_HELP_STRING([--enable-property-triggers], [Enable property trigger scripts]),
          [prop_trig="yes"], [prop_trig="no"])
 
 AM_CONDITIONAL(PROPTRIGGER, [test "x${prop_trig}" = "xyes"])
+
+AC_ARG_WITH(systemd,
+        AS_HELP_STRING([--with-systemd], [enable leproperties in systemd]),
+        [SYSTEMD="yes"],
+        [SYSTEMD="no"])
+
+AM_CONDITIONAL([USE_SYSTEMD], [test "x${SYSTEMD}" != "xno"])
 
 AC_CONFIG_FILES([ \
     Makefile \

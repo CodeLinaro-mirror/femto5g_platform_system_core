@@ -393,6 +393,15 @@ case "$1" in
          case "$soc_id" in
          "458" | "483")
                 echo -n "Starting powerconfig for SDXLEMUR: "
+                #Mkdir for coresight-stm protocol folder
+                stm_policy=/sys/kernel/config/stp-policy/coresight-stm:p_basic.policy
+                mkdir $stm_policy
+                chmod 0660 $stm_policy
+                chown system:system $stm_policy
+                mkdir $stm_policy/default
+                chmod 0660 $stm_policy/default
+                chown system:system $stm_policy/default
+
                 echo N > /sys/module/lpm_levels/parameters/sleep_disabled
 
                 echo "++++ $0 -> ENABLE-FTRACE START" > /dev/kmsg

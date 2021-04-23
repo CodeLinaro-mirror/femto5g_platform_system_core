@@ -6,6 +6,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Check for programs
+AM_PROG_AR
 AM_PROG_AS
 AC_PROG_CC
 AM_PROG_CC_C_O
@@ -40,7 +41,7 @@ AC_SUBST([EXT4UTILS_CFLAGS])
 AC_SUBST([EXT4UTILS_LIBS])
 
 AC_ARG_WITH([glib],
-      AC_HELP_STRING([--with-glib],
+      AS_HELP_STRING([--with-glib],
          [enable glib, building HLOS systems which use glib]))
 
 if (test "x${with_glib}" = "xyes"); then

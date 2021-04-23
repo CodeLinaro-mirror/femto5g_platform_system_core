@@ -1,11 +1,12 @@
 AC_PREREQ(2.61)
 AC_INIT([libcutils],1.0.0)
-AM_INIT_AUTOMAKE([-Wall gnu foreign])
+AM_INIT_AUTOMAKE([-Wall gnu foreign subdir-objects])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Check for programs
+AM_PROG_AR
 AM_PROG_AS
 AC_PROG_CC
 AM_PROG_CC_C_O
@@ -22,17 +23,6 @@ PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES([LIBLOG], [liblog])
 AC_SUBST([LIBLOG_CFLAGS])
 AC_SUBST([LIBLOG_LIBS])
-
-AC_ARG_WITH([core_includes],
-    AC_HELP_STRING([--with-core-includes=@<:@dir@:>@],
-       [Specify the location of the core headers]),
-    [core_incdir=$withval],
-    with_core_includes=no)
-
-if test "x$with_core_includes" != "xno"; then
-   CPPFLAGS="${CPPFLAGS} -I${core_incdir}"
-   AC_SUBST(core_incdir,${core_incdir})
-fi
 
 AS_CASE([$host],
         [arm*], [ARM=yes],
@@ -69,7 +59,7 @@ fi
 AM_CONDITIONAL([HOST_OS_LINUX], [test "x$HOST_OS" = "xlinux"])
 
 AC_ARG_ENABLE(leproperties,
-      AC_HELP_STRING([--enable-leproperties], [Enable leproperty usage]),
+      AS_HELP_STRING([--enable-leproperties], [Enable leproperty usage]),
          [leprop="yes"], [leprop="no"])
 
 AM_CONDITIONAL(LE_PROPERTIES, [test "x$leprop" = "xyes"])
