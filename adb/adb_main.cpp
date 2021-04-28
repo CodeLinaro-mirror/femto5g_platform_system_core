@@ -125,6 +125,12 @@ static bool should_drop_privileges() {
     // shared memory variable and stop 'adb root' support in production builds.
     // ...except "adb root" lets you keep privileges in a debuggable build.
     // ...and "adb unroot" lets you explicitly drop privileges.
+
+    if (adb_use_pcie) {
+	drop = false;
+	return drop;
+    }
+
     int f = unix_open("/tmp/.adb.root", O_RDONLY);
     if (f > 0) {
         char buf[ROOT_MAGIC_SIZE];
