@@ -6,6 +6,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Check for programs
+AM_PROG_AR
 AM_PROG_AS
 AC_PROG_CC
 AM_PROG_CC_C_O
@@ -19,7 +20,7 @@ AC_PROG_MAKE_SET
 PKG_PROG_PKG_CONFIG
 
 AC_ARG_WITH([glib],
-      AC_HELP_STRING([--with-glib],
+      AS_HELP_STRING([--with-glib],
          [enable glib, building HLOS systems which use glib]))
 
 if (test "x${with_glib}" = "xyes"); then
@@ -35,17 +36,6 @@ if (test "x${with_glib}" = "xyes"); then
         AC_SUBST(GLIB_LIBS)
 fi
 AM_CONDITIONAL(USE_GLIB, test "x${with_glib}" = "xyes")
-
-AC_ARG_WITH([core_includes],
-    AC_HELP_STRING([--with-core-includes=@<:@dir@:>@],
-       [Specify the location of the core headers]),
-    [core_incdir=$withval],
-    with_core_includes=no)
-
-if test "x$with_core_includes" != "xno"; then
-   CPPFLAGS="${CPPFLAGS} -I${core_incdir}"
-   AC_SUBST(core_incdir,${core_incdir})
-fi
 
 AS_CASE([$host],
         [arm*], [ARM=yes],
@@ -69,14 +59,20 @@ AM_CONDITIONAL(BUILD_HOST, [test "x$X86_64" = "xyes"])
 AM_CONDITIONAL(BUILD_DEVICE, [test "x$ARM$ARM64" != "xnono"])
 
 AC_ARG_WITH([logd-logging],
-      AC_HELP_STRING([--with-logd-logging],
+      AS_HELP_STRING([--with-logd-logging],
          [enable logd based logging]))
 
 AM_CONDITIONAL(USE_LOGD, [test "x${with_logd_logging}" = "xyes"])
+
+AC_ARG_WITH(class-target,
+        AS_HELP_STRING([--with-class-target], [enable class-target]),
+        [CLASS_TARGET="yes"],
+        [CLASS_TARGET="no"])
+
+AM_CONDITIONAL([HAS_CLASS_TARGET], [test "x${CLASS_TARGET}" != "xno"])
 
 AC_CONFIG_FILES([ \
     Makefile \
     liblog.pc
 ])
 AC_OUTPUT
-

@@ -36,7 +36,7 @@ AC_SUBST([LIBBASE_CFLAGS])
 AC_SUBST([LIBBASE_LIBS])
 
 AC_ARG_WITH([glib],
-      AC_HELP_STRING([--with-glib],
+      AS_HELP_STRING([--with-glib],
          [enable glib, building HLOS systems which use glib]))
 
 if (test "x${with_glib}" = "xyes"); then
@@ -53,19 +53,15 @@ if (test "x${with_glib}" = "xyes"); then
 fi
 AM_CONDITIONAL(USE_GLIB, test "x${with_glib}" = "xyes")
 
-AC_ARG_WITH([core_includes],
-    AC_HELP_STRING([--with-core-includes=@<:@dir@:>@],
-       [Specify the location of the core headers]),
-    [core_incdir=$withval],
-    with_core_includes=no)
+AC_ARG_WITH(systemd,
+        AS_HELP_STRING([--with-systemd], [enable logd based logging in systemd]),
+        [SYSTEMD="yes"],
+        [SYSTEMD="no"])
 
-if test "x$with_core_includes" != "xno"; then
-   CPPFLAGS="${CPPFLAGS} -I${core_incdir}"
-   AC_SUBST(core_incdir,${core_incdir})
-fi
+AM_CONDITIONAL([USE_SYSTEMD], [test "x${SYSTEMD}" != "xno"])
 
 AC_ARG_WITH([logd-logging],
-      AC_HELP_STRING([--with-logd-logging],
+      AS_HELP_STRING([--with-logd-logging],
          [enable logd based logging]))
 
 AM_CONDITIONAL(USE_LOGD, [test "x${with_logd_logging}" = "xyes"])

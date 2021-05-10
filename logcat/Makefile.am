@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 bin_PROGRAMS = logcat
 
 logcat_SOURCES = logcat.cpp event.logtags

@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (c) 2009-2020, The Linux Foundation. All rights reserved.
+# Copyright (c) 2021, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -27,11 +27,4 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-echo "4 4 1 4" > /proc/sys/kernel/printk
-echo -n "Starting post boot settings "
-sleep 2
-echo mem > /sys/power/autosleep
-
-if [ -f /etc/init.qti.debug.sh ]; then
-    /etc/init.qti.debug.sh
-fi
+# Empty file

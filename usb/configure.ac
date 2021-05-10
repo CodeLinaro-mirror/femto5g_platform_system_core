@@ -18,6 +18,14 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 PKG_PROG_PKG_CONFIG
 
+PKG_CHECK_MODULES([LIBCUTILS], [libcutils])
+AC_SUBST([LIBCUTILS_CFLAGS])
+AC_SUBST([LIBCUTILS_LIBS])
+
+PKG_CHECK_MODULES([LIBUTILS], [libutils])
+AC_SUBST([LIBUTILS_CFLAGS])
+AC_SUBST([LIBUTILS_LIBS])
+
 AC_ARG_WITH(sanitized-headers,
       AS_HELP_STRING([--with-sanitized-headers=DIR],
          [Specify the location of the sanitized Linux headers]),
