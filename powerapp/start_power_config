@@ -403,6 +403,7 @@ case "$1" in
                 chown system:system $stm_policy/default
 
                 echo N > /sys/module/lpm_levels/parameters/sleep_disabled
+                echo mem > /sys/power/autosleep
 
                 echo "++++ $0 -> ENABLE-FTRACE START" > /dev/kmsg
                 #Enable FTRACE_ENABLE on SDXLEMUR
@@ -412,7 +413,6 @@ case "$1" in
                     return
                 fi
 
-                echo mem > /sys/power/autosleep
                 #bail out if coresight isn't present
                 if [ ! -d /sys/bus/coresight ]
                 then
