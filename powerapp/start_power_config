@@ -401,6 +401,7 @@ case "$1" in
                 mkdir $stm_policy/default
                 chmod 0660 $stm_policy/default
                 chown system:system $stm_policy/default
+                chown diag:root /dev/byte-cntr
 
 		echo ondemand > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
 		#reduce the min frequency once boot is done
