@@ -9,7 +9,7 @@ if LOG_RESTRICT
 root_etc_SCRIPTS += logging-restrictions.sh
 endif
 if ENABLE_DEBUG
-root_etc_SCRIPTS += init.qti.debug.sh 
+root_etc_SCRIPTS += $(MACHINE_ENABLED)/init.qti.debug.sh
 endif
 
 install-data-hook:
