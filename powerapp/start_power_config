@@ -406,6 +406,7 @@ case "$1" in
 		echo ondemand > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
 		#reduce the min frequency once boot is done
 		echo 1144 > /sys/class/devfreq/soc:qcom,cpu0-cpu-ddr-lat/min_freq
+		echo 10 > /sys/class/devfreq/soc:qcom,cpu0-cpu-ddr-lat/polling_interval
 
                 echo N > /sys/module/lpm_levels/parameters/sleep_disabled
                 echo mem > /sys/power/autosleep
