@@ -391,7 +391,7 @@ case "$1" in
          esac
 
          case "$soc_id" in
-         "458" | "483")
+         "458" | "483" | "509")
                 echo -n "Starting powerconfig for SDXLEMUR: "
                 #Mkdir for coresight-stm protocol folder
                 stm_policy=/sys/kernel/config/stp-policy/coresight-stm:p_basic.policy
