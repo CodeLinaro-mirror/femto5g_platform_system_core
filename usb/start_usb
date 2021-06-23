@@ -176,9 +176,6 @@ case "$1" in
 				echo 901F > /etc/usb/boot_hsusb_comp
 			fi
 			;;
-		*sdxlemur* )
-			echo Y > /sys/kernel/config/usb_gadget/g1/functions/gsi.rmnet/rmnet_use_tcm_mem
-			;;
 		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* )
 			echo 901D > /etc/usb/boot_hsusb_comp
 		        ;;
