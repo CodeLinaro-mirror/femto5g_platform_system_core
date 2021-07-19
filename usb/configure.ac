@@ -31,5 +31,11 @@ AC_ARG_WITH(sanitized-headers,
          [Specify the location of the sanitized Linux headers]),
       [CPPFLAGS="$CPPFLAGS -idirafter $withval"])
 
+AC_ARG_WITH(systemd,
+        AS_HELP_STRING([--with-systemd], [enable usb in systemd]),
+        [SYSTEMD="yes"],
+        [SYSTEMD="no"])
+AM_CONDITIONAL([USE_SYSTEMD], [test "x${SYSTEMD}" != "xno"])
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

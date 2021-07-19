@@ -6,6 +6,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Check for programs
+AM_PROG_AR
 AM_PROG_AS
 AC_PROG_CC
 AM_PROG_CC_C_O
@@ -26,17 +27,6 @@ AC_SUBST([LIBSELINUX_LIBS])
 PKG_CHECK_MODULES([LIBCUTILS], [libcutils])
 AC_SUBST([LIBCUTILS_CFLAGS])
 AC_SUBST([LIBCUTILS_LIBS])
-
-#obtain  system-core source path.
-AC_ARG_WITH([core_sourcedir],
-    AC_HELP_STRING([--with-core-sourcedir=@<:@dir@:>@],
-       [Specify the location of the core headers]),
-    [core_source=$withval],
-    with_core_sourcedir=no)
-
-if test "x$with_core_sourcedir" != "xno"; then
-   AC_SUBST(core_srcdir,${core_source})
-fi
 
 #check if the build is for host or target
 
