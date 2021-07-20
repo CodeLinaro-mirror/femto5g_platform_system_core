@@ -46,6 +46,13 @@ AM_CONDITIONAL(ARM, [test "x$ARM" = "xyes"])
 AC_CHECK_FUNCS([strlcpy],[STRLCPY=yes],[STRLCPY=no])
 AM_CONDITIONAL([HAVE_STRLCPY],[test "x$STRLCPY" = "xyes"])
 
+AC_ARG_ENABLE([vm-config],
+              AC_HELP_STRING([--enable-vm-config],
+                             [Enable VM power config]),
+                             [has_vmconfig=${enableval}])
+
+AM_CONDITIONAL([ENABLE_VM_POWER_CONFIG], [test "x$has_vmconfig" = "xyes"])
+
 AC_OUTPUT([ \
         Makefile
 ])

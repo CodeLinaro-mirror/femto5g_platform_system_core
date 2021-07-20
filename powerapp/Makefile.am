@@ -15,6 +15,10 @@ AM_CFLAGS = -Os \
             -D_GNU_SOURCE \
             -I../include
 
+if ENABLE_VM_POWER_CONFIG
+    AM_CFLAGS += -DVM_POWER_CONFIG
+endif
+
 powerapp_sbindir             = $(root_sbindir)
 powerapp_sbin_PROGRAMS       = powerapp
 powerapp_sbin_SCRIPTS        = reboot-bootloader
