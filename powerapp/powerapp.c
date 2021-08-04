@@ -41,8 +41,7 @@
 #include <libgen.h>
 #include <mtd/mtd-user.h>
 
-#define KEY_INPUT_DEVICE_0 "/dev/input/event0"
-#define KEY_INPUT_DEVICE_1 "/dev/input/event1"
+#define KEY_INPUT_DEVICE "/dev/input/event0"
 #define SHUTDOWN_COMMAND "/sbin/shutdown"
 #define REBOOT_COMMAND "/sbin/reboot"
 #define USEC_IN_SEC 1000000
@@ -401,11 +400,6 @@ main(int argc, char *argv[])
    char *arg1 = NULL;
    char *cmd_name = basename(argv[0]);
 
-   /* By default, listen to event 0 */
-   char input_key_dev_0[] = KEY_INPUT_DEVICE_0;
-   char input_key_dev_1[] = KEY_INPUT_DEVICE_1;
-   char *input_key_dev = input_key_dev_0;
-
    if(argc > 1)
 	   arg1 = argv[1];
 
@@ -420,16 +414,11 @@ main(int argc, char *argv[])
       return 2;
    }
 
-   /* For VM, events will occur ar /dev/input/event1 */
-   #ifdef VM_POWER_CONFIG
-     input_key_dev = input_key_dev_1;
-   #endif
-
-   fd = open(input_key_dev, O_RDONLY);
+   fd = open(KEY_INPUT_DEVICE, O_RDONLY);
 
    if (fd == -1)
    {
-      fprintf(stderr, "%s: cannot open input device %s\n", argv[0], input_key_dev);
+      fprintf(stderr, "%s: cannot open input device %s\n", argv[0], KEY_INPUT_DEVICE);
       exit(1);
    }
 
