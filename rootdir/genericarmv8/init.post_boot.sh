@@ -30,7 +30,7 @@
 mknod -m 660 /dev/ram5 b 1 1
 mkfs.ext4 /dev/ram5 6144
 mount -t ext4 /dev/ram5 /mnt/tvmapp/ -o rootcontext=system_u:object_r:tvmapp_t:s0
-restorecon /mnt/tvmapp
+
 echo "4 4 1 4" > /proc/sys/kernel/printk
 echo -n "Starting post boot settings "
 sleep 2
