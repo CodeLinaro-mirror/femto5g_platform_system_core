@@ -47,6 +47,9 @@ run_configfs() {
 	rmdir configs/c.2 configs/c.3 2> /dev/null
 	echo 0x05c6 > idVendor
 	echo 0x9114 > idProduct
+	echo 0xEF > bDeviceClass
+	echo 0x02 > bDeviceSubClass
+	echo 0x01 > bDeviceProtocol
 	echo "DIAG_UAC1_UVC" > configs/c.1/strings/0x409/configuration
 	ln -s functions/diag.diag configs/c.1/f1
 	ln -s functions/uac1.uac1 configs/c.1/f2
