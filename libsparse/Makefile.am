@@ -40,9 +40,10 @@ library_include_HEADERS = $(libsparse_h_sources)
 
 
 if IMG_CONVERT_UTILS
-bin_PROGRAMS = simg2img \
-               img2simg \
-               append2simg
+bin_PROGRAMS:=simg2img \
+             img2simg \
+             append2simg \
+             squashfs2sparse
 
 simg2img_c_sources = simg2img.c \
                      sparse_crc32.c
@@ -59,9 +60,15 @@ img2simg_LDADD     = libsparse.la
 img2simg_LDFLAGS   = @Z_LIB@
 
 #bin_PROGRAMS=append2simg
-append2simg_c_sources = append2simg.c
-append2simg_CFLAGS    = $(AM_CFLAGS) \
-                        -Wno-strict-prototypes
-append2simg_LDADD     = libsparse.la
-append2simg_LDFLAGS   = @Z_LIB@
+append2simg_c_sources := append2simg.c
+append2simg_CFLAGS := $(AM_CFLAGS) \
+                      -Wno-strict-prototypes
+append2simg_LDADD =libsparse.la
+append2simg_LDFLAGS = @Z_LIB@
+
+
+squashfs2sparse_c_sources := squashfs2sparse.c
+squashfs2sparse_CFLAGS := $(AM_CFLAGS) \
+                      -Wno-strict-prototypes
+squashfs2sparse_LDFLAGS = @Z_LIB@
 endif
