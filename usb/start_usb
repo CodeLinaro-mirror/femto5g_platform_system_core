@@ -340,6 +340,10 @@ case "$1" in
 	if [ -d /sys/class/android_usb/android0 ]
 	then
 		pid=`cat /etc/usb/boot_hsusb_comp`
+		# exit with success if device is in mhi mode
+		if [ "$pid" == "none" ]; then
+			exit 0
+		fi
 		# make 901D as default composition
                 if [ -z "$pid" ]
 		then
