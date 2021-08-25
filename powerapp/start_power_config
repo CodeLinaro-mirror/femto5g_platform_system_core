@@ -482,8 +482,6 @@ case "$1" in
                 echo 0xC202244 1 > $DCC_PATH/config
                 echo 0xC20100C 0x9 > $DCC_PATH/config
                 echo 0xC20200C 0x9 > $DCC_PATH/config
-                echo 0x17808004 1 > $DCC_PATH/config
-                echo 0x17808020 1 > $DCC_PATH/config
 
                 echo 0x9690008 1 > $DCC_PATH/config
                 echo 0x9690010 1 > $DCC_PATH/config
@@ -583,6 +581,8 @@ case "$1" in
 
                 echo 0x1781002C 0x1480 > $DCC_PATH/config_write
                 echo 0x17830408 1 > $DCC_PATH/config #APCS_RSCC_RSC_SEQ_PROGRAM_COUNTER_DRV0
+                echo 0x17808004 1 > $DCC_PATH/config
+                echo 0x17808020 1 > $DCC_PATH/config
                 echo 0x1781002C 0x900 > $DCC_PATH/config_write
 
                 echo 1 > $DCC_PATH/enable
