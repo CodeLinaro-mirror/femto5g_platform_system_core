@@ -32,10 +32,11 @@ mkfs.ext4 /dev/ram5 6144
 mount -t ext4 /dev/ram5 /mnt/tvmapp/ -o rootcontext=system_u:object_r:tvmapp_t:s0
 
 echo "4 4 1 4" > /proc/sys/kernel/printk
-echo -n "Starting post boot settings "
-sleep 2
+sleep 6
 echo mem > /sys/power/autosleep
 
 if [ -f /etc/init.qti.debug.sh ]; then
     /etc/init.qti.debug.sh
 fi
+
+echo -n "Started post boot settings " > /dev/kmsg
