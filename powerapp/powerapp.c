@@ -51,6 +51,9 @@
 #define RESUME_STRING "on"
 #define POWER_OFF_TIMER 1000000
 
+/* If the duration is less than 800 ms, it reboot else shutdown */
+#define VM_REBOOT_THRESHOLD 800000
+
 /* Finds and opens an mtdchar device with the given partition name. Returns a
    valid file desciptor or -1 on failure. */
 static int mtd_open_partition_name(const char *partition_name, unsigned int *dev_id,
@@ -308,6 +311,26 @@ void powerapp_shutdown(void)
    for(;;);
 }
 
+void vm_shutdown(int duration)
+{
+   pid_t pid;
+
+   pid = fork();
+   if (pid == 0)
+   {
+      if(duration < VM_REBOOT_THRESHOLD)
+      {
+         execl(REBOOT_COMMAND, REBOOT_COMMAND, NULL);
+      }
+      else
+      {
+         execl(SHUTDOWN_COMMAND, SHUTDOWN_COMMAND, "-P", "now", NULL);
+      }
+   }
+   // should never reach here
+   for(;;);
+}
+
 void sys_shutdown_or_reboot(int reboot, char *arg1)
 {
    int cmd = LINUX_REBOOT_CMD_POWER_OFF;
@@ -376,6 +399,7 @@ main(int argc, char *argv[])
    int duration = 0;
    char *arg1 = NULL;
    char *cmd_name = basename(argv[0]);
+
    if(argc > 1)
 	   arg1 = argv[1];
 
@@ -389,7 +413,9 @@ main(int argc, char *argv[])
       sys_shutdown_or_reboot(0, arg1);
       return 2;
    }
+
    fd = open(KEY_INPUT_DEVICE, O_RDONLY);
+
    if (fd == -1)
    {
       fprintf(stderr, "%s: cannot open input device %s\n", argv[0], KEY_INPUT_DEVICE);
@@ -398,6 +424,7 @@ main(int argc, char *argv[])
 
    memset(&then, 0, sizeof(struct timeval));
    memset(&now, 0, sizeof(struct timeval));
+
 
    while ((n = read(fd, &ev, sizeof(struct input_event))) > 0) {
       if (n < sizeof(struct input_event))
@@ -414,6 +441,13 @@ main(int argc, char *argv[])
       {
 	 memcpy(&now, &ev.time, sizeof(struct timeval));
 	 duration = diff_timestamps(&then, &now);
+
+         /* For VM, duration is interpretted to shutdown or reboot */
+         #ifdef VM_POWER_CONFIG
+            /* we don't return from this */
+	    vm_shutdown(duration);
+         #endif
+
 	 if (duration > POWER_OFF_TIMER)
 	 {
 	    powerapp_shutdown();

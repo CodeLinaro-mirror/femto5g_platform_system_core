@@ -32,6 +32,28 @@ export LS_COLORS="none"
 
 case "$1" in
   init)
+	# enable concurrent SoftAP and DUN
+	if [ -f /etc/data/usb/softap_w_dun ]
+	then
+		SOFTAP_W_DUN=`cat /etc/data/usb/softap_w_dun`
+	fi
+
+	# bail out from script if qcom_gadget is enabled and
+	# SoftAP with DUN is not enabled
+	enabled=`cat /sys/bus/platform/devices/qcom_gadget/enabled`
+	if [ "$enabled" == "Y" ]; then
+		if [ "$SOFTAP_W_DUN" == "N" ]; then
+			exit 0
+		else
+			echo "SOFTAP + DUN is enabled, disabling qcom_gadget" > /dev/kmsg
+			echo 0 > /sys/bus/platform/devices/qcom_gadget/enabled
+			usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
+			if [ "$usb_qti_partition" != "" ]; then
+				flash_erase -q /dev/$usb_qti_partition 0 4
+			fi
+		fi
+	fi
+
 	if [ -d /sys/class/android_usb/android0/f_ffs ]
 	then
 		echo adb > /sys/class/android_usb/android0/f_ffs/aliases
@@ -299,12 +321,6 @@ case "$1" in
 		usb_debug -f on n /sbin/usb/debuger/default_debug
 	fi
 
-	# enable concurrent SoftAP and DUN
-	if [ -f /data/usb/softap_w_dun ]
-	then
-		SOFTAP_W_DUN=`cat /data/usb/softap_w_dun`
-	fi
-
 	# boot hsic composition:
 	if [ -d /sys/class/android_usb/android1 ]
 	then
@@ -329,12 +345,15 @@ case "$1" in
 		then
                     pid = "901D"
 		fi
-		/sbin/usb/compositions/$pid n $adbd_params
 
-		if [ "$SOFTAP_W_DUN" == "Y" ]
-		then
-			echo "DUN+SOFTAP mode is enabled."
-			echo 1  > /sys/devices/virtual/android_usb/android0/f_serial/dun_w_softap_enable
+		# check if more than 1 argument is passed
+		if [ $# -gt 1 ]; then
+			# if second argument is n, do nothing
+			if [ $2 != 'n' ]; then
+				/sbin/usb/compositions/$pid n $adbd_params
+			fi
+		else
+			/sbin/usb/compositions/$pid n $adbd_params
 		fi
 	fi
 	;;

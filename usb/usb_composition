@@ -30,6 +30,21 @@ COMP_DIR="/sbin/usb/compositions"
 symlink_hsusb="/etc/usb/boot_hsusb_comp"
 symlink_hsic="/etc/usb/boot_hsic_comp"
 
+if [ -f /sys/devices/soc0/hw_platform ]; then
+	socplatform=`cat /sys/devices/soc0/machine` 2> /dev/null
+	soc_hwplatform=`cat /sys/devices/soc0/hw_platform`
+	soc_subtypeid=`cat /sys/devices/soc0/platform_subtype_id`
+else
+	socplatform=`cat /sys/devices/system/soc/soc0/machine` 2> /dev/null
+fi
+
+msm_serial=`cat /sys/devices/soc0/serial_number`
+msm_serial_hex=`printf %08X $msm_serial`
+# since product string will be passed to kernel via kernel cmdline compose
+# product string in such a way that there is no space in the string instead
+# have a special character '!'
+cmdline_product_string="$socplatform-$soc_hwplatform!_SN:$msm_serial_hex"
+
 legal_composition() {
 	for c in $( ls $COMP_DIR ); do
 		if [ "$1" = "$c" ]; then
@@ -149,7 +164,7 @@ elif [ "$#" -eq 5 ]; then
 		echo "Illegal from adbd (must be 'y' or 'n')."
 		exit 5
 	fi
-	pid=$1
+	local_pid=$1
 	hsic=$2
 	persistent=$3
 	immediate=$4
@@ -173,7 +188,7 @@ elif [ "$#" -eq 4 ]; then
 		echo "Illegal immediate choice (must be 'y' or 'n')."
 		exit 4
 	fi
-	pid=$1
+	local_pid=$1
 	hsic=$2
 	persistent=$3
 	immediate=$4
@@ -193,7 +208,7 @@ elif [ "$#" -eq 3 ]; then
 		echo "Illegal persistent choice (must be 'y' or 'n')."
 		exit 3
 	fi
-	pid=$1
+	local_pid=$1
 	hsic=$2
 	persistent=$3
 	immediate="y"
@@ -209,7 +224,7 @@ elif [ "$#" -eq 2 ]; then
 		echo "Illegal hsic choice (must be 'y' or 'n')."
 		exit 2
 	fi
-	pid=$1
+	local_pid=$1
 	hsic=$2
 	persistent="n"
 	immediate="y"
@@ -221,7 +236,7 @@ elif [ "$#" -eq 1 ]; then
 		echo "Illegal pid"
 		exit 1
 	fi
-	pid=$1
+	local_pid=$1
 	hsic="n"
 	persistent="n"
 	immediate="y"
@@ -236,7 +251,7 @@ elif [ "$#" -eq 0 ]; then
 		desc=`grep DESCRIPTION: $COMP_DIR/$i | sed 's/.*DESCRIPTION: *//g'`
 		echo "   $i -	$desc"
 	done
-	pid=`read_pid`
+	local_pid=`read_pid`
 	hsic=`read_hsic`
         persistent=`read_persistent`
 	immediate=`read_immediate`
@@ -257,7 +272,7 @@ else
 	other=$hsic_comp
 fi
 
-common=`common_functions $other $pid`
+common=`common_functions $other $local_pid`
 if [ $common != "0" ]; then
 	echo "******************************************************************************"
 	echo "*                        !!!WARNING!!!                                       *"
@@ -271,18 +286,30 @@ fi
 
 if [ $persistent = "y" ]; then
 	if [ $hsic = "y" ]; then
-		echo "$pid" > $symlink_hsic
+		echo "$local_pid" > $symlink_hsic
 	else
-		echo "$pid" > $symlink_hsusb
+		echo "$local_pid" > $symlink_hsusb
+		# find mtd number of usb_qti partition
+		usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
+		if [ "$usb_qti_partition=" != "" ]; then
+			flash_erase -q /dev/$usb_qti_partition 0 4
+			printf "USB_COMP!,pid=$local_pid,product_string=$cmdline_product_string\0" > /tmp/data/usb_qti_comp
+			nandwrite -q -p /dev/$usb_qti_partition /tmp/data/usb_qti_comp
+		fi
 	fi
 fi
 
 if [ $hsic = "n" ]; then
 	if [ $immediate = "y" ]; then
-		$COMP_DIR/$pid n 0.2 $from_adb
+		# disable qcom_gadget and run start_usb script if qcom_gadget is enabled
+		enabled=`cat /sys/bus/platform/devices/qcom_gadget/enabled`
+		if [ "$enabled" == "Y" ]; then
+			echo 0 > /sys/bus/platform/devices/qcom_gadget/enabled
+			# pass n as second argument to avoid switching to default composition
+			source /sbin/start_usb init n
+		fi
+		$COMP_DIR/$local_pid n 0.2 $from_adb
 	fi
 else
 	echo "Please reboot device for HSIC composition to take effect"
 fi
-
-
