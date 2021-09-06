@@ -4,6 +4,7 @@ Description=leprop Service
 Before=persist-prop.service
 
 [Service]
+Nice=-20
 User=leprop
 Group=leprop
 Restart=always
@@ -11,4 +12,4 @@ ExecStartPre=+/bin/mkdir -p -m 777 /dev/socket
 ExecStart=/sbin/leprop-service
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=local-fs.target

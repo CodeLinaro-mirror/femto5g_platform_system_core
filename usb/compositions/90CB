@@ -49,6 +49,9 @@ run_configfs() {
 	rmdir configs/c.2 configs/c.3 2> /dev/null
 	echo 0x05c6 > idVendor
 	echo 0x90CB > idProduct
+	echo 0xEF > bDeviceClass
+	echo 0x02 > bDeviceSubClass
+	echo 0x01 > bDeviceProtocol
 	if [ -e functions/diag.diag/pid ]; then
 		echo 0x90CB > functions/diag.diag/pid
 	fi

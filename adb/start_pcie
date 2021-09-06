@@ -47,9 +47,22 @@ set_debug_transport()
 # Check for PCIe support
 if [ -e /dev/mhi_ctrl ]; then
     if [ -e /data/debug_transport.conf ]; then
+        # Set the value from debug_transport.conf if the file is present
         set_debug_transport `cat /data/debug_transport.conf`
     else
-        printf "pcie\0" > /data/debug_transport.conf
-        set_debug_transport "pcie"
+        # Create debug_transport.conf file in the first boot with default debug option
+        default_debug_transport="pcie"
+
+        # SDXLEMUR IPQ fusion devices with platform subtype 11 need usb as debug transport
+        if [ -e /sys/devices/soc0/platform_subtype_id ] && [ -e /sys/devices/soc0/machine ]; then
+            soc_subtypeid=`cat /sys/devices/soc0/platform_subtype_id`
+            soc_machine=`cat /sys/devices/soc0/machine`
+            if [ $soc_machine == "SDXLEMUR" -a $soc_subtypeid == "11" ]; then
+                default_debug_transport="usb"
+            fi
+        fi
+
+        printf "$default_debug_transport\0" > /data/debug_transport.conf
+        set_debug_transport $default_debug_transport
     fi
 fi
