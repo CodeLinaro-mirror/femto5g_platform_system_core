@@ -454,6 +454,10 @@ case "$1" in
 
                 echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
 
+                echo 1 > /sys/kernel/debug/tracing/events/clk/enable
+                echo 1 > /sys/kernel/debug/tracing/events/regulator/enable
+                echo 1 > /sys/kernel/debug/tracing/events/rpmh/enable
+
                 echo 1 > /sys/kernel/debug/tracing/tracing_on
                 echo "++++ $0 -> ENABLE-FTRACE END" > /dev/kmsg
 
@@ -584,6 +588,8 @@ case "$1" in
                 echo 0x17808004 1 > $DCC_PATH/config
                 echo 0x17808020 1 > $DCC_PATH/config
                 echo 0x1781002C 0x900 > $DCC_PATH/config_write
+
+                echo 0x17808100 0x9 > $DCC_PATH/config
 
                 echo 1 > $DCC_PATH/enable
                 echo "++++ $0 -> ENABLE-DCC END" > /dev/kmsg
