@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (c) 2009-2020, The Linux Foundation. All rights reserved.
+# Copyright (c) 2009-2021, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -40,3 +40,24 @@ if [ -f /etc/init.qti.debug.sh ]; then
 fi
 
 echo -n "Started post boot settings " > /dev/kmsg
+
+#ftrace
+tracefs=/sys/kernel/debug/tracing
+
+#SPI
+mkdir $tracefs/instances/spi_qup
+echo 2 > $tracefs/instances/spi_qup/buffer_size_kb
+echo 1 > $tracefs/instances/spi_qup/events/qup_spi_trace/enable
+echo 1 > $tracefs/instances/spi_qup/tracing_on
+
+#I2C
+mkdir $tracefs/instances/i2c_qup
+echo 2 > $tracefs/instances/i2c_qup/buffer_size_kb
+echo 1 > $tracefs/instances/i2c_qup/events/qup_i2c_trace/enable
+echo 1 > $tracefs/instances/i2c_qup/tracing_on
+
+#GENI_COMMON
+#mkdir $tracefs/instances/qupv3_common
+#echo 2 > $tracefs/instances/qupv3_common/buffer_size_kb
+#echo 1 > $tracefs/instances/qupv3_common/events/qup_common_trace/enable
+#echo 1 > $tracefs/instances/qupv3_common/tracing_on
