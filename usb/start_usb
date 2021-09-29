@@ -128,7 +128,7 @@ case "$1" in
 			echo $serialno > /etc/adb_devid
 			sync
 		fi
-		cat /etc/adb_devid > strings/0x409/serialnumber
+		echo $serialno > strings/0x409/serialnumber
 		echo "QCOM" > strings/0x409/manufacturer
 		echo "$product_string" > strings/0x409/product
 		if [ -e functions/diag.diag/serial ]; then
