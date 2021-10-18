@@ -454,6 +454,10 @@ case "$1" in
 
                 echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
 
+                echo 1 > /sys/kernel/debug/tracing/events/clk/enable
+                echo 1 > /sys/kernel/debug/tracing/events/regulator/enable
+                echo 1 > /sys/kernel/debug/tracing/events/rpmh/enable
+
                 echo 1 > /sys/kernel/debug/tracing/tracing_on
                 echo "++++ $0 -> ENABLE-FTRACE END" > /dev/kmsg
 
@@ -483,9 +487,109 @@ case "$1" in
                 echo 0xC20100C 0x9 > $DCC_PATH/config
                 echo 0xC20200C 0x9 > $DCC_PATH/config
 
+                echo 0x9690008 1 > $DCC_PATH/config
+                echo 0x9690010 1 > $DCC_PATH/config
+                echo 0x9693008 1 > $DCC_PATH/config
+                echo 0x9693010 1 > $DCC_PATH/config
+                echo 0x9698008 1 > $DCC_PATH/config
+                echo 0x9698010 1 > $DCC_PATH/config
+                echo 0x969A008 1 > $DCC_PATH/config
+                echo 0x969A010 1 > $DCC_PATH/config
+                echo 0x969B008 1 > $DCC_PATH/config
+                echo 0x969B010 1 > $DCC_PATH/config
+
+                #MEMNOC_HM_mem_noc_debug_master
+                echo 0x9685100 1 > $DCC_PATH/config
+                echo 0x9685104 1 > $DCC_PATH/config
+                echo 0x968510C 1 > $DCC_PATH/config
+                echo 0x9685110 1 > $DCC_PATH/config
+                echo 0x9685114 1 > $DCC_PATH/config
+                echo 0x9685300 1 > $DCC_PATH/config
+                echo 0x9685308 1 > $DCC_PATH/config
+                echo 0x968530C 1 > $DCC_PATH/config
+                echo 0x969E100 1 > $DCC_PATH/config
+                echo 0x96A3100 1 > $DCC_PATH/config
+
+                #MEMNOC_HM_mem_noc_errorlogger
+                echo 0x9680000 1 > $DCC_PATH/config
+                echo 0x9680008 1 > $DCC_PATH/config
+                echo 0x9680010 1 > $DCC_PATH/config
+                echo 0x9680020 7 > $DCC_PATH/config
+
+                #MEMNOC_HM_mem_noc_sbm
+                echo 0x9680440 1 > $DCC_PATH/config
+                echo 0x9680448 1 > $DCC_PATH/config
+
+                echo 0x162C008 1 > $DCC_PATH/config
+                echo 0x162C010 1 > $DCC_PATH/config
+                echo 0x162D008 1 > $DCC_PATH/config
+                echo 0x162D010 1 > $DCC_PATH/config
+                echo 0x162E008 1 > $DCC_PATH/config
+                echo 0x162E010 1 > $DCC_PATH/config
+                echo 0x162F008 1 > $DCC_PATH/config
+                echo 0x162F010 1 > $DCC_PATH/config
+                echo 0x1630008 1 > $DCC_PATH/config
+                echo 0x1630010 1 > $DCC_PATH/config
+                echo 0x1631008 1 > $DCC_PATH/config
+                echo 0x1631010 1 > $DCC_PATH/config
+                echo 0x1632008 1 > $DCC_PATH/config
+                echo 0x1632010 1 > $DCC_PATH/config
+                echo 0x1634008 1 > $DCC_PATH/config
+                echo 0x1634010 1 > $DCC_PATH/config
+                echo 0x1635008 1 > $DCC_PATH/config
+                echo 0x1635010 1 > $DCC_PATH/config
+                echo 0x1636008 1 > $DCC_PATH/config
+                echo 0x1636010 1 > $DCC_PATH/config
+                echo 0x1637008 1 > $DCC_PATH/config
+                echo 0x1637010 1 > $DCC_PATH/config
+                echo 0x1638008 1 > $DCC_PATH/config
+                echo 0x1638010 1 > $DCC_PATH/config
+
+                echo 0x164D100 1 > $DCC_PATH/config
+                echo 0x164E100 1 > $DCC_PATH/config
+                echo 0x164E104 1 > $DCC_PATH/config
+                echo 0x164E108 1 > $DCC_PATH/config
+                echo 0x164E10C 1 > $DCC_PATH/config
+                echo 0x164E110 1 > $DCC_PATH/config
+                echo 0x164F100 1 > $DCC_PATH/config
+                echo 0x164F104 1 > $DCC_PATH/config
+                echo 0x164F108 1 > $DCC_PATH/config
+                echo 0x164F10C 1 > $DCC_PATH/config
+                echo 0x1650100 1 > $DCC_PATH/config
+                echo 0x1650104 1 > $DCC_PATH/config
+                echo 0x1650108 1 > $DCC_PATH/config
+                echo 0x165010C 1 > $DCC_PATH/config
+                echo 0x1651100 1 > $DCC_PATH/config
+                echo 0x1651104 1 > $DCC_PATH/config
+
+                echo 0x1620010 1 > $DCC_PATH/config
+                echo 0x1620018 1 > $DCC_PATH/config
+                echo 0x1620020 1 > $DCC_PATH/config
+                echo 0x1620024 1 > $DCC_PATH/config
+                echo 0x1620028 1 > $DCC_PATH/config
+                echo 0x162002C 1 > $DCC_PATH/config
+                echo 0x1620030 1 > $DCC_PATH/config
+                echo 0x1620034 1 > $DCC_PATH/config
+                echo 0x1620038 1 > $DCC_PATH/config
+                echo 0x162003C 1 > $DCC_PATH/config
+
+                echo 0x1620240 1 > $DCC_PATH/config
+                echo 0x1620244 1 > $DCC_PATH/config
+                echo 0x1620248 1 > $DCC_PATH/config
+                echo 0x162024C 1 > $DCC_PATH/config
+
+                echo 0x117004 1 > $DCC_PATH/config
+                echo 0x12F004 1 > $DCC_PATH/config
+                echo 0x143004 1 > $DCC_PATH/config
+                echo 0x148004 1 > $DCC_PATH/config
+
                 echo 0x1781002C 0x1480 > $DCC_PATH/config_write
                 echo 0x17830408 1 > $DCC_PATH/config #APCS_RSCC_RSC_SEQ_PROGRAM_COUNTER_DRV0
+                echo 0x17808004 1 > $DCC_PATH/config
+                echo 0x17808020 1 > $DCC_PATH/config
                 echo 0x1781002C 0x900 > $DCC_PATH/config_write
+
+                echo 0x17808100 0x9 > $DCC_PATH/config
 
                 echo 1 > $DCC_PATH/enable
                 echo "++++ $0 -> ENABLE-DCC END" > /dev/kmsg

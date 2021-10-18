@@ -47,6 +47,7 @@
 
 // For gettid.
 #if defined(__linux__) && !defined(__ANDROID__)
+#if defined(__GLIBC__) && !__GLIBC_PREREQ(2, 30)
 #include <syscall.h>
 #include <unistd.h>
 
@@ -54,6 +55,7 @@
 pid_t gettid() {
   return syscall(__NR_gettid);
 }
+#endif
 #endif  // __ANDROID__
 
 #define LOG_BUF_SIZE 1024
