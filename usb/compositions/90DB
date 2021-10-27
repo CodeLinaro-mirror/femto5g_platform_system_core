@@ -80,7 +80,7 @@ run_configfs() {
 }
 
 case `source /sbin/usb/target` in
-	*sdxpoorwills* | *sdxprairie* | *sdxlemur* )
+	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sa410m* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
 		;;
