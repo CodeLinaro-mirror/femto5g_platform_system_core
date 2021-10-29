@@ -99,7 +99,7 @@ run_8009() {
 }
 
 case `source /sbin/usb/target` in
-	*qcs605* | *qcs610* | *sdxlemur*)
+	*qcs605* | *qcs610* | *sdxlemur* | *sxr2130* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
 		;;
