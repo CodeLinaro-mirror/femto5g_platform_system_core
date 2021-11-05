@@ -49,6 +49,8 @@ public:
     static const timespec EPOCH;
     log_time()
     {
+        tv_sec = 0x00000000UL;
+        tv_nsec = 0x00000000UL;
     }
     log_time(clockid_t id)
     {
