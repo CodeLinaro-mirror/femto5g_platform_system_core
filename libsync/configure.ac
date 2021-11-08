@@ -6,6 +6,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Check for programs
+AM_PROG_AR
 AM_PROG_AS
 AC_PROG_CC
 AM_PROG_CC_C_O
@@ -38,6 +39,27 @@ if (test "x${with_glib}" = "xyes"); then
         AC_SUBST(GLIB_LIBS)
 fi
 AM_CONDITIONAL(USE_GLIB, test "x${with_glib}" = "xyes")
+
+AS_CASE([$host],
+        [arm*], [ARM=yes],
+        [ARM=no]
+)
+AM_CONDITIONAL(ARM, [test "x$ARM" = "xyes"])
+
+AS_CASE([$host],
+        [aarch64*], [ARM64=yes],
+        [ARM64=no]
+)
+AM_CONDITIONAL(ARM64, [test "x$ARM64" = "xyes"])
+
+AS_CASE([$host],
+        [x86_64*], [X86_64=yes],
+        [X86_64=no]
+)
+AM_CONDITIONAL(X86_64, [test "x$X86_64" = "xyes"])
+
+AM_CONDITIONAL(BUILD_HOST, [test "x$X86_64" = "xyes"])
+AM_CONDITIONAL(BUILD_DEVICE, [test "x$ARM$ARM64" != "xnono"])
 
 AC_CONFIG_FILES([ \
     Makefile \

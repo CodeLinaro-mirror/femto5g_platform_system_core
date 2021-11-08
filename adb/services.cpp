@@ -91,15 +91,12 @@ void restart_root_service(int fd, void *cookie) {
 }
 
 void restart_unroot_service(int fd, void *cookie) {
-#if defined(ALLOW_ADBD_ROOT)
-    int f;
-#endif
     if (getuid() != 0) {
         WriteFdExactly(fd, "adbd not running as root\n");
-        adb_close(fd);
-    } else {
+    }
 #if defined(ALLOW_ADBD_ROOT)
-        f = unix_open("/tmp/.adb.root", O_RDWR | O_CLOEXEC);
+    else {
+        int f = unix_open("/tmp/.adb.root", O_RDWR | O_CLOEXEC);
         if (f > 0) {
             char buf[ROOT_MAGIC_SIZE];
             if (unix_read(f, buf, sizeof(buf)) != -1) {
@@ -114,11 +111,11 @@ void restart_unroot_service(int fd, void *cookie) {
                    WriteFdExactly(fd, "restarting adbd as non root\n");
                 }
             }
-#endif
         }
         unix_close(f);
-        adb_close(fd);
     }
+#endif
+    adb_close(fd);
 }
 
 void restart_tcp_service(int fd, void *cookie) {

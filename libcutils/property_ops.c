@@ -140,6 +140,9 @@ static int send_getprop_msg(const char *msg, char *resp)
             ALOGE("getprop poll timed out");
             ret = -1; // Don't try to recv in case of time out.
         }
+    } else {
+         ALOGE("%s: Failed to send the msg : num_bytes=%d msg=%s msg_len=%d\n",__func__,num_bytes,msg,msg_len);
+         ret = -1;
     }
     close(fd);
     return ret;

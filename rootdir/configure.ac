@@ -18,9 +18,16 @@ AC_ARG_WITH([basemachine],
 AC_MSG_RESULT([$machine_selected])
 AC_SUBST([MACHINE_ENABLED],[$machine_selected])
 
+#systemd
+AC_ARG_WITH(systemd,
+        AS_HELP_STRING([--with-systemd], [enable post boot systemd services]),
+        [SYSTEMD="yes"],
+        [SYSTEMD="no"])
+AM_CONDITIONAL([USE_SYSTEMD], [test "x${SYSTEMD}" != "xno"])
+
 #logging restrictions
 AC_ARG_ENABLE([logrestrict],
-              [AC_HELP_STRING([--enable-logrestrict],
+              [AS_HELP_STRING([--enable-logrestrict],
               [Specify if log restrictions are needed])],
               [logres="$enableval"], [logres="no"])
 
@@ -28,7 +35,7 @@ AM_CONDITIONAL(LOG_RESTRICT, [test "x$logres" = "xyes"])
 
 #debugging
 AC_ARG_ENABLE([debug],
-              [AC_HELP_STRING([--enable-debug],
+              [AS_HELP_STRING([--enable-debug],
               [Specify if debug features are needed])],
               [dbg="$enableval"], [dbg="no"])
 
@@ -36,6 +43,5 @@ AM_CONDITIONAL(ENABLE_DEBUG, [test "x$dbg" = "xyes"])
 
 AC_CONFIG_FILES([ \
     Makefile \
-    etc/Makefile \
 ])
 AC_OUTPUT
