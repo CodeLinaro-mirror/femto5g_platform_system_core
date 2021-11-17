@@ -117,6 +117,7 @@ case "$1" in
 		mkdir functions/ipc.ipc
 		mkdir functions/ecm.ecm
 		mdkir functions/hid.usb0
+		mkdir functions/ccid.ccid
 
 		kernel_version=${KERNEL%%.*}
 		if [ "$kernel_version" -ge "5" ]; then
