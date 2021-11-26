@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
+# Copyright (c) 2021, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -24,10 +24,9 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# DESCRIPTION: DIAG + IPC_ROUTER + RmNet + RmNet + ECM (s/w path)
+# DESCRIPTION: DIAG + UAC1 + UVC + HID
 
-
-echo "Switching to composition number 0x90FD"  > /dev/kmsg
+echo "Switching to composition number 0x9120"  > /dev/kmsg
 
 if [ "$#" -ge 3 ]; then
 	from_adb=$3
@@ -36,45 +35,40 @@ else
 fi
 
 run_configfs() {
-	echo start > /tmp/usb_bind_in_progress
+	echo start > /data/usb_bind_in_progress
 	if [ $from_adb = "n" ]
 	then
 		pkill adbd
-		sleep 1
 	fi
 	cd /sys/kernel/config/usb_gadget/g1
 	rm os_desc/c* 2> /dev/null
 	rm configs/c*/f* 2> /dev/null
 	rmdir configs/c.2/strings/* configs/c.3/strings/* 2> /dev/null
 	rmdir configs/c.2 configs/c.3 2> /dev/null
+	echo 0 > functions/hid.usb0/protocol                     #  set the HID protocol
+        echo 0 > functions/hid.usb0/subclass                     #  set the device subclass
+        echo 3 > functions/hid.usb0/report_length                #  set the byte length of HID reports
+        cat /data/hid-tel.bin > functions/hid.usb0/report_desc
 	echo 0x05c6 > idVendor
-	echo 0x90fd > idProduct
-	if [ -e functions/diag.diag/pid ]; then
-		echo 0x90fd > functions/diag.diag/pid
-	fi
-	echo "DIAG_IPC_RMNET_RMNET_ECM" > configs/c.1/strings/0x409/configuration
-	if [ -e functions/ffs.diag ]; then
-		ln -s functions/ffs.diag configs/c.1/f1
-	else
-		ln -s functions/diag.diag configs/c.1/f1
-	fi
-	ln -s functions/ipc.ipc configs/c.1/f2
-	ln -s functions/gsi.rmnet configs/c.1/f3
-	ln -s functions/gsi.rmnet.v2x configs/c.1/f4
-	ln -s functions/ecm.ecm configs/c.1/f5
-	echo 0xA0 > configs/c.1/bmAttributes
-	rm -f /tmp/usb_bind_in_progress
+	echo 0x9120 > idProduct
+	echo "DIAG_UAC1_UVC_HID" > configs/c.1/strings/0x409/configuration
+	ln -s functions/diag.diag configs/c.1/f1
+	ln -s functions/uac1.uac1 configs/c.1/f2
+	ln -s functions/uvc.0 configs/c.1/f3
+	ln -s functions/hid.usb0 configs/c.1/f4
+	echo 0x80 > configs/c.1/bmAttributes
+	rm -f /data/usb_bind_in_progress
 	echo "binding UDC with Gadget..." $1
 	echo $1 > UDC
 	cd /
 }
 
 case `source /sbin/usb/target` in
-	*sdxpoorwills* | *sa410m* )
+	*qcs610* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
 		;;
-        * )
-		echo "This composition is currently not supported for this target "
+	* )
+		echo "This composition is not supported"
 		;;
 esac

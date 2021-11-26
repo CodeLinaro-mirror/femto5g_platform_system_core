@@ -116,6 +116,7 @@ case "$1" in
 		mkdir functions/rndis.rndis
 		mkdir functions/ipc.ipc
 		mkdir functions/ecm.ecm
+		mdkir functions/hid.usb0
 
 		kernel_version=${KERNEL%%.*}
 		if [ "$kernel_version" -ge "5" ]; then
@@ -127,7 +128,7 @@ case "$1" in
 			echo $serialno > /etc/adb_devid
 			sync
 		fi
-		cat /etc/adb_devid > strings/0x409/serialnumber
+		echo $serialno > strings/0x409/serialnumber
 		echo "QCOM" > strings/0x409/manufacturer
 		echo "$product_string" > strings/0x409/product
 		if [ -e functions/diag.diag/serial ]; then
@@ -198,7 +199,7 @@ case "$1" in
 				echo 901F > /etc/usb/boot_hsusb_comp
 			fi
 			;;
-		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* )
+		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* | *sa410m*)
 			echo 901D > /etc/usb/boot_hsusb_comp
 		        ;;
 		*sm8150* )

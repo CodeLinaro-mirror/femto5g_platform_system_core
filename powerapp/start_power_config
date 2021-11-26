@@ -582,7 +582,58 @@ case "$1" in
                 echo 0x12F004 1 > $DCC_PATH/config
                 echo 0x143004 1 > $DCC_PATH/config
                 echo 0x148004 1 > $DCC_PATH/config
-
+                #LLCC/CABO Registers
+                echo 0x9220344 8 > $DCC_PATH/config
+                echo 0x9220370 6 > $DCC_PATH/config
+                echo 0x9220480 > $DCC_PATH/config
+                echo 0x9222400 5 > $DCC_PATH/config
+                echo 0x9223214 5 > $DCC_PATH/config
+                echo 0x9223308 > $DCC_PATH/config
+                echo 0x9223318 > $DCC_PATH/config
+                echo 0x9230010 > $DCC_PATH/config
+                echo 0x9230020 > $DCC_PATH/config
+                echo 0x9230030 > $DCC_PATH/config
+                echo 0x9230040 > $DCC_PATH/config
+                echo 0x9232050 > $DCC_PATH/config
+                echo 0x9232100 > $DCC_PATH/config
+                echo 0x9236040 8 > $DCC_PATH/config
+                echo 0x92360A0 > $DCC_PATH/config
+                echo 0x92360B0 > $DCC_PATH/config
+                echo 0x9238004 > $DCC_PATH/config
+                echo 0x9238014 > $DCC_PATH/config
+                echo 0x923805C > $DCC_PATH/config
+                echo 0x923A004 7 > $DCC_PATH/config
+                echo 0x923E030 2 > $DCC_PATH/config
+                echo 0x9241000 > $DCC_PATH/config
+                echo 0x9242028 > $DCC_PATH/config
+                echo 0x9242044 3 > $DCC_PATH/config
+                echo 0x9242070 > $DCC_PATH/config
+                echo 0x9248030 > $DCC_PATH/config
+                echo 0x9248048 8 > $DCC_PATH/config
+                echo 0x9260080 > $DCC_PATH/config
+                echo 0x9260400 > $DCC_PATH/config
+                echo 0x9260410 5 > $DCC_PATH/config
+                echo 0x9260430 > $DCC_PATH/config
+                echo 0x9260440 > $DCC_PATH/config
+                echo 0x9260448 > $DCC_PATH/config
+                echo 0x92604A0 > $DCC_PATH/config
+                echo 0x92604B0 > $DCC_PATH/config
+                echo 0x92604B8 2 > $DCC_PATH/config
+                echo 0x92604D0 2 > $DCC_PATH/config
+                echo 0x9261400 > $DCC_PATH/config
+                echo 0x9263410 > $DCC_PATH/config
+                echo 0x92653B0 > $DCC_PATH/config
+                echo 0x9265804 > $DCC_PATH/config
+                echo 0x9265B1C > $DCC_PATH/config
+                echo 0x9265B2C > $DCC_PATH/config
+                echo 0x9265B38 > $DCC_PATH/config
+                echo 0x9269100 > $DCC_PATH/config
+                echo 0x9269110 > $DCC_PATH/config
+                echo 0x9269120 > $DCC_PATH/config
+                echo 0x9269108 > $DCC_PATH/config
+                echo 0x9269118 > $DCC_PATH/config
+                echo 0x9269180 2 > $DCC_PATH/config
+                #RSC registers
                 echo 0x1781002C 0x1480 > $DCC_PATH/config_write
                 echo 0x17830408 1 > $DCC_PATH/config #APCS_RSCC_RSC_SEQ_PROGRAM_COUNTER_DRV0
                 echo 0x17808004 1 > $DCC_PATH/config
