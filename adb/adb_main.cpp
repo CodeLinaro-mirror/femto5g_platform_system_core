@@ -127,8 +127,8 @@ static bool should_drop_privileges() {
     // ...and "adb unroot" lets you explicitly drop privileges.
 
     if (adb_use_pcie) {
-	drop = false;
-	return drop;
+        drop = false;
+        return drop;
     }
 
     int f = unix_open("/tmp/.adb.root", O_RDONLY);
@@ -138,7 +138,7 @@ static bool should_drop_privileges() {
             if(!strncmp(buf, ROOT_MAGIC, ROOT_MAGIC_SIZE))
                 drop = false;
         }
-	unix_close(f);
+        unix_close(f);
     }
 #endif
 
@@ -304,6 +304,9 @@ int adb_main(int is_daemon, int server_port)
         printf("using port=%d\n", port);
         // listen on TCP port specified by service.adb.tcp.port property
         local_init(port);
+    } else if (adb_use_pcie) {
+        // listen on default port on pcie devices
+        local_init(DEFAULT_ADB_LOCAL_TRANSPORT_PORT);
     } else if (!usb) {
         // listen on default port
         local_init(DEFAULT_ADB_LOCAL_TRANSPORT_PORT);
