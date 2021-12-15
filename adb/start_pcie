@@ -59,6 +59,8 @@ if [ -e /dev/mhi_ctrl ]; then
             soc_machine=`cat /sys/devices/soc0/machine`
             if [ $soc_machine == "SDXLEMUR-SD" -a $soc_subtypeid == "11" ]; then
                 default_debug_transport="usb"
+            elif [ $soc_machine == "SDXLEMUR-SD" -a $soc_subtypeid == "17" ]; then
+                default_debug_transport="usb"
             fi
         fi
 
