@@ -195,6 +195,9 @@ case "$1" in
 				echo 901F > /etc/usb/boot_hsusb_comp
 			fi
 			;;
+		*sxr2130* )
+			echo 9060 > /etc/usb/boot_hsusb_comp
+			;;
 		*sdxpoorwills* | *sdxprairie* )
 			if [ -e /dev/mhi_ctrl ]; then
 				echo 901F > /etc/usb/boot_hsusb_comp
