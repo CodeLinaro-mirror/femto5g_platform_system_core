@@ -37,3 +37,6 @@ Environment="adbd_params=0 y"
 RemainAfterExit=yes
 ExecStart=/sbin/start_usb init
 Nice=-5
+
+[Install]
+WantedBy=default.target

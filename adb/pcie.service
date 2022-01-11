@@ -71,3 +71,6 @@ Type=oneshot
 KillMode=process
 ExecStartPre=/sbin/mount-copybind /systemrw/boot_hsusb_comp /etc/usb/boot_hsusb_comp
 ExecStart=/etc/start_pcie
+
+[Install]
+WantedBy=default.target
