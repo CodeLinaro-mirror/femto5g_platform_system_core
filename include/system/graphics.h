@@ -68,6 +68,7 @@ typedef enum {
     HAL_PIXEL_FORMAT_YCRCB_420_SP       = 17, // 0x11 NV21
     HAL_PIXEL_FORMAT_YCBCR_422_I        = 20, // 0x14 YUY2
     HAL_PIXEL_FORMAT_JPEG = 256, // 0x100
+    HAL_PIXEL_FORMAT_CBYCRY_422_I = 288, // 0x120 UYVY
 } android_pixel_format_t;
 
 /*
@@ -382,6 +383,7 @@ struct android_smpte2086_metadata {
 #define HAL_PIXEL_FORMAT_YCbCr_422_SP HAL_PIXEL_FORMAT_YCBCR_422_SP
 #define HAL_PIXEL_FORMAT_YCrCb_420_SP HAL_PIXEL_FORMAT_YCRCB_420_SP
 #define HAL_PIXEL_FORMAT_YCbCr_422_I HAL_PIXEL_FORMAT_YCBCR_422_I
+#define HAL_PIXEL_FORMAT_CbYCrY_422_I HAL_PIXEL_FORMAT_CBYCRY_422_I
 typedef android_pixel_format_t android_pixel_format;
 typedef android_transform_t android_transform;
 typedef android_dataspace_t android_dataspace;
