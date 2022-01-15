@@ -45,6 +45,7 @@
 #include "file_sync_service.h"
 #include "remount_service.h"
 #include "transport.h"
+#include "log/log.h"
 
 struct stinfo {
     void (*func)(int fd, void *cookie);
@@ -72,7 +73,13 @@ void restart_root_service(int fd, void *cookie) {
         adb_close(fd);
     } else {
 #if defined(ALLOW_ADBD_ROOT)
+    int retry = 5;
+    while(retry--){
         f = unix_open("/tmp/.adb.root", O_RDWR | O_CLOEXEC);
+        if ( f == -1 && errno == ENOENT) {
+            ALOGI("%s: unix_open failed,errorno = %d errstr= %s\n", __func__,errno, strerror(errno));
+            f = unix_open("/tmp/.adb.root", O_WRONLY | O_CREAT, 0666);
+        }
         if (f > 0) {
             if (unix_write(f, ROOT_MAGIC, ROOT_MAGIC_SIZE) == -1) {
                 D("Failed to write to /tmp/.adb.root \n");
@@ -80,9 +87,15 @@ void restart_root_service(int fd, void *cookie) {
                 adb_close(fd);
                 return;
             }
+            unix_close(f);
+            WriteFdExactly(fd, "restarting adbd as root\n");
         }
-        unix_close(f);
-        WriteFdExactly(fd, "restarting adbd as root\n");
+        else {
+            ALOGI("%s: unix_open failed, errorno = %d errstr= %s\n", __func__,errno, strerror(errno));
+            usleep(100000);
+
+        }
+    }
 #else
         WriteFdExactly(fd, "adbd cannot run as root in production builds\n");
 #endif
