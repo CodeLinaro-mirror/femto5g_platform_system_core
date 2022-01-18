@@ -40,3 +40,6 @@ ExecStartPre=/bin/chmod 0660 /sys/kernel/config/usb_gadget/g1/UDC
 ExecStartPre=/bin/chown root:adb /sys/kernel/config/usb_gadget/g1/UDC
 ExecStart=/sbin/launch_adbd start
 Nice=-5
+
+[Install]
+WantedBy=default.target

@@ -291,7 +291,7 @@ if [ $persistent = "y" ]; then
 		echo "$local_pid" > $symlink_hsusb
 		# find mtd number of usb_qti partition
 		usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
-		if [ "$usb_qti_partition=" != "" ]; then
+		if [ "$usb_qti_partition" != "" ]; then
 			flash_erase -q /dev/$usb_qti_partition 0 4
 			printf "USB_COMP!,pid=$local_pid,product_string=$cmdline_product_string\0" > /tmp/data/usb_qti_comp
 			nandwrite -q -p /dev/$usb_qti_partition /tmp/data/usb_qti_comp
