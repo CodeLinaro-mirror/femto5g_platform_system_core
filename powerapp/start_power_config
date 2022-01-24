@@ -482,6 +482,13 @@ case "$1" in
                 echo 0xb211024 1 > $DCC_PATH/config #RPMH_PDC_APPS_SEQ_DBG_PROGRAM_COUNTER_DRV0
                 echo 0xb204524 1 > $DCC_PATH/config #RPMH_PDC_APPS_SEQ_OVERRIDE_START_ADDR
 
+                #RSC registers
+                echo 0x1781002C 0x1480 > $DCC_PATH/config_write
+                echo 0x17830408 1 > $DCC_PATH/config #APCS_RSCC_RSC_SEQ_PROGRAM_COUNTER_DRV0
+                echo 0x17808004 1 > $DCC_PATH/config
+                echo 0x17808020 1 > $DCC_PATH/config
+                echo 0x1781002C 0x900 > $DCC_PATH/config_write
+
                 echo 0xC201244 1 > $DCC_PATH/config
                 echo 0xC202244 1 > $DCC_PATH/config
                 echo 0xC20100C 0x9 > $DCC_PATH/config
@@ -493,7 +500,7 @@ case "$1" in
                 echo 0x9693010 1 > $DCC_PATH/config
                 echo 0x9698008 1 > $DCC_PATH/config
                 echo 0x9698010 1 > $DCC_PATH/config
-                echo 0x969A008 1 > $DCC_PATH/config
+                #echo 0x969A008 1 > $DCC_PATH/config
                 echo 0x969A010 1 > $DCC_PATH/config
                 echo 0x969B008 1 > $DCC_PATH/config
                 echo 0x969B010 1 > $DCC_PATH/config
@@ -633,16 +640,11 @@ case "$1" in
                 echo 0x9269108 > $DCC_PATH/config
                 echo 0x9269118 > $DCC_PATH/config
                 echo 0x9269180 2 > $DCC_PATH/config
-                #RSC registers
-                echo 0x1781002C 0x1480 > $DCC_PATH/config_write
-                echo 0x17830408 1 > $DCC_PATH/config #APCS_RSCC_RSC_SEQ_PROGRAM_COUNTER_DRV0
-                echo 0x17808004 1 > $DCC_PATH/config
-                echo 0x17808020 1 > $DCC_PATH/config
-                echo 0x1781002C 0x900 > $DCC_PATH/config_write
 
                 echo 0x17808100 0x9 > $DCC_PATH/config
 
                 echo 1 > $DCC_PATH/enable
+
                 echo "++++ $0 -> ENABLE-DCC END" > /dev/kmsg
                 echo "done";
                 ;;

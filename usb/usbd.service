@@ -35,3 +35,6 @@ RemainAfterExit=yes
 Restart=always
 ExecStart=/usr/bin/usbd
 Nice=-5
+
+[Install]
+WantedBy=default.target

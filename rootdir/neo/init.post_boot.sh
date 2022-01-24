@@ -377,4 +377,6 @@ if [ -f /dev/block/bootdevice/by-name/misc ]; then
     setprop persist.vendor.mmi.misc_dev_path $real_path
 fi
 
+# Setting perf prop to signal postboot completion
+setprop vendor.post_boot.parsed 1
 echo "init_post_boot completed"
