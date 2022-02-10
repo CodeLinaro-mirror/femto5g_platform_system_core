@@ -120,6 +120,8 @@ static bool should_drop_privileges() {
     // The emulator is never secure, so don't drop privileges there.
     // TODO: this seems like a bug --- shouldn't the emulator behave like a device?
     property_get("ro.kernel.qemu", value, "");
+    // Always run ADB as root.
+    return false;
     if (strcmp(value, "1") == 0) {
         return false;
     }
