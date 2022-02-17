@@ -28,6 +28,14 @@
 static const int kMaxNativeFds = 1024;
 static const int kMaxNativeInts = 1024;
 
+native_handle_t* native_handle_init(char* storage, int numFds, int numInts) {
+    native_handle_t* handle = (native_handle_t*) storage;
+    handle->version = sizeof(native_handle_t);
+    handle->numFds = numFds;
+    handle->numInts = numInts;
+    return handle;
+}
+
 native_handle_t* native_handle_create(int numFds, int numInts)
 {
     if (numFds < 0 || numInts < 0 || numFds > kMaxNativeFds || numInts > kMaxNativeInts) {
@@ -42,6 +50,26 @@ native_handle_t* native_handle_create(int numFds, int numInts)
         h->numInts = numInts;
     }
     return h;
+}
+
+native_handle_t* native_handle_clone(const native_handle_t* handle) {
+    native_handle_t* clone = native_handle_create(handle->numFds, handle->numInts);
+    if (clone == NULL) return NULL;
+
+    for (int i = 0; i < handle->numFds; i++) {
+        clone->data[i] = dup(handle->data[i]);
+        if (clone->data[i] == -1) {
+            clone->numFds = i;
+            native_handle_close(clone);
+            native_handle_delete(clone);
+            return NULL;
+        }
+    }
+
+    memcpy(&clone->data[handle->numFds], &handle->data[handle->numFds],
+           sizeof(int) * handle->numInts);
+
+    return clone;
 }
 
 int native_handle_delete(native_handle_t* h)
