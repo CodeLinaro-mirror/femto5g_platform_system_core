@@ -28,6 +28,7 @@
 [Unit]
 Description=Setting the power config
 SourcePath=/etc/initscripts/power_config
+After=multi-user.target
 
 [Service]
 Restart=on-failure

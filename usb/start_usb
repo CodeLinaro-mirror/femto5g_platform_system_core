@@ -47,9 +47,15 @@ case "$1" in
 		else
 			echo "SOFTAP + DUN is enabled, disabling qcom_gadget" > /dev/kmsg
 			echo 0 > /sys/bus/platform/devices/qcom_gadget/enabled
-			usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
-			if [ "$usb_qti_partition" != "" ]; then
-				flash_erase -q /dev/$usb_qti_partition 0 4
+			if [ $(cat /proc/cmdline | grep -c "root=.*ubi\|mtd") -gt 0 ]; then
+				usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
+				if [ "$usb_qti_partition" != "" ]; then
+					flash_erase -q /dev/$usb_qti_partition 0 4
+				fi
+			elif [ $(cat /proc/cmdline | grep -c "root=.*mmc") -gt 0 ]; then
+				if [ -e /dev/block/bootdevice/by-name/usb_qti ]; then
+					dd if=/dev/zero of=/dev/block/bootdevice/by-name/usb_qti
+				fi
 			fi
 		fi
 	fi
@@ -194,6 +200,9 @@ case "$1" in
 			if [ -e /dev/mhi_ctrl ]; then
 				echo 901F > /etc/usb/boot_hsusb_comp
 			fi
+			;;
+		*sxr2130* )
+			echo 9060 > /etc/usb/boot_hsusb_comp
 			;;
 		*sdxpoorwills* | *sdxprairie* )
 			if [ -e /dev/mhi_ctrl ]; then
