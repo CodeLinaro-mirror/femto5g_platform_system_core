@@ -45,7 +45,7 @@ enable_lemur_ftrace_event_tracing()
         return
     fi
 
-    coresight
+    #coresight
     #echo sg > /sys/bus/coresight/devices/coresight-tmc-etr/mem_type
 
     echo 0 > /sys/kernel/debug/tracing/events/enable
@@ -77,7 +77,7 @@ enable_lemur_ftrace_event_tracing()
     echo 1 > /sys/kernel/debug/tracing/events/clk/enable
     echo 1 > /sys/kernel/debug/tracing/events/regulator/enable
     echo 1 > /sys/kernel/debug/tracing/events/rpmh/enable
-
+    echo 1 > /sys/kernel/debug/tracing/events/power/suspend_resume/enable
     echo 1 > /sys/kernel/debug/tracing/tracing_on
     echo "++++ $0 -> ENABLE-FTRACE END" > /dev/kmsg
 }
@@ -263,6 +263,42 @@ enable_lemur_dcc_config()
     echo 0x9269108 > $DCC_PATH/config
     echo 0x9269118 > $DCC_PATH/config
     echo 0x9269180 2 > $DCC_PATH/config
+
+    #RPMH_PDC_APPS_PROFILING_UNITpf_DRVd_TIMESTAMP_LO
+    echo 0xB201204 > $DCC_PATH/config
+    echo 0xB201218 > $DCC_PATH/config
+    echo 0xB20122C > $DCC_PATH/config
+    echo 0xB201240 > $DCC_PATH/config
+    echo 0xB201254 > $DCC_PATH/config
+    echo 0xB211204 > $DCC_PATH/config
+    echo 0xB211218 > $DCC_PATH/config
+    echo 0xB21122C > $DCC_PATH/config
+    echo 0xB211240 > $DCC_PATH/config
+    echo 0xB211254 > $DCC_PATH/config
+
+    #RPMH_PDC_APPS_PROFILING_UNITpf_DRVd_TIMESTAMP_HI
+    echo 0xB201208 > $DCC_PATH/config
+    echo 0xB20121C > $DCC_PATH/config
+    echo 0xB201230 > $DCC_PATH/config
+    echo 0xB201244 > $DCC_PATH/config
+    echo 0xB201258 > $DCC_PATH/config
+    echo 0xB211208 > $DCC_PATH/config
+    echo 0xB21121C > $DCC_PATH/config
+    echo 0xB211230 > $DCC_PATH/config
+    echo 0xB211244 > $DCC_PATH/config
+    echo 0xB211258 > $DCC_PATH/config
+
+    #RPMH_PDC_APPS_PROFILING_UNITpf_DRVd_OUTPUT
+    echo 0xB201200 > $DCC_PATH/config
+    echo 0xB201214 > $DCC_PATH/config
+    echo 0xB201228 > $DCC_PATH/config
+    echo 0xB20123C > $DCC_PATH/config
+    echo 0xB201250 > $DCC_PATH/config
+    echo 0xB211200 > $DCC_PATH/config
+    echo 0xB211214 > $DCC_PATH/config
+    echo 0xB211228 > $DCC_PATH/config
+    echo 0xB21123C > $DCC_PATH/config
+    echo 0xB211250 > $DCC_PATH/config
 
     echo 0x17808100 0x9 > $DCC_PATH/config
 
