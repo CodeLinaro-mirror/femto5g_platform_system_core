@@ -858,6 +858,14 @@ case "$1" in
                 set +e
                 ;;
          esac
+
+         case "$soc_id" in
+          "356")
+                echo -n "Starting powerconfig for SXR2130: "
+
+                echo "done"
+                ;;
+         esac
          ;;
   stop)
         ;;
