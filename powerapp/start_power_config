@@ -936,7 +936,6 @@ case "$1" in
                 #enble FTRACE for Workqueue events
                 echo 1 > /sys/kernel/debug/tracing/events/workqueue/enable
                 #schedular
-                echo 1 > /sys/kernel/debug/tracing/events/sched/sched_cpu_hotplug/enable
                 echo 1 > /sys/kernel/debug/tracing/events/sched/sched_migrate_task/enable
                 echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
                 echo 1 > /sys/kernel/debug/tracing/events/sched/sched_wakeup_new/enable
