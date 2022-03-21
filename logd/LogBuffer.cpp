@@ -174,11 +174,16 @@ int LogBuffer::log(log_id_t log_id, log_time realtime,
 
     // Insert elements in time sorted order if possible
     //  NB: if end is region locked, place element at end of list
+    static uint32_t too_far_back = 5;
     LogBufferElementCollection::iterator it = mLogElements.end();
     LogBufferElementCollection::iterator last = it;
     while (last != mLogElements.begin()) {
         --it;
-        if ((*it)->getRealTime() <= realtime) {
+        if (((*it)->getRealTime() <= realtime) ||
+            (((*it)->getRealTime().tv_sec - too_far_back) >
+             elem->getRealTime().tv_sec) &&
+             (elem->getLogId() != LOG_ID_KERNEL) &&
+             ((*it)->getLogId() != LOG_ID_KERNEL)) {
             break;
         }
         last = it;
