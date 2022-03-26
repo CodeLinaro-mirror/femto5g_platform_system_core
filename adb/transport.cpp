@@ -57,7 +57,7 @@ void kick_transport(atransport* t)
             t->kicked = 1;
         adb_mutex_unlock(&transport_lock);
 
-        if (!kicked)
+        if (!kicked && t->kick)
             t->kick(t);
     }
 }
@@ -674,11 +674,12 @@ static void transport_unref_locked(atransport *t)
     t->ref_count--;
     if (t->ref_count == 0) {
         D("transport: %s unref (kicking and closing)\n", t->serial);
-        if (!t->kicked) {
+        if (!t->kicked && t->kick) {
             t->kicked = 1;
             t->kick(t);
         }
-        t->close(t);
+        if(t->close)
+            t->close(t);
         remove_transport(t);
     } else {
         D("transport: %s unref (count=%d)\n", t->serial, t->ref_count);
