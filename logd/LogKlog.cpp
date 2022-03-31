@@ -287,6 +287,12 @@ void LogKlog::sniffTime(log_time &now, const char **buf, bool reverse) {
                     correction += real;
                 }
             }
+        } else {
+            log_time refresh_correction = log_time(CLOCK_REALTIME)-log_time(CLOCK_MONOTONIC);
+            if (refresh_correction.tv_sec > correction.tv_sec+1 ||
+                refresh_correction.tv_sec < correction.tv_sec-1) {
+                correction = refresh_correction;
+            }
         }
 
         convertMonotonicToReal(now);
