@@ -23,6 +23,11 @@ if ENABLE_VM_POWER_CONFIG
     AM_CFLAGS += -DVM_POWER_CONFIG
 endif
 
+if USE_GLIB
+AM_CFLAGS  += $(GLIB_CFLAGS) -include glib.h -Dstrlcpy=g_strlcpy
+AM_LDFLAGS = $(GLIB_LIBS)
+endif
+
 powerapp_sbindir             = $(root_sbindir)
 powerapp_sbin_PROGRAMS       = powerapp
 powerapp_sbin_SCRIPTS        = reboot-bootloader
