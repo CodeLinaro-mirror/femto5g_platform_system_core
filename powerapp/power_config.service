@@ -37,4 +37,4 @@ ExecStart=/etc/initscripts/power_config start
 ExecStop=/etc/initscripts/power_config stop
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=sysinit.target

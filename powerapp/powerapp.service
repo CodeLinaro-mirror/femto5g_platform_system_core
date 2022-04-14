@@ -34,4 +34,4 @@ Restart=on-failure
 ExecStart=/sbin/powerapp
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=sysinit.target

@@ -370,7 +370,7 @@ void suspend_or_resume(void)
    {
      if (suspend == 1)
      {
-       strcpy (buf, SUSPEND_STRING);
+       strlcpy (buf, SUSPEND_STRING, sizeof(buf));
        errno = 0;
        if (write(fd, buf, strlen(buf)) == -1)
        {

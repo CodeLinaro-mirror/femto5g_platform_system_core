@@ -187,7 +187,7 @@ run_configfs() {
 	ln -s functions/ffs.adb configs/c.1/f2
 	ln -s functions/cser.dun.0 configs/c.1/f3
 	ln -s functions/cser.nmea.1 configs/c.1/f4
-	ln -s functions/qdss.qdss configs/c.1/f5
+	ln -s functions/$qdss_func configs/c.1/f5
 	ln -s functions/gsi.rmnet configs/c.1/f6
 	ln -s functions/gsi.ecm configs/c.2/f1
 	ln -s functions/gsi.mbim configs/c.3/f1
@@ -226,6 +226,12 @@ case `source /sbin/usb/target` in
 		run_sdx20 &
 		;;
 	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sdxnightjar* | *sa410m* )
+		if [ `source /sbin/usb/target` == "sdxlemur" ]
+		then
+			qdss_func="qdss.qdss_mdm"
+		else
+			qdss_func="qdss.qdss"
+		fi
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
 		;;

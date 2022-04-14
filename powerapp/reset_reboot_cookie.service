@@ -34,4 +34,4 @@ Restart=no
 ExecStart=/etc/initscripts/reset_reboot_cookie
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=sysinit.target

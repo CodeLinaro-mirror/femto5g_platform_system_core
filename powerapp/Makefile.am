@@ -13,7 +13,11 @@ AM_CFLAGS = -Os \
             -Wno-unused-parameter \
             -D_XOPEN_SOURCE \
             -D_GNU_SOURCE \
-            -I../include
+            -I../include \
+            @GLIB_CFLAGS@ \
+            -Dstrlcpy=g_strlcpy
+
+AM_LDFLAGS = @GLIB_LIBS@
 
 if ENABLE_VM_POWER_CONFIG
     AM_CFLAGS += -DVM_POWER_CONFIG
