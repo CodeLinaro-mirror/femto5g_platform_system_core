@@ -70,7 +70,7 @@ run_configfs() {
 	fi
 	ln -s functions/gsi.rmnet configs/c.1/f3
 	ln -s functions/gsi.dpl configs/c.1/f4
-	ln -s functions/qdss.qdss configs/c.1/f5
+	ln -s functions/$qdss_func configs/c.1/f5
 	ln -s functions/ffs.adb configs/c.1/f6
 	echo 0x80 > configs/c.1/bmAttributes
 	rm -f /tmp/usb_bind_in_progress
@@ -81,6 +81,12 @@ run_configfs() {
 
 case `source /sbin/usb/target` in
 	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sa410m* )
+		if [ `source /sbin/usb/target` == "sdxlemur" ]
+		then
+			qdss_func="qdss.qdss_mdm"
+		else
+			qdss_func="qdss.qdss"
+		fi
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
 		;;

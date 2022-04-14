@@ -45,7 +45,7 @@ enable_lemur_ftrace_event_tracing()
         return
     fi
 
-    coresight
+    #coresight
     #echo sg > /sys/bus/coresight/devices/coresight-tmc-etr/mem_type
 
     echo 0 > /sys/kernel/debug/tracing/events/enable
@@ -77,7 +77,7 @@ enable_lemur_ftrace_event_tracing()
     echo 1 > /sys/kernel/debug/tracing/events/clk/enable
     echo 1 > /sys/kernel/debug/tracing/events/regulator/enable
     echo 1 > /sys/kernel/debug/tracing/events/rpmh/enable
-
+    echo 1 > /sys/kernel/debug/tracing/events/power/suspend_resume/enable
     echo 1 > /sys/kernel/debug/tracing/tracing_on
     echo "++++ $0 -> ENABLE-FTRACE END" > /dev/kmsg
 }
@@ -263,6 +263,42 @@ enable_lemur_dcc_config()
     echo 0x9269108 > $DCC_PATH/config
     echo 0x9269118 > $DCC_PATH/config
     echo 0x9269180 2 > $DCC_PATH/config
+
+    #RPMH_PDC_APPS_PROFILING_UNITpf_DRVd_TIMESTAMP_LO
+    echo 0xB201204 > $DCC_PATH/config
+    echo 0xB201218 > $DCC_PATH/config
+    echo 0xB20122C > $DCC_PATH/config
+    echo 0xB201240 > $DCC_PATH/config
+    echo 0xB201254 > $DCC_PATH/config
+    echo 0xB211204 > $DCC_PATH/config
+    echo 0xB211218 > $DCC_PATH/config
+    echo 0xB21122C > $DCC_PATH/config
+    echo 0xB211240 > $DCC_PATH/config
+    echo 0xB211254 > $DCC_PATH/config
+
+    #RPMH_PDC_APPS_PROFILING_UNITpf_DRVd_TIMESTAMP_HI
+    echo 0xB201208 > $DCC_PATH/config
+    echo 0xB20121C > $DCC_PATH/config
+    echo 0xB201230 > $DCC_PATH/config
+    echo 0xB201244 > $DCC_PATH/config
+    echo 0xB201258 > $DCC_PATH/config
+    echo 0xB211208 > $DCC_PATH/config
+    echo 0xB21121C > $DCC_PATH/config
+    echo 0xB211230 > $DCC_PATH/config
+    echo 0xB211244 > $DCC_PATH/config
+    echo 0xB211258 > $DCC_PATH/config
+
+    #RPMH_PDC_APPS_PROFILING_UNITpf_DRVd_OUTPUT
+    echo 0xB201200 > $DCC_PATH/config
+    echo 0xB201214 > $DCC_PATH/config
+    echo 0xB201228 > $DCC_PATH/config
+    echo 0xB20123C > $DCC_PATH/config
+    echo 0xB201250 > $DCC_PATH/config
+    echo 0xB211200 > $DCC_PATH/config
+    echo 0xB211214 > $DCC_PATH/config
+    echo 0xB211228 > $DCC_PATH/config
+    echo 0xB21123C > $DCC_PATH/config
+    echo 0xB211250 > $DCC_PATH/config
 
     echo 0x17808100 0x9 > $DCC_PATH/config
 
@@ -862,6 +898,50 @@ case "$1" in
          case "$soc_id" in
           "356")
                 echo -n "Starting powerconfig for SXR2130: "
+
+                echo "++++ $0 -> ENABLE-FTRACE START" > /dev/kmsg
+                #bail out if its perf config
+                if [ ! -d /sys/module/msm_rtb ]
+                then
+                        return
+                fi
+
+                #bail out if coresight isn't present
+                if [ ! -d /sys/bus/coresight ]
+                then
+                        return
+                fi
+
+                #coresight
+                echo 0 > /sys/kernel/debug/tracing/events/enable
+                echo mem > /sys/bus/coresight/devices/coresight-tmc-etr/out_mode
+                echo 1 > /sys/bus/coresight/devices/coresight-tmc-etr/enable_sink
+                echo 1 > /sys/bus/coresight/devices/coresight-stm/enable_source
+                echo 1 > /sys/kernel/debug/tracing/tracing_on
+                #timer
+                echo 1 > /sys/kernel/debug/tracing/events/timer/timer_expire_entry/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/timer_expire_exit/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_cancel/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_expire_entry/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_expire_exit/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_init/enable
+                echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_start/enable
+                #enble FTRACE for softirq events
+                echo 1 > /sys/kernel/debug/tracing/events/irq/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/softirq_entry/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/softirq_exit/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/softirq_raise/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/irq_handler_entry/enable
+                echo 1 > /sys/kernel/debug/tracing/events/irq/irq_handler_exit/enable
+                #enble FTRACE for Workqueue events
+                echo 1 > /sys/kernel/debug/tracing/events/workqueue/enable
+                #schedular
+                echo 1 > /sys/kernel/debug/tracing/events/sched/sched_migrate_task/enable
+                echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
+                echo 1 > /sys/kernel/debug/tracing/events/sched/sched_wakeup_new/enable
+                echo 1 > /sys/kernel/debug/tracing/events/sched/sched_wakeup/enable
+
+                echo "++++ $0 -> ENABLE-FTRACE END" > /dev/kmsg
 
                 echo "done"
                 ;;
