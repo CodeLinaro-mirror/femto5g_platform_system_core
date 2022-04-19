@@ -325,10 +325,6 @@ case "$1" in
 		echo "1 806400:80" > /sys/devices/system/cpu/cpufreq/interactive/target_loads
 		echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
 		echo 806400 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-		echo mem > /sys/power/autosleep
-
-		# Enable Low Power modes
-		echo 0 > /sys/module/lpm_levels/parameters/sleep_disabled
 		;;
 	esac
 
@@ -343,21 +339,17 @@ case "$1" in
                 echo "85 800000:90" > /sys/devices/system/cpu/cpufreq/interactive/target_loads
                 echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
                 echo 300000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-                echo mem > /sys/power/autosleep
 
                 # Disable standalone_pc
                 echo N > /sys/module/lpm_levels/system/cpu0/standalone_pc/idle_enabled
                 echo N > /sys/module/lpm_levels/system/cpu0/standalone_pc/suspend_enabled
 
-		# Enable Low Power modes
-                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
                 ;;
         esac
 
         case "$soc_id" in
         "234" | "235" | "236"| "237" | "238")
                 echo -n "Starting powerconfig for 9x40: "
-                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
 
                 echo "interactive" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
                 echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
@@ -366,7 +358,6 @@ case "$1" in
                 echo "85 800000:90" > /sys/devices/system/cpu/cpufreq/interactive/target_loads
                 echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
                 echo 300000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-                echo mem > /sys/power/autosleep
                 ;;
         esac
 
@@ -403,7 +394,6 @@ case "$1" in
          case "$soc_id" in
          "333" | "314")
                 echo -n "Starting powerconfig for SDX20: "
-                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
                 # Enable LPMs
                 echo Y > /sys/module/lpm_levels/system/cpu0/wfi/idle_enabled
                 echo Y > /sys/module/lpm_levels/system/cpu0/standalone_pc/idle_enabled
@@ -420,18 +410,14 @@ case "$1" in
                 echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
                 echo 300000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
 
-                echo mem > /sys/power/autosleep
                 ;;
          esac
 
          case "$soc_id" in
          "334" )
                 echo -n "Starting powerconfig for SDX24: "
-                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
                 #CPU Governor settings
                 echo ondemand >  /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
-                #Enable Suspend
-                echo mem > /sys/power/autosleep
                 #Enable bus-dcvs
                 echo "compute" > /sys/class/devfreq/soc:qcom,cpubw/governor
                 echo 10 > /sys/class/devfreq/soc:qcom,cpubw/polling_interval
@@ -587,11 +573,9 @@ case "$1" in
         case "$soc_id" in
 	"357" | "368")
                 echo -n "Starting powerconfig for SDX55: "
-                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
                 echo ondemand > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
                 echo compute > /sys/class/devfreq/soc:qcom,cpubw/governor
 
-                echo mem > /sys/power/autosleep
                 echo 10 > /sys/class/devfreq/soc:qcom,cpubw/polling_interval
 
 		echo "++++ $0 -> ENABLE-FTRACE START" > /dev/kmsg
@@ -686,9 +670,6 @@ case "$1" in
 		#reduce the min frequency once boot is done
 		echo 1144 > /sys/class/devfreq/soc:qcom,cpu0-cpu-ddr-lat/min_freq
 		echo 10 > /sys/class/devfreq/soc:qcom,cpu0-cpu-ddr-lat/polling_interval
-
-                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
-                echo mem > /sys/power/autosleep
 
                 enable_lemur_dcc_config
                 enable_lemur_ftrace_event_tracing
