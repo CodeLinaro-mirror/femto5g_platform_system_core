@@ -361,12 +361,12 @@ property_db* pull_one_line_data(const char* line)
             {
                 case EXT_NAME:
                     curr_length = delimiter - curr_line_ptr;
-                    if (curr_length > PROP_NAME_MAX || curr_length < 0)
+                    if (curr_length > (PROP_NAME_MAX - 1) || curr_length < 0)
                     {
-                       curr_length = PROP_NAME_MAX;
+                       curr_length = PROP_NAME_MAX - 1;
                     }
                     strlcpy(extracted_val->unit.property_name,
-                            curr_line_ptr, curr_length);
+                            curr_line_ptr, (curr_length + 1));
                     LOG("[%s] => Extracted Name: %s\n", __func__,
                             extracted_val->unit.property_name);
                     break;
@@ -374,12 +374,12 @@ property_db* pull_one_line_data(const char* line)
                 case EXT_VAL:
                     curr_line_ptr = delimiter+1; //+1 for the delimiter itself
                     curr_length = strlen(curr_line_ptr);
-                    if (curr_length > PROP_VALUE_MAX || curr_length < 0)
+                    if (curr_length > (PROP_VALUE_MAX - 1) || curr_length < 0)
                     {
-                       curr_length = PROP_VALUE_MAX;
+                       curr_length = PROP_VALUE_MAX - 1;
                     }
                     strlcpy(extracted_val->unit.property_value,
-                            curr_line_ptr, curr_length);
+                            curr_line_ptr, (curr_length + 1));
                     LOG("[%s] => Extracted Value: %s\n", __func__
                             ,extracted_val->unit.property_value);
                     break;
