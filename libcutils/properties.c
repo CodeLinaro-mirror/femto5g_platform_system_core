@@ -29,7 +29,7 @@ int property_get(const char *key, char *value, const char *default_value) {
     }
 #endif
     if (NULL != default_value) {
-        rc = sprintf(value, "%.*s", PROPERTY_VALUE_MAX - 1, default_value);
+        rc = snprintf(value, PROPERTY_VALUE_MAX, "%.*s", PROPERTY_VALUE_MAX - 1, default_value);
     }
     return rc;
 }

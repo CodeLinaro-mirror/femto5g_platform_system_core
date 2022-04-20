@@ -365,7 +365,7 @@ property_db* pull_one_line_data(const char* line)
                     {
                        curr_length = PROP_NAME_MAX;
                     }
-                    strncpy(extracted_val->unit.property_name,
+                    strlcpy(extracted_val->unit.property_name,
                             curr_line_ptr, curr_length);
                     LOG("[%s] => Extracted Name: %s\n", __func__,
                             extracted_val->unit.property_name);
@@ -378,7 +378,7 @@ property_db* pull_one_line_data(const char* line)
                     {
                        curr_length = PROP_VALUE_MAX;
                     }
-                    strncpy(extracted_val->unit.property_value,
+                    strlcpy(extracted_val->unit.property_value,
                             curr_line_ptr, curr_length);
                     LOG("[%s] => Extracted Value: %s\n", __func__
                             ,extracted_val->unit.property_value);
