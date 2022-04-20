@@ -410,6 +410,6 @@ ssize_t fs_config_generate(char *buffer, size_t length, const struct fs_path_con
     p->uid = get2LE((const uint8_t *)&(pc->uid));
     p->gid = get2LE((const uint8_t *)&(pc->gid));
     p->capabilities = get8LE((const uint8_t *)&(pc->capabilities));
-    strcpy(p->prefix, pc->prefix);
+    strlcpy(p->prefix, pc->prefix, (strlen(pc->prefix) + 1));
     return len;
 }
