@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
+# Copyright (c) 2014,2017-2021, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -24,10 +24,21 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# DESCRIPTION: DIAG + IPC_ROUTER + RmNet + RmNet + ECM (s/w path)
+# DESCRIPTION: CCID + DIAG + ADB
 
+echo "Switching to composition number 0x90D1" > /dev/kmsg
 
-echo "Switching to composition number 0x90FD"  > /dev/kmsg
+if [ "$1" = "y" ]; then
+	num="1"
+else
+	num="0"
+fi
+
+if [ "$#" -ge 2 ]; then
+	delay=$2
+else
+	delay="0"
+fi
 
 if [ "$#" -ge 3 ]; then
 	from_adb=$3
@@ -40,6 +51,7 @@ run_configfs() {
 	if [ $from_adb = "n" ]
 	then
 		pkill adbd
+		# Give enough time to restart ADBD and open EP0 file node
 		sleep 1
 	fi
 	cd /sys/kernel/config/usb_gadget/g1
@@ -48,21 +60,16 @@ run_configfs() {
 	rmdir configs/c.2/strings/* configs/c.3/strings/* 2> /dev/null
 	rmdir configs/c.2 configs/c.3 2> /dev/null
 	echo 0x05c6 > idVendor
-	echo 0x90fd > idProduct
-	if [ -e functions/diag.diag/pid ]; then
-		echo 0x90fd > functions/diag.diag/pid
-	fi
-	echo "DIAG_IPC_RMNET_RMNET_ECM" > configs/c.1/strings/0x409/configuration
+	echo 0x90D1 > idProduct
+	echo "CCID_DIAG_ADB" > configs/c.1/strings/0x409/configuration
+	ln -s functions/ccid.ccid configs/c.1/f1
 	if [ -e functions/ffs.diag ]; then
-		ln -s functions/ffs.diag configs/c.1/f1
+		ln -s functions/ffs.diag configs/c.1/f2
 	else
-		ln -s functions/diag.diag configs/c.1/f1
+		ln -s functions/diag.diag configs/c.1/f2
 	fi
-	ln -s functions/ipc.ipc configs/c.1/f2
-	ln -s functions/gsi.rmnet configs/c.1/f3
-	ln -s functions/gsi.rmnet.v2x configs/c.1/f4
-	ln -s functions/ecm.ecm configs/c.1/f5
-	echo 0xA0 > configs/c.1/bmAttributes
+	ln -s functions/ffs.adb configs/c.1/f3
+	echo 0x80 > configs/c.1/bmAttributes
 	rm -f /tmp/usb_bind_in_progress
 	echo "binding UDC with Gadget..." $1
 	echo $1 > UDC
@@ -70,11 +77,8 @@ run_configfs() {
 }
 
 case `source /sbin/usb/target` in
-	*sdxpoorwills* | *sa410m* )
+	*sdxlemur* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
-		;;
-        * )
-		echo "This composition is currently not supported for this target "
 		;;
 esac

@@ -69,7 +69,7 @@ case `source /sbin/usb/target` in
 	*9640* )
 		run_9x35 &
 		;;
-	*sdxpoorwills* | *sdxprairie* | *sdxlemur* )
+	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sa410m* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
 		run_configfs $udcname &
 		;;

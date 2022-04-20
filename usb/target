@@ -81,6 +81,9 @@ case $TARGET in
 	*8098* )
 		res="8098";
 		;;
+	*sxr2130* )
+		res="sxr2130";
+		;;
 	*sdxnightjar* )
 		res="sdxnightjar";
 		;;
@@ -98,6 +101,9 @@ case $TARGET in
 		;;
 	*sa2150p* )
 		res="sa2150p";
+		;;
+	*sa410m* )
+		res="sa410m";
 		;;
 	* )
 		res="none"

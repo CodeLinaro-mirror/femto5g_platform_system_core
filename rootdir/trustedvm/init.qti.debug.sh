@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (c) 2009-2021, The Linux Foundation. All rights reserved.
+#Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -27,37 +27,16 @@
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-mknod -m 660 /dev/ram5 b 1 1
-mkfs.ext4 /dev/ram5 6144
-mount -t ext4 /dev/ram5 /mnt/tvmapp/ -o rootcontext=system_u:object_r:tvmapp_t:s0
+configure_memory_debug_parameters()
+{
+    #panic whenever oom is detected
+    echo 2 > /proc/sys/vm/panic_on_oom
+}
 
-echo "4 4 1 4" > /proc/sys/kernel/printk
-sleep 6
-echo mem > /sys/power/autosleep
+enable_debug()
+{
+    echo -n "Configuring post boot debug settings "
+    configure_memory_debug_parameters
+}
 
-if [ -f /etc/init.qti.debug.sh ]; then
-    /etc/init.qti.debug.sh
-fi
-
-echo -n "Started post boot settings " > /dev/kmsg
-
-#ftrace
-tracefs=/sys/kernel/debug/tracing
-
-#SPI
-mkdir $tracefs/instances/spi_qup
-echo 2 > $tracefs/instances/spi_qup/buffer_size_kb
-echo 1 > $tracefs/instances/spi_qup/events/qup_spi_trace/enable
-echo 1 > $tracefs/instances/spi_qup/tracing_on
-
-#I2C
-mkdir $tracefs/instances/i2c_qup
-echo 2 > $tracefs/instances/i2c_qup/buffer_size_kb
-echo 1 > $tracefs/instances/i2c_qup/events/qup_i2c_trace/enable
-echo 1 > $tracefs/instances/i2c_qup/tracing_on
-
-#GENI_COMMON
-#mkdir $tracefs/instances/qupv3_common
-#echo 2 > $tracefs/instances/qupv3_common/buffer_size_kb
-#echo 1 > $tracefs/instances/qupv3_common/events/qup_common_trace/enable
-#echo 1 > $tracefs/instances/qupv3_common/tracing_on
+enable_debug
