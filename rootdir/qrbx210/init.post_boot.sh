@@ -28,6 +28,3 @@
 #
 
 # Empty file
-if [ -f /sys/module/drm/parameters/vblankoffdelay ]; then
-    echo 0 > /sys/module/drm/parameters/vblankoffdelay
-fi
