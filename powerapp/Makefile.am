@@ -42,6 +42,7 @@ powerapp_sysconf_SCRIPTS  = reboot
 powerapp_sysconf_SCRIPTS += reset_reboot_cookie
 powerapp_sysconf_SCRIPTS += shutdown
 powerapp_sysconf_SCRIPTS += start_power_config
+powerapp_sysconf_SCRIPTS += enable_autosleep
 
 install-data-hook:
 	mv $(DESTDIR)/$(powerapp_sysconfdir)/start_power_config  $(DESTDIR)/$(powerapp_sysconfdir)/power_config
@@ -49,12 +50,14 @@ install-data-hook:
 powerapp_systemddir       = $(root_libdir)/systemd/system
 powerapp_systemd_DATA     = reset_reboot_cookie.service
 powerapp_systemd_DATA    += power_config.service
+powerapp_systemd_DATA    += enable_autosleep.service
 else
 powerapp_sysconfdir       = $(root_etcdir)/init.d
 powerapp_sysconf_SCRIPTS  = reboot
 powerapp_sysconf_SCRIPTS += reset_reboot_cookie
 powerapp_sysconf_SCRIPTS += shutdown
 powerapp_sysconf_SCRIPTS += start_power_config
+powerapp_sysconf_SCRIPTS += enable_autosleep
 
 install-data-hook:
 	 mv $(DESTDIR)/$(powerapp_sysconfdir)/start_power_config $(DESTDIR)/$(powerapp_sysconfdir)/power_config
