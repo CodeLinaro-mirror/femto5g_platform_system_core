@@ -97,6 +97,7 @@ case "$1" in
 		mkdir strings/0x409
 		mkdir configs/c.1
 		mkdir configs/c.1/strings/0x409
+		mkdir functions/acm.0
 		mkdir functions/mass_storage.0
 		mkdir functions/mass_storage.1
 		mkdir functions/ffs.adb
