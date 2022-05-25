@@ -51,6 +51,10 @@ powerapp_systemddir       = $(root_libdir)/systemd/system
 powerapp_systemd_DATA     = reset_reboot_cookie.service
 powerapp_systemd_DATA    += power_config.service
 powerapp_systemd_DATA    += enable_autosleep.service
+if ENABLE_VM_POWER_CONFIG
+powerapp_systemd_DATA    += powerapp.service
+endif
+
 else
 powerapp_sysconfdir       = $(root_etcdir)/init.d
 powerapp_sysconf_SCRIPTS  = reboot
