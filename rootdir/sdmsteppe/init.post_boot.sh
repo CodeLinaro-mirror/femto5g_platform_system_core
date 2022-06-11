@@ -248,6 +248,11 @@ case "$target" in
     # Enable bus-dcvs
     for device in /sys/devices/platform/soc
     do
+        for allfreq in /sys/class/devfreq/*qcom,cpu*
+        do
+            cat  $allfreq/available_frequencies | cut -d " " -f 1 > $allfreq/min_freq
+        done
+
         for cpubw in $device/*cpu-cpu-llcc-bw/devfreq/*cpu-cpu-llcc-bw
         do
             echo "bw_hwmon" > $cpubw/governor
