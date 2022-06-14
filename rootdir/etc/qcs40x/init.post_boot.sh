@@ -145,6 +145,9 @@ case "$target" in
                 echo 0 > /sys/module/lpm_levels/parameters/sleep_disabled
                 #echo mem > /sys/power/autosleep
 
+                #improve low and high watermark
+                echo 200 > /proc/sys/vm/watermark_scale_factor
+
                 echo "++++ $0 -> Debug QCS40X - START" > /dev/kmsg
                 enable_qcs40x_debug
                 echo "++++ $0 -> Debug QCS40X - END" > /dev/kmsg
