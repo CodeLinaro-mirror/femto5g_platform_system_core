@@ -2,6 +2,7 @@
 SourcePath=/sbin/leprop-service
 Description=leprop Service
 Before=persist-prop.service
+DefaultDependencies=no
 
 [Service]
 Nice=-20
