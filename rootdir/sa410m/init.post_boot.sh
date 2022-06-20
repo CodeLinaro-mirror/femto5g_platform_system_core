@@ -74,8 +74,8 @@ case "$target" in
             soc_id=`cat /sys/devices/system/soc/soc0/id`
         fi
 
-        if [ -f /etc/init_qti_debug.sh ]; then
-            source /etc/init_qti_debug.sh
+        if [ -f /etc/init.qti.debug.sh ]; then
+            source /etc/init.qti.debug.sh
         fi
 
         case "$soc_id" in
@@ -87,6 +87,9 @@ case "$target" in
                 echo N > /sys/module/lpm_levels/parameters/sleep_disabled
                 echo mem > /sys/power/autosleep
 
+                echo "++++ $0 -> Debug SA410M - START" > /dev/kmsg
+                enable_SA410M_debug
+                echo "++++ $0 -> Debug SA410M - END" > /dev/kmsg
                 ;;
             *)
                 ;;
