@@ -26,6 +26,10 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+# Change from Qualcomm Innovation Center are provided under the following license:
+# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#
 
 configure_memory_parameters () {
     # Set Memory paremeters.
@@ -173,7 +177,6 @@ case "$target" in
         echo 60 > /sys/devices/system/cpu/cpu0/core_ctl/busy_up_thres
         echo 40 > /sys/devices/system/cpu/cpu0/core_ctl/busy_down_thres
         echo 100 > /sys/devices/system/cpu/cpu0/core_ctl/offline_delay_ms
-        echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/is_big_cluster
         echo 8 > /sys/devices/system/cpu/cpu0/core_ctl/task_thres
         echo 0 > /sys/devices/system/cpu/cpu6/core_ctl/enable
 
@@ -183,7 +186,8 @@ case "$target" in
 
         # configure governor settings for big cluster
         echo "schedutil" > /sys/devices/system/cpu/cpu6/cpufreq/scaling_governor
-        echo 0 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/rate_limit_us
+        echo 0 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/up_rate_limit_us
+        echo 0 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/down_rate_limit_us
         echo 1209600 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/hispeed_freq
         echo 768000 > /sys/devices/system/cpu/cpu6/cpufreq/scaling_min_freq
 
@@ -192,9 +196,6 @@ case "$target" in
         echo -6 >  /sys/devices/system/cpu/cpu7/sched_load_boost
         echo 85 > /sys/devices/system/cpu/cpu6/cpufreq/schedutil/hispeed_load
 
-        # cpuset parameters
-        echo 0-5 > /dev/cpuset/background/cpus
-        echo 0-5 > /dev/cpuset/system-background/cpus
         ;;
     esac
 
@@ -223,10 +224,23 @@ case "$target" in
     echo 85 > /proc/sys/kernel/sched_group_downmigrate
     echo 100 > /proc/sys/kernel/sched_group_upmigrate
     echo 1 > /proc/sys/kernel/sched_walt_rotate_big_tasks
+    echo 0 > /proc/sys/kernel/sched_coloc_busy_hysteresis_enable_cpus
+    echo 0 > /proc/sys/kernel/sched_busy_hysteresis_enable_cpus
+    echo 5 > /proc/sys/kernel/sched_ravg_window_nr_ticks
+
+    # disable unfiltering
+    echo 20000000 > /proc/sys/kernel/sched_task_unfilter_period
+
+    # colocation v3 settings
+    echo 680000 > /sys/devices/system/cpu/cpufreq/policy0/schedutil/rtg_boost_freq
+    echo 0 > /sys/devices/system/cpu/cpufreq/policy6/schedutil/rtg_boost_freq
+    echo 51 > /proc/sys/kernel/sched_min_task_util_for_boost
+    echo 35 > /proc/sys/kernel/sched_min_task_util_for_colocation
 
     # configure governor settings for little cluster
     echo "schedutil" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-    echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/rate_limit_us
+    echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/up_rate_limit_us
+    echo 0 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/down_rate_limit_us
     echo 1209600 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/hispeed_freq
     echo 90 > /sys/devices/system/cpu/cpu0/cpufreq/schedutil/hispeed_load
     echo 576000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
@@ -239,8 +253,9 @@ case "$target" in
     echo -10 >  /sys/devices/system/cpu/cpu4/sched_load_boost
     echo -10 >  /sys/devices/system/cpu/cpu5/sched_load_boost
 
-    echo "0:1209600" > /sys/module/cpu_boost/parameters/input_boost_freq
-    echo 40 > /sys/module/cpu_boost/parameters/input_boost_ms
+    # configure input boost settings
+    echo "0:1209600" > /sys/devices/system/cpu/cpu_boost/input_boost_freq
+    echo 40 > /sys/devices/system/cpu/cpu_boost/input_boost_ms
 
     # Set Memory parameters
     configure_memory_parameters
@@ -248,11 +263,6 @@ case "$target" in
     # Enable bus-dcvs
     for device in /sys/devices/platform/soc
     do
-        for allfreq in /sys/class/devfreq/*qcom,cpu*
-        do
-            cat  $allfreq/available_frequencies | cut -d " " -f 1 > $allfreq/min_freq
-        done
-
         for cpubw in $device/*cpu-cpu-llcc-bw/devfreq/*cpu-cpu-llcc-bw
         do
             echo "bw_hwmon" > $cpubw/governor

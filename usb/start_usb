@@ -1,7 +1,9 @@
 #!/bin/sh
 #
 # Copyright (c) 2012-2015, 2018-2021, The Linux Foundation. All rights reserved.
-#
+# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #     * Redistributions of source code must retain the above copyright
@@ -97,6 +99,7 @@ case "$1" in
 		mkdir strings/0x409
 		mkdir configs/c.1
 		mkdir configs/c.1/strings/0x409
+		mkdir functions/acm.0
 		mkdir functions/mass_storage.0
 		mkdir functions/mass_storage.1
 		mkdir functions/ffs.adb
@@ -204,9 +207,24 @@ case "$1" in
 		*sxr2130* )
 			echo 9060 > /etc/usb/boot_hsusb_comp
 			;;
-		*sdxpoorwills* | *sdxprairie* )
+		*sdxpoorwills* )
 			if [ -e /dev/mhi_ctrl ]; then
 				echo 901F > /etc/usb/boot_hsusb_comp
+			fi
+			;;
+		*sdxprairie* )
+			# Check if device is standalone ADP
+			if [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "0" ]; then
+				echo 90DB > /etc/usb/boot_hsusb_comp
+			# Check if device is ADP with PCIe fusion
+			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "1" ]; then
+				echo 9104 > /etc/usb/boot_hsusb_comp
+			# Check if device is ADP with USB fusion
+			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "2" ]; then
+				echo 9106 > /etc/usb/boot_hsusb_comp
+			# Check if device is ADP with ETH fusion
+			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "5" ]; then
+				echo 9104 > /etc/usb/boot_hsusb_comp
 			fi
 			;;
 		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* )
@@ -232,7 +250,7 @@ case "$1" in
 		cd /sys/kernel/config/usb_gadget/g1/functions/uvc.0
 
 		echo 3072 > streaming_maxpacket
-		echo 4 > streaming_maxburst
+		echo 10 > streaming_maxburst
 		mkdir control/header/h
 		ln -s control/header/h control/class/fs/
 		ln -s control/header/h control/class/ss
@@ -375,7 +393,7 @@ case "$1" in
 		# make 901D as default composition
                 if [ -z "$pid" ]
 		then
-                    pid = "901D"
+                    pid="901D"
 		fi
 
 		/sbin/usb/compositions/$pid y
@@ -394,7 +412,7 @@ case "$1" in
 		# make 901D as default composition
                 if [ -z "$pid" ]
 		then
-                    pid = "901D"
+                    pid="901D"
 		fi
 
 		# check if more than 1 argument is passed
