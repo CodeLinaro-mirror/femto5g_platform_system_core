@@ -308,6 +308,118 @@ enable_lemur_dcc_config()
 
 }
 
+adjust_cinder_permission()
+{
+    #add permission for block_size, mem_type, mem_size nodes to collect diag over QDSS by ODL
+    echo "++++ $0 -> adjust_permission START" > /dev/kmsg
+    chmod 660 /sys/devices/platform/soc/10048000.tmc/coresight-tmc-etr/block_size
+    chmod 660 /sys/devices/platform/soc/10048000.tmc/coresight-tmc-etr/buffer_size
+    chown diag:root /dev/byte-cntr
+    echo "++++ $0 -> adjust_permission END" > /dev/kmsg
+}
+
+create_cinder_stp_policy()
+{
+    echo "++++ $0 -> create_stp_policy START" > /dev/kmsg
+    mkdir /sys/kernel/config/stp-policy/coresight-stm:p_ost.policy
+    chmod 660 /sys/kernel/config/stp-policy/coresight-stm:p_ost.policy
+    mkdir /sys/kernel/config/stp-policy/coresight-stm:p_ost.policy/default
+    chmod 660 /sys/kernel/config/stp-policy/coresight-stm:p_ost.policy/default
+    echo 0x10 > /sys/bus/coresight/devices/coresight-stm/traceid
+    echo "++++ $0 -> create_stp_policy END" > /dev/kmsg
+}
+
+enable_cinder_stm_events()
+{
+    echo "++++ $0 -> enable_stm_events START" > /dev/kmsg
+    # bail out if its perf config
+    if [ ! -d /sys/module/msm_rtb ]
+    then
+        return
+    fi
+    # bail out if coresight isn't present
+    if [ ! -d /sys/bus/coresight ]
+    then
+        return
+    fi
+    # bail out if ftrace events aren't present
+    if [ ! -d /sys/kernel/debug/tracing/events ]
+    then
+        return
+    fi
+
+    echo $etr_size > /sys/bus/coresight/devices/coresight-tmc-etr/buffer_size
+    echo 1 > /sys/bus/coresight/devices/coresight-tmc-etr/$sinkenable
+    echo coresight-stm > /sys/class/stm_source/ftrace/stm_source_link
+    echo 1 > /sys/bus/coresight/devices/coresight-stm/$srcenable
+    echo 0 > /sys/bus/coresight/devices/coresight-stm/hwevent_enable
+    echo "++++ $0 -> enable_stm_events END" > /dev/kmsg
+}
+
+enable_cinder_ftrace_event_tracing()
+{
+    echo "++++ $0 -> ENABLE-FTRACE START" > /dev/kmsg
+    #Enable FTRACE_ENABLE on CINDER
+    #bail out if its perf config
+    if [ ! -d /sys/module/msm_rtb ]
+    then
+        return
+    fi
+
+    #bail out if coresight isn't present
+    if [ ! -d /sys/bus/coresight ]
+    then
+        return
+    fi
+
+    echo 0 > /sys/kernel/debug/tracing/events/enable
+    echo 0 > /sys/kernel/debug/tracing/tracing_on
+
+    #IRQs
+    echo 1 > /sys/kernel/debug/tracing/events/irq/enable
+    #Workqueue
+    echo 1 > /sys/kernel/debug/tracing/events/workqueue/enable
+    #Timer
+    echo 1 > /sys/kernel/debug/tracing/events/timer/timer_expire_entry/enable
+    echo 1 > /sys/kernel/debug/tracing/events/timer/timer_expire_exit/enable
+    echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_cancel/enable
+    echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_expire_entry/enable
+    echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_expire_exit/enable
+    echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_init/enable
+    echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_start/enable
+    #sched
+    echo 1 > /sys/kernel/debug/tracing/events/sched/sched_migrate_task/enable
+    echo 1 > /sys/kernel/debug/tracing/events/sched/sched_pi_setprio/enable
+    echo 1 > /sys/kernel/debug/tracing/events/sched/sched_switch/enable
+    echo 1 > /sys/kernel/debug/tracing/events/sched/sched_wakeup/enable
+    echo 1 > /sys/kernel/debug/tracing/events/sched/sched_wakeup_new/enable
+    # hot-plug
+    echo 1 > /sys/kernel/debug/tracing/events/cpuhp/enable
+
+    echo 1 > /sys/kernel/debug/tracing/events/power/cpu_frequency/enable
+    echo 1 > /sys/kernel/debug/tracing/events/clk/enable
+    echo 1 > /sys/kernel/debug/tracing/events/regulator/enable
+    echo 1 > /sys/kernel/debug/tracing/events/rpmh/enable
+
+    echo 1 > /sys/kernel/debug/tracing/tracing_on
+    echo "++++ $0 -> ENABLE-FTRACE END" > /dev/kmsg
+}
+
+enable_cinder_debug()
+{
+    echo "++++ $0 -> enable_cinder_debug START" > /dev/kmsg
+
+    etr_size="0x2000000"
+    srcenable="enable_source"
+    sinkenable="enable_sink"
+
+    create_cinder_stp_policy
+    adjust_cinder_permission
+    enable_cinder_stm_events
+    enable_cinder_ftrace_event_tracing
+    echo "++++ $0 -> enable_cinder_debug END" > /dev/kmsg
+}
+
 set -e
 
 case "$1" in
@@ -927,6 +1039,13 @@ case "$1" in
                 echo "done"
                 ;;
          esac
+
+         case "$soc_id" in
+           "539" | "545")
+                enable_cinder_debug
+         ;;
+         esac
+
          ;;
   stop)
         ;;
