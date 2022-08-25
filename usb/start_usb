@@ -151,7 +151,6 @@ case "$1" in
 			/sbin/restorecon /dev/at_usb0 /dev/at_usb1
 		fi
 
-		setprop sys.usb.configfs 1
 		cd /
 	fi
 
