@@ -31,4 +31,38 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Empty file
+echo "++++ $0 -> Starting post boot settings " > /dev/kmsg
+
+if [ -f /sys/devices/soc0/machine ]; then
+    target=`cat /sys/devices/soc0/machine | tr [:upper:] [:lower:]`
+fi
+
+case "$target" in
+ "SA515M" | "sa515m")
+        if [ -f /sys/devices/soc0/soc_id ]; then
+            soc_id=`cat /sys/devices/soc0/soc_id`
+        else
+            soc_id=`cat /sys/devices/system/soc/soc0/id`
+        fi
+
+        if [ -f /etc/init.qti.debug.sh ]; then
+            source /etc/init.qti.debug.sh
+        fi
+
+        case "$soc_id" in
+ "357" |  "368" |  "418")
+
+                # enable console suspend
+                echo Y > /sys/module/printk/parameters/console_suspend
+
+                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
+                echo mem > /sys/power/autosleep
+
+                ;;
+            *)
+                ;;
+        esac
+    ;;
+esac
+
+echo "++++ $0 -> post boot settings completed" > /dev/kmsg
