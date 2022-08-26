@@ -120,6 +120,9 @@ case "$target" in
 	# the workqueue also run on cpu0, and the latency is out of control.
 	echo fe > /sys/devices/virtual/workqueue/cpumask
 
+	# RB5 Fan control
+	echo 1 > /dev/rb5_fan
+
 	# Core control parameters for gold
 	echo 2 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
 	echo 60 > /sys/devices/system/cpu/cpu4/core_ctl/busy_up_thres
