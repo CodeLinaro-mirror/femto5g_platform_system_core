@@ -1545,7 +1545,7 @@ enable_lemur_dcc_config()
     echo 0x9698008 1 > $DCC_PATH/config
     echo 0x9698010 1 > $DCC_PATH/config
     #echo 0x969A008 1 > $DCC_PATH/config
-    echo 0x969A010 1 > $DCC_PATH/config
+    #echo 0x969A010 1 > $DCC_PATH/config
     echo 0x969B008 1 > $DCC_PATH/config
     echo 0x969B010 1 > $DCC_PATH/config
 
