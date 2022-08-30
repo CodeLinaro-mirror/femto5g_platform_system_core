@@ -30,7 +30,7 @@ Description= Monitor /dev/socket path to start logd
 After=earlyinit-logd.service
 
 [Path]
-PathChanged=/dev/socket
+PathExistsGlob=/dev/socket/logd
 
 [Install]
 WantedBy=multi-user.target
