@@ -35,7 +35,7 @@
 get_usb_composition()
 {
     soc_machine=`cat /sys/devices/soc0/machine`
-    if [ $soc_machine == "CINDERDU" -o $soc_machine == "CINDERRU" ]; then
+    if [[ $soc_machine == CINDERDU* ]] || [[  $soc_machine == CINDERRU* ]]; then
         echo 9060 > /etc/usb/boot_hsusb_comp
     else
         #set usb composition to 901F by default
@@ -81,7 +81,7 @@ if [ -e /dev/mhi_ctrl ]; then
                         default_debug_transport="usb"
                     fi
                 fi
-            elif [ $soc_machine == "CINDERDU" -o $soc_machine == "CINDERRU" ]; then
+            elif [[ $soc_machine == CINDERDU* ]] || [[  $soc_machine == CINDERRU* ]]; then
                 soc_hwplatform=`cat /sys/devices/soc0/hw_platform`
                 # CINDER IDP devices need usb as debug transport
                 if [ $soc_hwplatform == "IDP" ]; then
