@@ -44,6 +44,12 @@ AC_ARG_WITH(systemd,
 
 AM_CONDITIONAL([USE_SYSTEMD], [test "x${SYSTEMD}" != "xno"])
 
+AC_ARG_WITH([fulldisk-encryption],
+      AS_HELP_STRING([--with-fulldiskencryption],
+         [change leprop service order ]))
+
+AM_CONDITIONAL(USE_FDE, [test "x${with_fulldiskencryption}" = "xyes"])
+
 AC_CONFIG_FILES([ \
     Makefile \
 ])
