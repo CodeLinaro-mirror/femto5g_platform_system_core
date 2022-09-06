@@ -26,6 +26,22 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE
+#
+# Changes from Qualcomm Innovation Center are provided under the following license:
+# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+
+
+get_usb_composition()
+{
+    soc_machine=`cat /sys/devices/soc0/machine`
+    if [ $soc_machine == "CINDERDU" -o $soc_machine == "CINDERRU" ]; then
+        echo 9060 > /etc/usb/boot_hsusb_comp
+    else
+        #set usb composition to 901F by default
+        echo 901F > /etc/usb/boot_hsusb_comp
+    fi
+}
 
 set_debug_transport()
 {
@@ -34,33 +50,44 @@ set_debug_transport()
         printf "pcie=true\0" > /data/adb.conf
         #set usb composition to none
         echo none > /etc/usb/boot_hsusb_comp
-        echo -n "Debug transport mode is set to pcie. Update /data/debug_transport.conf to usb and reboot to switch" > /dev/kmsg
+        echo -n "start_pcie: Debug transport mode is set to pcie. Update /data/debug_transport.conf to usb and reboot to switch" > /dev/kmsg
     else
         # set adb tansport to usb mode
         printf "usb\0" > /data/adb.conf
-        #set usb composition to 901F
-        echo 901F > /etc/usb/boot_hsusb_comp
-        echo -n "Debug transport mode is set to usb. Update /data/debug_transport.conf to pcie and reboot to switch" > /dev/kmsg
+        get_usb_composition
+        echo -n "start_pcie: Debug transport mode is set to usb. Update /data/debug_transport.conf to pcie and reboot to switch" > /dev/kmsg
     fi
 }
 
+
 # Check for PCIe support
 if [ -e /dev/mhi_ctrl ]; then
+    echo -n "start_pcie: PCIe support enabled" > /dev/kmsg
     if [ -e /data/debug_transport.conf ]; then
         # Set the value from debug_transport.conf if the file is present
         set_debug_transport `cat /data/debug_transport.conf`
     else
         # Create debug_transport.conf file in the first boot with default debug option
         default_debug_transport="pcie"
-
-        # SDXLEMUR IPQ fusion devices with platform subtype 11 need usb as debug transport
-        if [ -e /sys/devices/soc0/platform_subtype_id ] && [ -e /sys/devices/soc0/machine ]; then
-            soc_subtypeid=`cat /sys/devices/soc0/platform_subtype_id`
+        if [ -e /sys/devices/soc0/machine ]; then
             soc_machine=`cat /sys/devices/soc0/machine`
-            if [ $soc_machine == "SDXLEMUR-SD" -a $soc_subtypeid == "11" ]; then
-                default_debug_transport="usb"
-            elif [ $soc_machine == "SDXLEMUR-SD" -a $soc_subtypeid == "17" ]; then
-                default_debug_transport="usb"
+            echo -n "start_pcie: $soc_machine" > /dev/kmsg
+            if [ $soc_machine == "SDXLEMUR-SD" ]; then
+                # SDXLEMUR IPQ fusion devices with platform subtype 11 and 17 need usb as debug transport
+                if [ -e /sys/devices/soc0/platform_subtype_id ]; then
+                    soc_subtypeid=`cat /sys/devices/soc0/platform_subtype_id`
+                    if [ $soc_subtypeid == "11" -o $soc_subtypeid == "17" ]; then
+                        echo -n "start_pcie: set USB as transport" > /dev/kmsg
+                        default_debug_transport="usb"
+                    fi
+                fi
+            elif [ $soc_machine == "CINDERDU" -o $soc_machine == "CINDERRU" ]; then
+                soc_hwplatform=`cat /sys/devices/soc0/hw_platform`
+                # CINDER IDP devices need usb as debug transport
+                if [ $soc_hwplatform == "IDP" ]; then
+                    echo -n "start_pcie: set USB as transport for $soc_hwplatform" > /dev/kmsg
+                    default_debug_transport="usb"
+                fi
             fi
         fi
 
