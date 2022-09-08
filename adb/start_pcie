@@ -32,9 +32,14 @@
 # SPDX-License-Identifier: BSD-3-Clause-Clear
 
 
+if [ -e /sys/devices/soc0/machine ]; then
+    soc_machine=`cat /sys/devices/soc0/machine`
+else
+    soc_machine="none"
+fi
+
 get_usb_composition()
 {
-    soc_machine=`cat /sys/devices/soc0/machine`
     if [[ $soc_machine == CINDERDU* ]] || [[  $soc_machine == CINDERRU* ]]; then
         echo 9060 > /etc/usb/boot_hsusb_comp
     else
@@ -48,8 +53,15 @@ set_debug_transport()
     if [ "$1" == "pcie" ]; then
         # set adb to pcie mode
         printf "pcie=true\0" > /data/adb.conf
+    if [[ $soc_machine == CINDERDU* ]] || [[  $soc_machine == CINDERRU* ]]; then
+        #set usb to Diag only composition
+        echo 900E > /etc/usb/boot_hsusb_comp
+        echo -n "start_pcie: setting usb composition to 900E for $soc_machine on PCIe mode" > /dev/kmsg
+    else
         #set usb composition to none
         echo none > /etc/usb/boot_hsusb_comp
+        echo -n "start_pcie: setting usb composition to none for $soc_machine on PCIe mode" > /dev/kmsg
+    fi
         echo -n "start_pcie: Debug transport mode is set to pcie. Update /data/debug_transport.conf to usb and reboot to switch" > /dev/kmsg
     else
         # set adb tansport to usb mode
@@ -69,8 +81,7 @@ if [ -e /dev/mhi_ctrl ]; then
     else
         # Create debug_transport.conf file in the first boot with default debug option
         default_debug_transport="pcie"
-        if [ -e /sys/devices/soc0/machine ]; then
-            soc_machine=`cat /sys/devices/soc0/machine`
+        if [ $soc_machine != "none" ]; then
             echo -n "start_pcie: $soc_machine" > /dev/kmsg
             if [ $soc_machine == "SDXLEMUR-SD" ]; then
                 # SDXLEMUR IPQ fusion devices with platform subtype 11 and 17 need usb as debug transport
