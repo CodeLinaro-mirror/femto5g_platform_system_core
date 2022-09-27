@@ -113,10 +113,15 @@ static bool checkUsbInterfaceAutoSuspend(const std::string &devicePath,
 }
 
 #define UEVENT_MSG_LEN 2048
+#define CONFIGFS_UDC_PATH "/sys/kernel/config/usb_gadget/g1/UDC"
+
 static void uevent_event(uint32_t ep) {
     char msg[UEVENT_MSG_LEN+2];
-    char *cp;
+    char *cp, *context;
     int n;
+    std::string udc_string;
+    static std::string udc_name;
+    std::regex xhci_regex("(unbind|remove)@/devices/platform/soc/.*/.*/xhci-hcd\\..*\\.auto/usb.*");
 
     n = uevent_kernel_multicast_recv(uevent_fd, msg, UEVENT_MSG_LEN);
     if (n <= 0)
@@ -153,6 +158,21 @@ static void uevent_event(uint32_t ep) {
 		    writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/bmAttributes", "0xa0");
 		}
 	    }
+	// Monitor xhci unbind/remove uevents only if the udc_name is empty / not cached yet.
+	} else if (!udc_name.length() && std::regex_match(cp, match, xhci_regex)) {
+		udc_name = strtok_r(cp, "/", &context);
+		for (n=0; n<5; n++)
+			udc_name = strtok_r(NULL ,"/", &context);
+		dbg("UDC Name extracted from xhci unbind/remove uevent: %d\n", udc_name.length());
+	// Monitor UDC add/change uevents only if the udc_name is cached / already extracted.
+	} else if (udc_name.length() && std::regex_match(cp, match, std::regex("(change|add)"
+			"@/devices/platform/soc/.*/" + udc_name + "/udc/" + udc_name))) {
+		readFile(CONFIGFS_UDC_PATH, &udc_string);
+		// Write the cached udc_name to CONFIGFS_UDC_PATH only if configfs UDC is empty.
+		if(!udc_string.length()) {
+			dbg("Binding UDC with configfs");
+			writeFile(CONFIGFS_UDC_PATH, udc_name);
+		}
 	}
 
 	while (*cp++) {}
