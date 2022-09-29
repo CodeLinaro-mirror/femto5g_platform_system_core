@@ -30,6 +30,17 @@
 
 echo -n "Starting init_post_boot: "
 
+kernelversion=`cat /proc/version`
+result=$(echo $kernelversion | grep "Linux version 5.4")
+if [ "$result" != "" ]; then
+    result=$(sed -n '23p' /etc/systemd/resolved.conf)
+    if [ "$result" != "DNSStubListener=no" ]; then
+        sed -i '23c DNSStubListener=no' /etc/systemd/resolved.conf
+        systemctl restart systemd-resolved
+        systemctl restart dnsmasq
+    fi
+fi
+
 if [ -f /sys/devices/soc0/machine ]; then
     target=`cat /sys/devices/soc0/machine | tr [:upper:] [:lower:]`
 else
