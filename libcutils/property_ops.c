@@ -192,6 +192,42 @@ bool get_property_value(const char* prop_name, unsigned char *prop_val)
     return true;
 }
 
+int propertylist_get(const char* prop_name, unsigned char *prop_val,int prop_nameindex)
+{
+    const char msg[MAX_ALLOWED_LINE_LEN+1]; // +1 for msg type.
+    char resp[MAX_ALLOWED_LINE_LEN];
+    int rc = 0;
+    memset(msg,  0 , sizeof(msg));
+    memset(resp, 0 , sizeof(resp));
+
+    snprintf(msg, sizeof msg, "%c%s_%d=",
+            PROP_MSG_GETPROP, "getproplist",prop_nameindex);
+
+    const int err = send_getprop_msg(&msg, &resp);
+    if (err < 0) {
+       LOG("Failed to send message to Get %s", prop_name);
+       return 0;
+    }
+
+    // Extract prop value from response.
+    char *delimiter = strchr(resp, '=');
+    const char *curr_line_ptr = delimiter+1; //+1 for delimiter
+    if(strlen(curr_line_ptr) <= 0) {
+        LOG("%s has invalid  length", prop_name);
+        return 0;
+    }
+    int curr_length = delimiter - resp;
+    if (curr_length > PROP_NAME_MAX || curr_length < 0)
+    {
+        curr_length = PROP_NAME_MAX;
+    }
+    memset(prop_name, '\0', PROP_NAME_MAX);
+    strlcpy(prop_name, resp, curr_length+1);
+    strlcpy(prop_val, curr_line_ptr, PROP_VALUE_MAX);
+    rc=strlen(prop_val);
+    return rc;
+}
+
 void dump_persist(void)
 {
     //TO BE IMPLEMENTED

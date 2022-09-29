@@ -15,6 +15,9 @@
  */
 
 #include <cutils/properties.h>
+
+#include <errno.h>
+#include <inttypes.h>
 #include <string.h>
 #include <stdio.h>
 #include "property_ops.h"
@@ -61,7 +64,6 @@ int8_t property_get_bool(const char *key, int8_t default_value) {
     if (!key) {
         return default_value;
     }
-
     int8_t result = default_value;
     char buf[PROPERTY_VALUE_MAX] = {'\0',};
 
@@ -83,6 +85,68 @@ int8_t property_get_bool(const char *key, int8_t default_value) {
 
     return result;
 
+}
+// Convert string property to int (default if fails); return default value if out of bounds
+static intmax_t property_get_imax(const char *key, intmax_t lower_bound, intmax_t upper_bound,
+                                  intmax_t default_value) {
+    if (!key) {
+        return default_value;
+    }
+    intmax_t result = default_value;
+    char buf[PROPERTY_VALUE_MAX] = {'\0'};
+    char *end = NULL;
+
+    int len = property_get(key, buf, "");
+    if (len > 0) {
+        int tmp = errno;
+        errno = 0;
+
+        // Infer base automatically
+        result = strtoimax(buf, &end, /*base*/ 0);
+        if ((result == INTMAX_MIN || result == INTMAX_MAX) && errno == ERANGE) {
+            // Over or underflow
+            result = default_value;
+            ALOGV("%s(%s,%" PRIdMAX ") - overflow", __FUNCTION__, key, default_value);
+        } else if (result < lower_bound || result > upper_bound) {
+            // Out of range of requested bounds
+            result = default_value;
+            ALOGV("%s(%s,%" PRIdMAX ") - out of range", __FUNCTION__, key, default_value);
+        } else if (end == buf) {
+            // Numeric conversion failed
+            result = default_value;
+            ALOGV("%s(%s,%" PRIdMAX ") - numeric conversion failed", __FUNCTION__, key,
+                  default_value);
+        }
+
+        errno = tmp;
+    }
+
+    return result;
+}
+
+int64_t property_get_int64(const char *key, int64_t default_value) {
+    return (int64_t)property_get_imax(key, INT64_MIN, INT64_MAX, default_value);
+}
+
+int32_t property_get_int32(const char *key, int32_t default_value) {
+    return (int32_t)property_get_imax(key, INT32_MIN, INT32_MAX, default_value);
+}
+
+
+int property_list(
+        void (*propfn)(const char *key, const char *value, void *cookie),
+        void *cookie)
+{
+    char buf[PROPERTY_VALUE_MAX] = {'\0'};
+    char key[PROP_NAME_MAX] = {'\0'};
+    int keyindex=0;
+    int len = propertylist_get(key, buf, keyindex);
+    while (len > 0) {
+       propfn(key, buf, cookie);
+       len = propertylist_get(key, buf, keyindex);
+       keyindex++;
+    }
+    return keyindex;
 }
 
 void dump_properties(void) {
