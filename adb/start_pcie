@@ -38,16 +38,6 @@ else
     soc_machine="none"
 fi
 
-get_usb_composition()
-{
-    if [[ $soc_machine == CINDERDU* ]] || [[  $soc_machine == CINDERRU* ]]; then
-        echo 9060 > /etc/usb/boot_hsusb_comp
-    else
-        #set usb composition to 901F by default
-        echo 901F > /etc/usb/boot_hsusb_comp
-    fi
-}
-
 set_debug_transport()
 {
     if [ "$1" == "pcie" ]; then
@@ -60,7 +50,6 @@ set_debug_transport()
     else
         # set adb tansport to usb mode
         printf "usb\0" > /data/adb.conf
-        get_usb_composition
         echo -n "start_pcie: Debug transport mode is set to usb. Update /data/debug_transport.conf to pcie and reboot to switch" > /dev/kmsg
     fi
 }
