@@ -171,9 +171,6 @@ static void *reinit_thread_start(void * /*obj*/) {
     set_sched_policy(0, SP_BACKGROUND);
     setpriority(PRIO_PROCESS, 0, ANDROID_PRIORITY_BACKGROUND);
 
-    setgid(AID_SYSTEM);
-    setuid(AID_SYSTEM);
-
     while (reinit_running && !sem_wait(&reinit) && reinit_running) {
 
         // uidToName Privileged Worker
