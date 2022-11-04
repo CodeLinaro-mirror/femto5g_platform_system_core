@@ -23,7 +23,7 @@
 #include "adb_trace.h"
 #include "fdevent.h"
 
-#define MAX_PAYLOAD 4096
+#define MAX_PAYLOAD 256 * 1024
 
 #define A_SYNC 0x434e5953
 #define A_CNXN 0x4e584e43
