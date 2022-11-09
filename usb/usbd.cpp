@@ -117,7 +117,7 @@ static bool checkUsbInterfaceAutoSuspend(const std::string &devicePath,
 
 static void uevent_event(uint32_t ep) {
     char msg[UEVENT_MSG_LEN+2];
-    char *cp, *context;
+    char *context;
     int n;
     std::string udc_string;
     static std::string udc_name;
@@ -131,51 +131,46 @@ static void uevent_event(uint32_t ep) {
 
     msg[n] = '\0';
     msg[n+1] = '\0';
-    cp = msg;
 
     dbg("Got uevent %s\n", msg);
 
-    while (*cp) {
-	std::cmatch match;
+    std::cmatch match;
 
-	if (std::regex_match(cp, match,
-		    std::regex("bind@(/devices/platform/.*dwc3/xhci-hcd\\.\\d\\.auto/"
-                     "usb\\d(?:/\\d-\\d)*(?:/[\\d\\.-]+)*)/([^/]*:[^/]*)"))) {
-	  if (match.size() == 3) {
-	      std::csub_match devpath = match[1];
-	      std::csub_match intfpath = match[2];
-	      checkUsbInterfaceAutoSuspend("/sys/" + devpath.str(), intfpath.str());
-	  }
-	} else if (!strncmp(cp, "DEVTYPE=typec_", strlen("DEVTYPE=typec_"))) {
-	    std::string power_operation_mode;
-
-	    if (!readFile("/sys/class/typec/port0/power_operation_mode", &power_operation_mode)) {
-		if (power_operation_mode == "usb_power_delivery") {
-		    writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/MaxPower", "0");
-		    writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/bmAttributes", "0x80");
-		} else {
-		    writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/MaxPower", "900");
-		    writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/bmAttributes", "0xa0");
-		}
-	    }
-	// Monitor xhci unbind/remove uevents only if the udc_name is empty / not cached yet.
-	} else if (!udc_name.length() && std::regex_match(cp, match, xhci_regex)) {
-		udc_name = strtok_r(cp, "/", &context);
-		for (n=0; n<5; n++)
-			udc_name = strtok_r(NULL ,"/", &context);
-		dbg("UDC Name extracted from xhci unbind/remove uevent: %d\n", udc_name.length());
-	// Monitor UDC add/change uevents only if the udc_name is cached / already extracted.
-	} else if (udc_name.length() && std::regex_match(cp, match, std::regex("(change|add)"
-			"@/devices/platform/soc/.*/" + udc_name + "/udc/" + udc_name))) {
-		readFile(CONFIGFS_UDC_PATH, &udc_string);
-		// Write the cached udc_name to CONFIGFS_UDC_PATH only if configfs UDC is empty.
-		if(!udc_string.length()) {
-			dbg("Binding UDC with configfs");
-			writeFile(CONFIGFS_UDC_PATH, udc_name);
-		}
+    if (std::regex_match(msg, match,
+		std::regex("bind@(/devices/platform/.*dwc3/xhci-hcd\\.\\d\\.auto/"
+		"usb\\d(?:/\\d-\\d)*(?:/[\\d\\.-]+)*)/([^/]*:[^/]*)"))) {
+	if (match.size() == 3) {
+	    std::csub_match devpath = match[1];
+	    std::csub_match intfpath = match[2];
+	    checkUsbInterfaceAutoSuspend("/sys/" + devpath.str(), intfpath.str());
 	}
+    } else if (!strncmp(msg, "DEVTYPE=typec_", strlen("DEVTYPE=typec_"))) {
+	std::string power_operation_mode;
 
-	while (*cp++) {}
+	if (!readFile("/sys/class/typec/port0/power_operation_mode", &power_operation_mode)) {
+	    if (power_operation_mode == "usb_power_delivery") {
+		writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/MaxPower", "0");
+		writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/bmAttributes", "0x80");
+	    } else {
+		writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/MaxPower", "900");
+		writeFile("/sys/kernel/config/usb_gadget/g1/configs/c.1/bmAttributes", "0xa0");
+	    }
+	}
+    // Monitor xhci unbind/remove uevents only if the udc_name is empty / not cached yet.
+    } else if (!udc_name.length() && std::regex_match(msg, match, xhci_regex)) {
+	udc_name = strtok_r(msg, "/", &context);
+	for (n=0; n<5; n++)
+	    udc_name = strtok_r(NULL ,"/", &context);
+	dbg("UDC Name extracted from xhci unbind/remove uevent: %d\n", udc_name.length());
+    // Monitor UDC add/change uevents only if the udc_name is cached / already extracted.
+    } else if (udc_name.length() && std::regex_match(msg, match, std::regex("(change|add)"
+		    "@/devices/platform/soc/.*/" + udc_name + "/udc/" + udc_name))) {
+	readFile(CONFIGFS_UDC_PATH, &udc_string);
+	// Write the cached udc_name to CONFIGFS_UDC_PATH only if configfs UDC is empty.
+	if(!udc_string.length()) {
+	    dbg("Binding UDC with configfs");
+	    writeFile(CONFIGFS_UDC_PATH, udc_name);
+	}
     }
 
     return;
