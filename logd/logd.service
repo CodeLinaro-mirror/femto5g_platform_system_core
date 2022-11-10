@@ -43,6 +43,7 @@ ExecStart=+/bin/chmod 0222 /dev/socket/logdw
 ExecStart=+/bin/chmod 0666 /dev/socket/logdr
 ExecStart=+/bin/chmod 0666 /dev/socket/logd
 ExecStopPost=-/bin/rm -rf /dev/socket/logd*
+Restart=on-failure
 
 [Install]
 Alias=logcat.service
