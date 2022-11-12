@@ -80,7 +80,7 @@ run_configfs() {
 }
 
 case `source /sbin/usb/target` in
-	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sa410m* )
+	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sa410m* | *sa525m* )
 		if [ `source /sbin/usb/target` == "sdxlemur" ]
 		then
 			qdss_func="qdss.qdss_mdm"
