@@ -421,6 +421,13 @@ case "$1" in
 		esac
 	fi
 
+	# put USB in LPM and exit with success if device is in mhi mode
+	if [ "$pid" == "none" ] && [ "$debug_transport" == "pcie" ]; then
+		udcname=`ls -1 /sys/bus/platform/devices/ | grep -E 'ssusb|hsusb' | head -n 1`
+		echo none > /sys/bus/platform/devices/${udcname}/mode
+		exit 0
+	fi
+
 	# enable debug message
 	if [ -f /sbin/usb/debuger/default_debug ];
 	then
