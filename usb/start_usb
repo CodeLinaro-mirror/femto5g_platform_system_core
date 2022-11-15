@@ -99,7 +99,6 @@ case "$1" in
 		mkdir strings/0x409
 		mkdir configs/c.1
 		mkdir configs/c.1/strings/0x409
-		mkdir functions/acm.0
 		mkdir functions/mass_storage.0
 		mkdir functions/mass_storage.1
 		mkdir functions/ffs.adb
@@ -127,6 +126,7 @@ case "$1" in
 		mkdir functions/ecm.ecm
 		mdkir functions/hid.usb0
 		mkdir functions/ccid.ccid
+		mkdir functions/acm.0
 
 		kernel_version=${KERNEL%%.*}
 		if [ "$kernel_version" -ge "5" ]; then
@@ -263,6 +263,9 @@ case "$1" in
 		*sa410* )
 			echo 901D > /etc/usb/boot_hsusb_comp
 		        ;;
+		*cinder* )
+			echo 1 > /sys/kernel/config/usb_gadget/g1/functions/acm.0/console
+			;;
 	esac
 
 	#
