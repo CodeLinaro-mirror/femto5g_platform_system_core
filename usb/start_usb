@@ -260,9 +260,6 @@ case "$1" in
 		*scuba* )
 			echo 90DB > /etc/usb/boot_hsusb_comp
 		        ;;
-		*sa410* )
-			echo 901D > /etc/usb/boot_hsusb_comp
-		        ;;
 		*cinder* )
 			echo 1 > /sys/kernel/config/usb_gadget/g1/functions/acm.0/console
 			;;
