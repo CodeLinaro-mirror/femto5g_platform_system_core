@@ -404,6 +404,26 @@ case "$1" in
 		cd /
 	fi
 
+	pid=`cat /etc/usb/boot_hsusb_comp`
+	if [ -e /data/debug_transport.conf ]; then
+		debug_transport=`cat /data/debug_transport.conf`
+	else
+		debug_transport="none"
+	fi
+
+	# If device is not in MHI/PCIE mode & USB composition is none,
+	# then set the default composition from here
+	if [ "$pid" == "none" ] && [ "$debug_transport" != "pcie" ]; then
+		case `source /sbin/usb/target` in
+			*cinder* )
+				echo 9060 > /etc/usb/boot_hsusb_comp
+				;;
+			* )
+				echo 90DB > /etc/usb/boot_hsusb_comp
+				;;
+		esac
+	fi
+
 	# enable debug message
 	if [ -f /sbin/usb/debuger/default_debug ];
 	then
