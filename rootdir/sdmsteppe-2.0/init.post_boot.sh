@@ -318,6 +318,25 @@ case "$target" in
     echo 0 > /sys/module/lpm_levels/parameters/sleep_disabled
     ;;
 esac
+# set the io-scheduler default to bfq on all mq support devices
+echo "bfq" > /sys/class/block/mmcblk0/queue/scheduler
+echo "bfq" > /sys/class/block/mmcblk1/queue/scheduler
+echo "bfq" > /sys/block/sda/queue/scheduler
+echo "bfq" > /sys/block/sdb/queue/scheduler
+echo "bfq" > /sys/block/sdc/queue/scheduler
+echo "bfq" > /sys/block/sdd/queue/scheduler
+echo "bfq" > /sys/block/sde/queue/scheduler
+echo "bfq" > /sys/block/sdf/queue/scheduler
+
+# update io-scheduler tunables
+echo 0 > /sys/class/block/mmcblk0/queue/iosched/slice_idle
+echo 0 > /sys/class/block/mmcblk1/queue/iosched/slice_idle
+echo 0 > /sys/block/sda/queue/iosched/slice_idle
+echo 0 > /sys/block/sdb/queue/iosched/slice_idle
+echo 0 > /sys/block/sdc/queue/iosched/slice_idle
+echo 0 > /sys/block/sdd/queue/iosched/slice_idle
+echo 0 > /sys/block/sde/queue/iosched/slice_idle
+echo 0 > /sys/block/sdf/queue/iosched/slice_idle
 
 echo "post boot settings completed"
 echo "++++ $0 -> post boot settings completed" > /dev/kmsg
