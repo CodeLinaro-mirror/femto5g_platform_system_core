@@ -49,13 +49,36 @@ property_db* __list_matches_prop_name(const char* search_name)
         return NULL;
     }
     property_db *ln = glisthead;
-    for (; ln !=NULL; ln  = ln ->next)
+    if(!strncmp(search_name, "getproplist",
+                strlen("getproplist")))
     {
-        LOG("[%s] => search val=%s, curr val =%s\n", __func__,
-                search_name,ln->unit.property_name);
-        if (strcmp(ln->unit.property_name, search_name) == 0)
+        char *delimiter = strchr(search_name, '_');
+        char* end;
+        int base = 10;
+        int i=0;
+        int lnindex = strtoimax(delimiter+1, &end, base);
+         for (; ln !=NULL; ln  = ln ->next)
         {
-            return ln;
+            LOG("[%s] => search index=%d, curr val =%s\n", __func__,
+                    lnindex,ln->unit.property_name);
+            if(lnindex == i)
+            {
+                memset(search_name, 0, sizeof search_name);
+                strlcpy(search_name, ln->unit.property_name, strlen(ln->unit.property_name)+1);
+                return ln;
+            }
+            i++;
+        }
+    }
+    else{
+        for (; ln !=NULL; ln  = ln ->next)
+        {
+            LOG("[%s] => search val=%s, curr val =%s\n", __func__,
+                    search_name,ln->unit.property_name);
+            if (strcmp(ln->unit.property_name, search_name) == 0)
+            {
+                return ln;
+            }
         }
     }
     return NULL;

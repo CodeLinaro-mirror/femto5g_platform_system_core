@@ -249,10 +249,12 @@ property_db* process_getprop_msg(char* buff)
         line[i-1] = buff[i];
     i++;
     }
-    LOG("Getprop cmd received");
+    LOG("Getprop cmd received %s",line);
 
     node = (property_db *)pull_one_line_data(line);
     if (NULL != node) {
+    LOG("Found prop:%s with val:%s",
+        node->unit.property_name, node->unit.property_value);
         __retrive_prop_value(node->unit.property_name,
                              node->unit.property_value);
         LOG("Found prop:%s with val:%s",
@@ -428,7 +430,6 @@ bool search_and_add_property_val(const char* fpath)
         LOG("%s, reached EOF", __func__);
         fclose(fp);
     } else {
-        LOG("%s, no %s", __func__, line);
         list_add_status = false;
     }
     return list_add_status;
