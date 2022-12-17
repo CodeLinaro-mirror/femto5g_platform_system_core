@@ -260,6 +260,9 @@ case "$1" in
 		*scuba* )
 			echo 90DB > /etc/usb/boot_hsusb_comp
 		        ;;
+		*sa525m* )
+			echo 90DB > /etc/usb/boot_hsusb_comp
+			;;
 		*sa410* )
 			echo 901D > /etc/usb/boot_hsusb_comp
 		        ;;
