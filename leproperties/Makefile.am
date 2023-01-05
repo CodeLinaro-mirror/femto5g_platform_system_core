@@ -33,13 +33,6 @@ install-data-hook:
 endif
 
 if USE_SYSTEMD
-if USE_FDE
-leproperties_systemddir   = $(root_libdir)/systemd/system
-leproperties_systemd_DATA = leprop_local-fs-pre.service
-install-data-hook:
-	mv $(DESTDIR)/lib/systemd/system/leprop_local-fs-pre.service $(DESTDIR)/lib/systemd/system/leprop.service
-else
 leproperties_systemddir   = $(root_libdir)/systemd/system
 leproperties_systemd_DATA = leprop.service
-endif
 endif

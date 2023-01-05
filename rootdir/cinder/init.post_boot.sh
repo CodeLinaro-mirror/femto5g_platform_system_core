@@ -31,4 +31,22 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+echo -n "Starting init_post_boot: "
+
 echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
+
+# Enable CPUidle states and auto suspend
+echo N > /sys/devices/system/cpu/qcom_lpm/parameters/sleep_disabled
+echo mem > /sys/power/autosleep
+
+# set the io-scheduler default to bfq on all mq support devices
+echo "bfq" > /sys/class/block/mmcblk0/queue/scheduler
+echo "bfq" > /sys/class/block/mmcblk1/queue/scheduler
+
+# update io-scheduler tunables
+echo 0 > /sys/class/block/mmcblk0/queue/iosched/slice_idle
+echo 0 > /sys/class/block/mmcblk1/queue/iosched/slice_idle
+
+# Setting perf prop to signal postboot completion
+setprop vendor.post_boot.parsed 1
+echo "init_post_boot completed"

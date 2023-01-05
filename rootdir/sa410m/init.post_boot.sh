@@ -28,7 +28,7 @@
 
 # Changes from Qualcomm Innovation Center are provided under the following license:
 #
-# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) 2022,2023 Qualcomm Innovation Center, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted (subject to the limitations in the
@@ -67,7 +67,7 @@ if [ -f /sys/devices/soc0/machine ]; then
 fi
 
 case "$target" in
-    "scuba")
+    "scuba" | "sa410m")
         if [ -f /sys/devices/soc0/soc_id ]; then
             soc_id=`cat /sys/devices/soc0/soc_id`
         else
@@ -79,12 +79,12 @@ case "$target" in
         fi
 
         case "$soc_id" in
-           "441")
+           "441" | "560")
 
                 # enable console suspend
                 echo Y > /sys/module/printk/parameters/console_suspend
 
-                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
+                echo N > /sys/devices/system/cpu/qcom_lpm/parameters/sleep_disabled
                 echo mem > /sys/power/autosleep
 
                 echo "++++ $0 -> Debug SA410M - START" > /dev/kmsg

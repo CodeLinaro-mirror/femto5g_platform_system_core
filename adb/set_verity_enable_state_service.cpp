@@ -26,7 +26,6 @@
 
 #include "cutils/properties.h"
 
-#include "bootimg.h"
 #include "adb.h"
 #include "adb_io.h"
 #include "ext4_sb.h"
@@ -41,6 +40,19 @@
 #define VERITY_METADATA_SIZE 32768
 #define MAX_CMDLINE_LEN 512
 #define MAX_VERITYMD_LEN 10
+
+/*
+ * Users are expected to explicitly specify the boot image header version
+ * they need to use using a config option.
+ */
+#include <bootimg.h>
+#if defined(BOOT_HEADER_VERSION) && BOOT_HEADER_VERSION == 3
+typedef vendor_boot_img_hdr_v3 img_hdr;
+#elif defined(BOOT_HEADER_VERSION) && BOOT_HEADER_VERSION == 4
+typedef vendor_boot_img_hdr_v4 img_hdr;
+#else
+typedef boot_img_hdr img_hdr;
+#endif
 
 struct fstab *fstab;
 
@@ -218,7 +230,7 @@ static int set_verity_enabled_state(int fd, const char *block_device,
     char new_verity[] = "noveri=";
     unsigned int offset = 0;
     int result = 0;
-    boot_img_hdr hdr;
+    img_hdr hdr;
 
     if (!make_block_device_writable(block_device)) {
         WriteFdFmt(fd, "Could not make block device %s writable (%s).\n",
@@ -252,8 +264,8 @@ static int set_verity_enabled_state(int fd, const char *block_device,
 
         goto errout;
     }
-    /*Find the offset of cmdline member in boot_img_hdr structure */
-    offset = offsetof(struct boot_img_hdr, cmdline);
+    /*Find the offset of cmdline member in img_hdr structure */
+    offset = offsetof(img_hdr, cmdline);
     if (lseek64(device, offset, SEEK_SET) < 0) {
         WriteFdFmt(fd, "Could not seek to start of verity metadata block.\n");
         goto errout;

@@ -89,6 +89,7 @@ void restart_root_service(int fd, void *cookie) {
             }
             unix_close(f);
             WriteFdExactly(fd, "restarting adbd as root\n");
+            break;
         }
         else {
             ALOGI("%s: unix_open failed, errorno = %d errstr= %s\n", __func__,errno, strerror(errno));
