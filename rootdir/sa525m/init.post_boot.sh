@@ -1,5 +1,5 @@
 #! /bin/sh
-# Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
+# Copyright (c) 2022,2023 Qualcomm Innovation Center, Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted (subject to the limitations in the
@@ -31,4 +31,39 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Empty file
+echo "++++ $0 -> Starting post boot settings " > /dev/kmsg
+
+if [ -f /sys/devices/soc0/machine ]; then
+    target=`cat /sys/devices/soc0/machine`
+fi
+
+case "$target" in
+    "SA525M" | "SA522M")
+        if [ -f /sys/devices/soc0/soc_id ]; then
+            soc_id=`cat /sys/devices/soc0/soc_id`
+        fi
+
+        if [ -f /etc/init.qti.debug.sh ]; then
+            source /etc/init.qti.debug.sh
+        fi
+
+        case "$soc_id" in
+           "558" | "559")
+
+                # enable console suspend
+                echo Y > /sys/module/printk/parameters/console_suspend
+
+                echo N > /sys/devices/system/cpu/qcom_lpm/parameters/sleep_disabled
+                echo mem > /sys/power/autosleep
+
+                echo "++++ $0 -> Debug SA525M - START" > /dev/kmsg
+                enable_SA525M_debug
+                echo "++++ $0 -> Debug SA525M - END" > /dev/kmsg
+                ;;
+            *)
+                ;;
+        esac
+    ;;
+esac
+
+echo "++++ $0 -> post boot settings completed" > /dev/kmsg
