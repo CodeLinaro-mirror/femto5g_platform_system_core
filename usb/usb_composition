@@ -320,3 +320,5 @@ if [ $hsic = "n" ]; then
 else
 	echo "Please reboot device for HSIC composition to take effect"
 fi
+
+sync -f ${symlink_hsusb}
