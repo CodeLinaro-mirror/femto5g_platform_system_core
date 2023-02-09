@@ -99,7 +99,6 @@ case "$1" in
 		mkdir strings/0x409
 		mkdir configs/c.1
 		mkdir configs/c.1/strings/0x409
-		mkdir functions/acm.0
 		mkdir functions/mass_storage.0
 		mkdir functions/mass_storage.1
 		mkdir functions/ffs.adb
@@ -125,8 +124,9 @@ case "$1" in
 		mkdir functions/rndis.rndis
 		mkdir functions/ipc.ipc
 		mkdir functions/ecm.ecm
-		mdkir functions/hid.usb0
+		mkdir functions/hid.usb0
 		mkdir functions/ccid.ccid
+		mkdir functions/acm.0
 
 		kernel_version=${KERNEL%%.*}
 		if [ "$kernel_version" -ge "5" ]; then
@@ -257,6 +257,12 @@ case "$1" in
 				esac
 			fi
 		        ;;
+		*scuba* )
+			echo 90DB > /etc/usb/boot_hsusb_comp
+		        ;;
+		*cinder* )
+			echo 1 > /sys/kernel/config/usb_gadget/g1/functions/acm.0/console
+			;;
 	esac
 
 	#
@@ -393,6 +399,26 @@ case "$1" in
 		ln -s streaming/header/h1 streaming/class/hs/
 		ln -s streaming/header/h streaming/class/ss/
 		cd /
+	fi
+
+	pid=`cat /etc/usb/boot_hsusb_comp`
+	if [ -e /data/debug_transport.conf ]; then
+		debug_transport=`cat /data/debug_transport.conf`
+	else
+		debug_transport="none"
+	fi
+
+	# If device is not in MHI/PCIE mode & USB composition is none,
+	# then set the default composition from here
+	if [ "$pid" == "none" ] && [ "$debug_transport" != "pcie" ]; then
+		case `source /sbin/usb/target` in
+			*cinder* )
+				echo 9060 > /etc/usb/boot_hsusb_comp
+				;;
+			* )
+				echo 90DB > /etc/usb/boot_hsusb_comp
+				;;
+		esac
 	fi
 
 	# enable debug message

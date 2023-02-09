@@ -105,6 +105,9 @@ case $TARGET in
 	*sa410m* )
 		res="sa410m";
 		;;
+	*sa525m* )
+		res="sa525m";
+		;;
 	*cinder* )
 		res="cinder"
 		;;
