@@ -244,7 +244,7 @@ case `source /sbin/usb/target` in
 	*sdx20* )
 		run_sdx20 &
 		;;
-	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sdxnightjar* | *sa410m* )
+	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sdxnightjar* | *sa410m* | *sa525m* )
 		if [ `source /sbin/usb/target` == "sdxlemur" ]
 		then
 			qdss_func="qdss.qdss_mdm"
