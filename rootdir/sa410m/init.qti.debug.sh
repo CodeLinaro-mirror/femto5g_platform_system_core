@@ -31,6 +31,16 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+configure_coresight()
+{
+	#configure STM trace ID
+	chmod 664 /sys/bus/coresight/devices/coresight-stm/traceid
+	echo 0x10 > /sys/bus/coresight/devices/coresight-stm/traceid
+
+	#give diag application root permission for the device
+	chmod 664 /dev/byte-cntr
+	chown diag:root /dev/byte-cntr
+}
 
 configure_dcc()
 {
@@ -107,4 +117,6 @@ enable_SA410M_debug()
 	configure_dcc
 
 	configure_traces
+
+	configure_coresight
 }
