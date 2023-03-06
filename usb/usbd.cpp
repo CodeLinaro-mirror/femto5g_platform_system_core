@@ -117,7 +117,7 @@ static bool checkUsbInterfaceAutoSuspend(const std::string &devicePath,
 
 static void uevent_event(uint32_t ep) {
     char msg[UEVENT_MSG_LEN+2];
-    char *context;
+    char *context, *tmp_str;
     int n;
     std::string udc_string;
     static std::string udc_name;
@@ -158,10 +158,20 @@ static void uevent_event(uint32_t ep) {
 	}
     // Monitor xhci unbind/remove uevents only if the udc_name is empty / not cached yet.
     } else if (!udc_name.length() && std::regex_match(msg, match, xhci_regex)) {
-	udc_name = strtok_r(msg, "/", &context);
-	for (n=0; n<5; n++)
-	    udc_name = strtok_r(NULL ,"/", &context);
-	dbg("UDC Name extracted from xhci unbind/remove uevent: %d\n", udc_name.length());
+	/*
+	 * As std::string can't be used to check retval of strtok_r, use char* to tokenize the
+	 * string, and then typecast char* to std::string (strings are easier to use in regex)
+	 */
+	tmp_str = strtok_r(msg, "/", &context);
+	if(!tmp_str)
+	    return;
+	for (n=0; n<5; n++) {
+	    tmp_str = strtok_r(NULL ,"/", &context);
+	    if(!tmp_str)
+		return;
+	}
+	udc_name = tmp_str;
+	dbg("UDC Name extracted from xhci unbind/remove uevent: %s\n", tmp_str);
     // Monitor UDC add/change uevents only if the udc_name is cached / already extracted.
     } else if (udc_name.length() && std::regex_match(msg, match, std::regex("(change|add)"
 		    "@/devices/platform/soc/.*/" + udc_name + "/udc/" + udc_name))) {
