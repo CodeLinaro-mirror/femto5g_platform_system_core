@@ -47,6 +47,10 @@ echo "bfq" > /sys/class/block/mmcblk1/queue/scheduler
 echo 0 > /sys/class/block/mmcblk0/queue/iosched/slice_idle
 echo 0 > /sys/class/block/mmcblk1/queue/iosched/slice_idle
 
+# Disbaling proactive compaction since there is no benefit of higher order
+# pages here hence proactive compaction activity would be wasteful.
+echo 0 > /proc/sys/vm/compaction_proactiveness
+
 # Setting perf prop to signal postboot completion
 setprop vendor.post_boot.parsed 1
 
