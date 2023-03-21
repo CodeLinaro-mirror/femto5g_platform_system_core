@@ -75,13 +75,6 @@ if [ -e /dev/mhi_ctrl ]; then
                         default_debug_transport="usb"
                     fi
                 fi
-            elif [[ $soc_machine == CINDERDU* ]] || [[  $soc_machine == CINDERRU* ]]; then
-                soc_hwplatform=`cat /sys/devices/soc0/hw_platform`
-                # CINDER IDP devices need usb as debug transport
-                if [ $soc_hwplatform == "IDP" ]; then
-                    echo -n "start_pcie: set USB as transport for $soc_hwplatform" > /dev/kmsg
-                    default_debug_transport="usb"
-                fi
             fi
         fi
 
