@@ -198,6 +198,11 @@ case "$target" in
 	fi
 	echo 1 > /sys/devices/system/cpu/cpufreq/policy7/schedutil/pl
 
+	chmod 664 /sys/power/state
+	chmod 664 /sys/bus/platform/devices/a600000.ssusb/mode
+	chown :system /sys/power/state
+	chown :system /sys/bus/platform/devices/a600000.ssusb/mode
+
 	# Enable bus-dcvs
 	for device in /sys/devices/platform/soc
 	do

@@ -134,6 +134,12 @@ AC_SUBST(FEC_SIZE)
 
 AC_MSG_NOTICE([fec image size $FEC_SIZE detected.])
 
+AC_ARG_WITH(bootver,
+       AC_HELP_STRING([--with-bootver], [Set the boot header version to be used]),
+       [BOOT_HDR_VER="$withval"], [BOOT_HDR_VER="0"])
+
+AC_SUBST(BOOT_HDR_VER)
+
 AC_CONFIG_FILES([ \
     Makefile \
 ])
