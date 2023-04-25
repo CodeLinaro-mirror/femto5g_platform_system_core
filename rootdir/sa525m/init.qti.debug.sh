@@ -86,6 +86,363 @@ enable_SA525M_debug()
 	echo 0xB200000 > $DCC_PATH/config
 	echo 0xB220000 > $DCC_PATH/config
 
+	#Tsense
+	echo 0xc222004 > $DCC_PATH/config
+	echo 0xc271014 > $DCC_PATH/config
+	echo 0xc2710e0 > $DCC_PATH/config
+	echo 0xc2710ec > $DCC_PATH/config
+	echo 0xc2710a0 16 > $DCC_PATH/config
+	echo 0xc2710e8 > $DCC_PATH/config
+	echo 0xc27113c > $DCC_PATH/config
+
+	#Silver LLVM
+	echo 0x17b784a0 12 > $DCC_PATH/config
+	echo 0x17b78520 > $DCC_PATH/config
+	echo 0x17b78588 > $DCC_PATH/config
+	echo 0x17b78d90 8 > $DCC_PATH/config
+	echo 0x17b79010 6 > $DCC_PATH/config
+	echo 0x17b79090 6 > $DCC_PATH/config
+	echo 0x17b79a90 4 > $DCC_PATH/config
+
+	#Turing LLM
+	#echo 0x32310220 3 > $DCC_PATH/config
+	#echo 0x323102a0 3 > $DCC_PATH/config
+	#echo 0x323104a0 6 > $DCC_PATH/config
+	#echo 0x32310520 > $DCC_PATH/config
+	#echo 0x32310588 > $DCC_PATH/config
+	#echo 0x32310d90 8 > $DCC_PATH/config
+	#echo 0x32311010 6 > $DCC_PATH/config
+	#echo 0x32311090 6 > $DCC_PATH/config
+	#echo 0x32311a90 3 > $DCC_PATH/config
+
+	# Central Broadcast
+	echo 0xec80010 > $DCC_PATH/config
+	echo 0xec81000 > $DCC_PATH/config
+	#echo 0xec81010 64 > $DCC_PATH/config
+
+	# CORE_HANG_THRESHOLD
+	echo 0x17800058 > $DCC_PATH/config
+	echo 0x17810058 > $DCC_PATH/config
+	echo 0x17820058 > $DCC_PATH/config
+	echo 0x17830058 > $DCC_PATH/config
+	# CORE_HANG_VALUE
+	echo 0x1780005c > $DCC_PATH/config
+	echo 0x1781005c > $DCC_PATH/config
+	echo 0x1782005c > $DCC_PATH/config
+	echo 0x1783005c > $DCC_PATH/config
+	#first core hang
+	echo 0x1740003c > $DCC_PATH/config
+	# CORE_HANG_CONFIG
+	echo 0x17800060 > $DCC_PATH/config
+	echo 0x17810060 > $DCC_PATH/config
+	echo 0x17820060 > $DCC_PATH/config
+	echo 0x17830060 > $DCC_PATH/config
+	#CORE_HANG_DBG_STS
+	echo 0x17800064 > $DCC_PATH/config
+	echo 0x17810064 > $DCC_PATH/config
+	echo 0x17820064 > $DCC_PATH/config
+	echo 0x17830064 > $DCC_PATH/config
+
+	#MIBU Debug registers
+	echo 0x17600238 > $DCC_PATH/config
+
+	#GNOC Hang counters
+	echo 0x17600404 > $DCC_PATH/config
+	echo 0x1760041c 2 > $DCC_PATH/config
+	echo 0x17600434 > $DCC_PATH/config
+	echo 0x1760043c 2 > $DCC_PATH/config
+
+	#CPRh
+	echo 0x17900908 > $DCC_PATH/config
+	echo 0x17900c18 > $DCC_PATH/config
+
+	# pll status for all banks and all domains
+	# silver PLL
+	echo 0x17a80000 0x8007 > $DCC_PATH/config_write
+	echo 0x17a80000 > $DCC_PATH/config
+	echo 0x17a80028 0x0 > $DCC_PATH/config_write
+	echo 0x17a80028 > $DCC_PATH/config
+	echo 0x17a80024 0x0 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x40 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x80 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0xc0 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x100 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x140 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x180 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x1c0 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x200 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x240 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x280 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x2c0 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x300 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x340 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x380 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x3c0 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x4000 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a80024 0x0 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a80024 0x0 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a80024 0x0 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+	echo 0x17a80024 0x40 > $DCC_PATH/config_write
+	echo 0x17a80024 > $DCC_PATH/config
+	echo 0x17a8003c > $DCC_PATH/config
+
+	# L3 pll
+	echo 0x17a84000 0x8007 > $DCC_PATH/config_write
+	echo 0x17a84000 > $DCC_PATH/config
+	echo 0x17a84018 0x0 > $DCC_PATH/config_write
+	echo 0x17a84018 > $DCC_PATH/config
+	echo 0x17a84014 0x0 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x40 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x80 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0xc0 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x100 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x140 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x180 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x1c0 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x200 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x240 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x280 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x2c0 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x300 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x340 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x380 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x3c0 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84018 0x4000 > $DCC_PATH/config_write
+	echo 0x17a84018 > $DCC_PATH/config
+	echo 0x17a84014 0x0 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a84014 0x0 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a84014 0x0 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+	echo 0x17a84014 0x40 > $DCC_PATH/config_write
+	echo 0x17a84014 > $DCC_PATH/config
+	echo 0x17a8403c > $DCC_PATH/config
+
+	#rpmh
+	echo 0xc201244 > $DCC_PATH/config
+	echo 0xc202244 > $DCC_PATH/config
+
+	#L3-ACD
+	echo 0x17a94030 > $DCC_PATH/config
+	echo 0x17a9408c > $DCC_PATH/config
+	echo 0x17a9409c 0x78 > $DCC_PATH/config_write
+	echo 0x17a9409c 0x0  > $DCC_PATH/config_write
+	echo 0x17a94048 0x1  > $DCC_PATH/config_write
+	echo 0x17a94090 0x0  > $DCC_PATH/config_write
+	echo 0x17a94090 0x25 > $DCC_PATH/config_write
+	echo 0x17a94098 > $DCC_PATH/config
+	echo 0x17a94048 0x1D > $DCC_PATH/config_write
+	echo 0x17a94090 0x0  > $DCC_PATH/config_write
+	echo 0x17a94090 0x25 > $DCC_PATH/config_write
+	echo 0x17a94098 > $DCC_PATH/config
+
+	#SILVER-ACD
+	echo 0x17a90030 > $DCC_PATH/config
+	echo 0x17a9008c > $DCC_PATH/config
+	echo 0x17a9009c 0x78 > $DCC_PATH/config_write
+	echo 0x17a9009c 0x0  > $DCC_PATH/config_write
+	echo 0x17a90048 0x1  > $DCC_PATH/config_write
+	echo 0x17a90090 0x0  > $DCC_PATH/config_write
+	echo 0x17a90090 0x25 > $DCC_PATH/config_write
+	echo 0x17a90098 > $DCC_PATH/config
+	echo 0x17a90048 0x1D > $DCC_PATH/config_write
+	echo 0x17a90090 0x0  > $DCC_PATH/config_write
+	echo 0x17a90090 0x25 > $DCC_PATH/config_write
+	echo 0x17a90098 > $DCC_PATH/config
+
+	echo 0x17ba0000 6 > $DCC_PATH/config
+	echo 0x17ba0020 5 > $DCC_PATH/config
+	echo 0x17ba0050 > $DCC_PATH/config
+	echo 0x17ba0070 > $DCC_PATH/config
+	echo 0x17ba0080 25 > $DCC_PATH/config
+	echo 0x17ba0100 > $DCC_PATH/config
+	echo 0x17ba0120 > $DCC_PATH/config
+	echo 0x17ba0140 > $DCC_PATH/config
+	echo 0x17ba0200 6 > $DCC_PATH/config
+	echo 0x17ba0700 > $DCC_PATH/config
+	echo 0x17ba070c 3 > $DCC_PATH/config
+	echo 0x17ba0780 32 > $DCC_PATH/config
+	echo 0x17ba0808 > $DCC_PATH/config
+	echo 0x17ba0c48 > $DCC_PATH/config
+	echo 0x17ba080c > $DCC_PATH/config
+	echo 0x17ba0c4c > $DCC_PATH/config
+	echo 0x17ba0810 > $DCC_PATH/config
+	echo 0x17ba0c50 > $DCC_PATH/config
+	echo 0x17ba0814 > $DCC_PATH/config
+	echo 0x17ba0c54 > $DCC_PATH/config
+	echo 0x17ba0818 > $DCC_PATH/config
+	echo 0x17ba0c58 > $DCC_PATH/config
+	echo 0x17ba081c > $DCC_PATH/config
+	echo 0x17ba0c5c > $DCC_PATH/config
+	echo 0x17ba0824 > $DCC_PATH/config
+	echo 0x17ba0c64 > $DCC_PATH/config
+	echo 0x17ba0828 > $DCC_PATH/config
+	echo 0x17ba0c68 > $DCC_PATH/config
+	echo 0x17ba082c > $DCC_PATH/config
+	echo 0x17ba0c6c > $DCC_PATH/config
+	echo 0x17ba0840 > $DCC_PATH/config
+	echo 0x17ba0c80 > $DCC_PATH/config
+	echo 0x17ba0844 > $DCC_PATH/config
+	echo 0x17ba0c84 > $DCC_PATH/config
+	echo 0x17ba0848 > $DCC_PATH/config
+	echo 0x17ba0c88 > $DCC_PATH/config
+	echo 0x17ba084c > $DCC_PATH/config
+	echo 0x17ba0c8c > $DCC_PATH/config
+	echo 0x17ba0850 > $DCC_PATH/config
+	echo 0x17ba0c90 > $DCC_PATH/config
+	echo 0x17ba0854 > $DCC_PATH/config
+	echo 0x17ba0c94 > $DCC_PATH/config
+	echo 0x17ba0858 > $DCC_PATH/config
+	echo 0x17ba0c98 > $DCC_PATH/config
+	echo 0x17ba085c > $DCC_PATH/config
+	echo 0x17ba0c9c > $DCC_PATH/config
+	echo 0x17ba0860 > $DCC_PATH/config
+	echo 0x17ba0ca0 > $DCC_PATH/config
+	echo 0x17ba0864 > $DCC_PATH/config
+	echo 0x17ba0ca4 > $DCC_PATH/config
+	echo 0x17ba0868 > $DCC_PATH/config
+	echo 0x17ba0ca8 > $DCC_PATH/config
+	echo 0x17ba086c > $DCC_PATH/config
+	echo 0x17ba0cac > $DCC_PATH/config
+	echo 0x17ba0870 > $DCC_PATH/config
+	echo 0x17ba0cb0 > $DCC_PATH/config
+	echo 0x17ba0874 > $DCC_PATH/config
+	echo 0x17ba0cb4 > $DCC_PATH/config
+	echo 0x17ba0878 > $DCC_PATH/config
+	echo 0x17ba0cb8 > $DCC_PATH/config
+	echo 0x17ba087c > $DCC_PATH/config
+	echo 0x17ba0cbc > $DCC_PATH/config
+	echo 0x17ba3500 80 > $DCC_PATH/config
+	echo 0x17ba3a00 3 > $DCC_PATH/config
+	echo 0x17ba3aa8 18 > $DCC_PATH/config
+	echo 0x17ba3b00 2 > $DCC_PATH/config
+	echo 0x17ba3b20 3 > $DCC_PATH/config
+	echo 0x17ba3b30 11 > $DCC_PATH/config
+	echo 0x17ba3b64 > $DCC_PATH/config
+	echo 0x17ba3b00 2 > $DCC_PATH/config
+	echo 0x17ba3b20 3 > $DCC_PATH/config
+	echo 0x17ba3b30 11 > $DCC_PATH/config
+	echo 0x17ba3b70 2 > $DCC_PATH/config
+
+	#APM
+	echo 0x17b00000 70 > $DCC_PATH/config
+
+	#PCU -DCC for LPM path
+	#Read only registers
+	#core#0
+	echo 0x17800010 > $DCC_PATH/config
+	echo 0x17800024 > $DCC_PATH/config
+	echo 0x17800038 6 > $DCC_PATH/config
+	echo 0x1780006c > $DCC_PATH/config
+	echo 0x178000f0 2 > $DCC_PATH/config
+	# core#1
+	echo 0x17810010 > $DCC_PATH/config
+	echo 0x17810024 > $DCC_PATH/config
+	echo 0x17810038 6 > $DCC_PATH/config
+	echo 0x1781006c > $DCC_PATH/config
+	echo 0x178100f0 2 > $DCC_PATH/config
+	# core#2
+	echo 0x17820010 > $DCC_PATH/config
+	echo 0x17820024 > $DCC_PATH/config
+	echo 0x17820038 6 > $DCC_PATH/config
+	echo 0x1782006c > $DCC_PATH/config
+	echo 0x178200f0 2 > $DCC_PATH/config
+	# core#3
+	echo 0x17830010 > $DCC_PATH/config
+	echo 0x17830024 > $DCC_PATH/config
+	echo 0x17830038 6 > $DCC_PATH/config
+	echo 0x1783006c > $DCC_PATH/config
+	echo 0x178300f0 2 > $DCC_PATH/config
+	# L3
+	echo 0x17880010 > $DCC_PATH/config
+	echo 0x17880024 > $DCC_PATH/config
+	echo 0x17880038 3 > $DCC_PATH/config
+	#APPS CL
+	echo 0x17880044 3 > $DCC_PATH/config
+	echo 0x1788006c 5 > $DCC_PATH/config
+	# APSS_BOOTFSM_STS
+	echo 0x17880084 > $DCC_PATH/config
+	# APSS_SILVER_PLL
+	echo 0x178800f4 5 > $DCC_PATH/config
+	# APSS_ITM_SILVER
+	echo 0x17880134 2 > $DCC_PATH/config
+	# APSS_SILVER_PWR_CTL_STS
+	echo 0x178801b4 > $DCC_PATH/config
+	# APSS_CL_PCU_PWR_CTL_STS
+	echo 0x178801bc 2 > $DCC_PATH/config
+	echo 0x178801c8 > $DCC_PATH/config
+
 	#APSS_RSCC
 	echo 0x17A20000 > $DCC_PATH/config
 	echo 0x17A00004 > $DCC_PATH/config
@@ -163,6 +520,35 @@ enable_SA525M_debug()
 	echo 0x17A20D30 > $DCC_PATH/config
 	echo 0x17A20D40 > $DCC_PATH/config
 
+	echo 0x17d80100 144 > $DCC_PATH/config
+	# EPSSSLOW_CLKDOM0
+	echo 0x17d9001c > $DCC_PATH/config
+	echo 0x17d900dc > $DCC_PATH/config
+	echo 0x17d900e8 > $DCC_PATH/config
+	echo 0x17d90320 > $DCC_PATH/config
+	echo 0x17d90020 > $DCC_PATH/config
+	echo 0x17d9034c > $DCC_PATH/config
+	echo 0x17d90300 > $DCC_PATH/config
+	# EPSSSLOW_CLKDOM1
+	echo 0x17d9101c > $DCC_PATH/config
+	echo 0x17d910dc > $DCC_PATH/config
+	echo 0x17d910e8 > $DCC_PATH/config
+	echo 0x17d91320 > $DCC_PATH/config
+	echo 0x17d91020 > $DCC_PATH/config
+	echo 0x17d9134c > $DCC_PATH/config
+	echo 0x17d91300 > $DCC_PATH/config
+
+	echo 0x26822000 2 > $DCC_PATH/config
+	echo 0x26824c00 > $DCC_PATH/config
+	echo 0x26824d04 2 > $DCC_PATH/config
+	echo 0x17d98014 4 > $DCC_PATH/config
+	echo 0x17d900e0 > $DCC_PATH/config
+	echo 0x17d90410 > $DCC_PATH/config
+	echo 0x17d90074 > $DCC_PATH/config
+	echo 0x17d90064 > $DCC_PATH/config
+	echo 0x17d91074 > $DCC_PATH/config
+	echo 0x17d910e0 > $DCC_PATH/config
+	echo 0x17d91410 > $DCC_PATH/config
 
 	echo 1 > $DCC_PATH/sw_trig
 	echo 1 > $DCC_PATH/enable
