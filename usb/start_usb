@@ -216,11 +216,11 @@ case "$1" in
 			# Check if device is ADP with USB fusion
 			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "2" ]; then
 				case `cat /etc/usb/boot_hsusb_comp` in
-				    *9102* )
-					# Dual RmNet selected by user, no change required
+				    *9106* )
+					# ECM + RmNet_V2X selected by user, no change required
 				    ;;
 				    * )
-					echo 9106 > /etc/usb/boot_hsusb_comp
+					echo 9102 > /etc/usb/boot_hsusb_comp
 				    ;;
 				esac
 			# Use this for MTP/TTP in PCIe mode
@@ -419,6 +419,13 @@ case "$1" in
 				echo 90DB > /etc/usb/boot_hsusb_comp
 				;;
 		esac
+	fi
+
+	# put USB in LPM and exit with success if device is in mhi mode
+	if [ "$pid" == "none" ] && [ "$debug_transport" == "pcie" ]; then
+		udcname=`ls -1 /sys/bus/platform/devices/ | grep -E 'ssusb|hsusb' | head -n 1`
+		echo none > /sys/bus/platform/devices/${udcname}/mode
+		exit 0
 	fi
 
 	# enable debug message

@@ -70,6 +70,10 @@ fi
 
 echo -n "Started post boot settings " > /dev/kmsg
 
+#disable watermark boost
+echo 0 > /proc/sys/vm/watermark_boost_factor
+echo -n "Watermark boost is disabled" > /dev/kmsg
+
 #ftrace
 tracefs=/sys/kernel/debug/tracing
 

@@ -31,22 +31,26 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-enable_SA410M_debug()
+configure_coresight()
 {
-	echo "++++ $0 -> SA410M target specific debug file" > /dev/kmsg
-	echo "++++ $0 -> DCC-Enable START" > /dev/kmsg
-	DCC_PATH="/sys/bus/platform/devices/1be2000.dcc_v2"
-	if [ ! -d $DCC_PATH ]; then
-		 echo "++++ $0 -> Not a debug build. No DCC available" > /dev/kmsg
-		 echo "DCC does not exist on this build."
-		 return
-	fi
+	#configure STM trace ID
+	chmod 664 /sys/bus/coresight/devices/coresight-stm/traceid
+	echo 0x10 > /sys/bus/coresight/devices/coresight-stm/traceid
 
-	echo 0 > $DCC_PATH/enable
-	echo 3 > $DCC_PATH/curr_list
-	echo cap > $DCC_PATH/func_type
-	echo sram > $DCC_PATH/data_sink
-	echo 1 > $DCC_PATH/config_reset
+	#give diag application root permission for the device
+	chmod 664 /dev/byte-cntr
+	chown diag:root /dev/byte-cntr
+}
+
+configure_dcc()
+{
+	echo "++++ $0 -> DCC-Enable START" > /dev/kmsg
+        DCC_PATH="/sys/bus/platform/devices/1be2000.dcc_v2"
+	if [ ! -d $DCC_PATH ]; then
+		echo "++++ $0 -> Not a debug build. No DCC available" > /dev/kmsg
+		echo "DCC does not exist on this build."
+		return
+	fi
 
 	#QDSP
 	echo 0xA754520  > $DCC_PATH/config
@@ -63,8 +67,11 @@ enable_SA410M_debug()
 
 	echo 1 > $DCC_PATH/enable
 
-	echo "++++ $0 -> DCC-Enable END" > /dev/kmsg
+        echo "++++ $0 -> DCC-Enable END" > /dev/kmsg
+}
 
+configure_traces()
+{
 	echo "++++ $0 -> ENABLE-FTRACE START" > /dev/kmsg
 
 	#bail out if its perf config
@@ -78,7 +85,6 @@ enable_SA410M_debug()
 		echo "++++ $0 -> Not a debug build. No Tracing events" > /dev/kmsg
 		return
 	fi
-
 
 	#IRQs
 	echo 1 > /sys/kernel/debug/tracing/events/irq/enable
@@ -102,5 +108,15 @@ enable_SA410M_debug()
 	echo 1 > /sys/kernel/debug/tracing/tracing_on
 
 	echo "++++ $0 -> FTRACE-Enable END" > /dev/kmsg
+}
 
+enable_SA410M_debug()
+{
+	echo "++++ $0 -> SA410M target specific debug file" > /dev/kmsg
+
+	configure_dcc
+
+	configure_traces
+
+	configure_coresight
 }

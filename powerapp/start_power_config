@@ -1914,6 +1914,10 @@ enable_cinder_ftrace_event_tracing()
     echo 1 > /sys/kernel/debug/tracing/events/regulator/enable
     echo 1 > /sys/kernel/debug/tracing/events/rpmh/enable
 
+    # EMMC Ftrace
+    echo 1 > /sys/kernel/debug/tracing/events/mmc/mmc_request_start/enable
+    echo 1 > /sys/kernel/debug/tracing/events/mmc/mmc_request_done/enable
+
     echo 1 > /sys/kernel/debug/tracing/tracing_on
     echo "++++ $0 -> ENABLE-FTRACE END" > /dev/kmsg
 }

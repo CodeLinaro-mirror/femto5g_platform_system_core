@@ -31,8 +31,8 @@
 echo -n "Starting init_post_boot: "
 
 kernelversion=`cat /proc/version`
-result=$(echo $kernelversion | grep "Linux version 5.4")
-if [ "$result" != "" ]; then
+kernel5_4=$(echo $kernelversion | grep "Linux version 5.4")
+if [ "$kernel5_4" != "" ]; then
     result=$(sed -n '23p' /etc/systemd/resolved.conf)
     if [ "$result" != "DNSStubListener=no" ]; then
         sed -i '23c DNSStubListener=no' /etc/systemd/resolved.conf
@@ -46,6 +46,8 @@ if [ -f /sys/devices/soc0/machine ]; then
 else
     target=`getprop ro.board.platform`
 fi
+
+
 
 function configure_read_ahead_kb_values() {
     MemTotalStr=`cat /proc/meminfo | grep MemTotal`
@@ -214,7 +216,10 @@ case "$target" in
 	do
 	    for cpubw in $device/*cpu-cpu-llcc-bw/devfreq/*cpu-cpu-llcc-bw
 	    do
-	        cat $cpubw/available_frequencies | cut -d " " -f 1 > $cpubw/min_freq
+                if [ "$kernel5_4" == "" ]; then
+                    echo "bw_hwmon" > $cpubw/governor
+                fi
+		cat $cpubw/available_frequencies | cut -d " " -f 1 > $cpubw/min_freq
                 echo 40 > $cpubw/polling_interval
 		echo "4577 7110 9155 12298 14236 15258" > $cpubw/bw_hwmon/mbps_zones
 		echo 4 > $cpubw/bw_hwmon/sample_ms
@@ -230,7 +235,10 @@ case "$target" in
 
 	    for llccbw in $device/*cpu-llcc-ddr-bw/devfreq/*cpu-llcc-ddr-bw
 	    do
-		cat $llccbw/available_frequencies | cut -d " " -f 1 > $llccbw/min_freq
+                if [ "$kernel5_4" == "" ]; then
+                    echo "bw_hwmon" > $llccbw/governor
+		fi
+                cat $llccbw/available_frequencies | cut -d " " -f 1 > $llccbw/min_freq
 		echo 40 > $llccbw/polling_interval
 		if [ ${ddr_type:4:2} == $ddr_type4 ]; then
 			echo "1720 2086 2929 3879 5161 5931 6881 7980" > $llccbw/bw_hwmon/mbps_zones
@@ -251,6 +259,9 @@ case "$target" in
 	    for npubw in $device/*npu*-ddr-bw/devfreq/*npu*-ddr-bw
 	    do
 		echo 1 > /sys/devices/virtual/npu/msm_npu/pwr
+		if [ "$kernel5_4" == "" ]; then
+			echo "bw_hwmon" > $npubw/governor
+		fi
 		cat $npubw/available_frequencies | cut -d " " -f 2 > $npubw/min_freq
 		echo 40 > $npubw/polling_interval
 		if [ ${ddr_type:4:2} == $ddr_type4 ]; then
@@ -302,6 +313,9 @@ case "$target" in
 	    #Enable mem_latency governor for LLCC and DDR scaling
 	    for memlat in $device/*cpu*-lat/devfreq/*cpu*-lat
 	    do
+		if [ "$kernel5_4" == "" ]; then
+		    echo "mem_latency" > $memlat/governor
+		fi
 		cat $memlat/available_frequencies | cut -d " " -f 1 > $memlat/min_freq
 		echo 10 > $memlat/polling_interval
 		echo 400 > $memlat/mem_latency/ratio_ceil
@@ -310,6 +324,9 @@ case "$target" in
 	    #Enable compute governor for gold latfloor
 	    for latfloor in $device/*cpu-ddr-latfloor*/devfreq/*cpu-ddr-latfloor*
 	    do
+		if [ "$kernel5_4" == "" ]; then
+	            echo "compute" > $latfloor/governor
+		fi
 		cat $latfloor/available_frequencies | cut -d " " -f 1 > $latfloor/min_freq
 		echo 10 > $latfloor/polling_interval
 	    done
@@ -329,6 +346,9 @@ case "$target" in
 	    #Enable mem_latency governor for qoslat
 	    for qoslat in $device/*qoslat/devfreq/*qoslat
 	    do
+		if [ "$kernel5_4" == "" ]; then
+		    echo "mem_latency" > $qoslat/governor
+		fi
 		cat $qoslat/available_frequencies | cut -d " " -f 1 > $qoslat/min_freq
 		echo 10 > $qoslat/polling_interval
 		echo 50 > $qoslat/mem_latency/ratio_ceil

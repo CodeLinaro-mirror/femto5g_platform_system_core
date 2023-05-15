@@ -96,17 +96,26 @@ run_configfs() {
 		ln -s functions/diag.diag configs/c.1/f1
 	fi
 	ln -s functions/ffs.adb configs/c.1/f2
-	echo 0x80 > configs/c.1/bmAttributes
+	echo $bmattributes > configs/c.1/bmAttributes
 	rm -f /tmp/usb_bind_in_progress
 	echo "binding UDC with Gadget..." $1
 	echo $1 > UDC
 	cd /
 }
 
-case `source /sbin/usb/target` in
+target=`source /sbin/usb/target`
+case $target in
 	* )
 		if [ $configfs_supported = "y" ]; then
 			udcname=`ls -1 /sys/class/udc | head -n 1`
+
+			# Cinder is self-powered, hence set the self-powered bit of bmAttributes
+			if [ $target == "cinder" ]; then
+				bmattributes="0xC0"
+			else
+				bmattributes="0x80"
+			fi
+
 			run_configfs $udcname &
 		else
 			run_non_configfs &

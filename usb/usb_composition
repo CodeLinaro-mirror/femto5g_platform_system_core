@@ -314,7 +314,21 @@ if [ $hsic = "n" ]; then
 			echo 0 > /sys/bus/platform/devices/qcom_gadget/enabled
 			# pass n as second argument to avoid switching to default composition
 			source /sbin/start_usb init n
+
+			TARGET=`source /sbin/usb/target`
+			if [[ "$TARGET" == "sdxprairie" ||  "$TARGET" == "sdxpoorwills" ]]; then
+				echo $TARGET
+
+				#Restart adbd and diag-router services if booting with early usb configuration
+				if ! pgrep -x "/sbin/adbd" > /dev/null; then
+					echo "Restart adbd"
+					systemctl restart adbd.service 2>/dev/null
+					sleep 1
+					pkill -9 diag-router 2>/dev/null
+				fi
+			fi
 		fi
+
 		$COMP_DIR/$local_pid n 0.2 $from_adb
 	fi
 else
