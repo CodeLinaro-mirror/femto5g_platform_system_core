@@ -42,6 +42,12 @@ create_sa525m_stm_stp_policy()
 	echo "++++ $0 -> create_stp_policy END" > /dev/kmsg
 }
 
+configure_coresight()
+{
+	chmod 660 /dev/byte-cntr
+	chown diag:root /dev/byte-cntr
+}
+
 enable_SA525M_debug()
 {
 	echo "++++ $0 -> SA525M target specific debug file" > /dev/kmsg
@@ -554,6 +560,8 @@ enable_SA525M_debug()
 	echo 1 > $DCC_PATH/enable
 
 	echo "++++ $0 -> DCC-Enable END" > /dev/kmsg
+
+	configure_coresight
 
 	echo "++++ $0 -> ENABLE-FTRACE START" > /dev/kmsg
 
