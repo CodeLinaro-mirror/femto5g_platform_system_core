@@ -46,6 +46,8 @@ configure_coresight()
 {
 	chmod 660 /dev/byte-cntr
 	chown diag:root /dev/byte-cntr
+	chmod 660 /sys/bus/coresight/reset_source_sink
+	chown diag:root /sys/bus/coresight/reset_source_sink
 }
 
 enable_SA525M_debug()
