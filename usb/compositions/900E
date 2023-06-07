@@ -59,6 +59,9 @@ run_configfs() {
 	else
 		ln -s functions/diag.diag configs/c.1/f1
 	fi
+
+	# Cinder is self-powered, hence set the self-powered bit of bmAttributes
+	echo 0xC0 > configs/c.1/bmAttributes
 	rm -f /data/usb_bind_in_progress
 	echo "binding UDC with Gadget..." $1
 	echo $1 > UDC

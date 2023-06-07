@@ -111,6 +111,9 @@ case $TARGET in
 	*cinder* )
 		res="cinder"
 		;;
+	*qcs6490-odk* )
+		res="qcs6490"
+		;;
 	* )
 		res="none"
 		;;
