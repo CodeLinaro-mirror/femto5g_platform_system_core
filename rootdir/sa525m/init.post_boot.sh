@@ -85,6 +85,9 @@ case "$target" in
                 echo N > /sys/devices/system/cpu/qcom_lpm/parameters/sleep_disabled
                 echo mem > /sys/power/autosleep
 
+		#enable schedutil governor
+                echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
+
                 echo "++++ $0 -> Debug SA525M - START" > /dev/kmsg
                 enable_SA525M_debug
                 echo "++++ $0 -> Debug SA525M - END" > /dev/kmsg
