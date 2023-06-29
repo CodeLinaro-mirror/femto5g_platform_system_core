@@ -184,6 +184,9 @@ case "$1" in
 			echo 1 > /sys/devices/virtual/android_usb/android0/f_rndis_qc/max_pkt_per_xfer
 			echo 3 > /sys/module/dwc3/parameters/bulk_ep_xfer_timeout_ms
 			;;
+		*9607* )
+			echo 901D > /etc/usb/boot_hsusb_comp
+                        ;;
 		*8916* )
 			echo 9091 > /etc/usb/boot_hsusb_comp
                         ;;
@@ -419,6 +422,13 @@ case "$1" in
 				echo 90DB > /etc/usb/boot_hsusb_comp
 				;;
 		esac
+	fi
+
+	# put USB in LPM and exit with success if device is in mhi mode
+	if [ "$pid" == "none" ] && [ "$debug_transport" == "pcie" ]; then
+		udcname=`ls -1 /sys/bus/platform/devices/ | grep -E 'ssusb|hsusb' | head -n 1`
+		echo none > /sys/bus/platform/devices/${udcname}/mode
+		exit 0
 	fi
 
 	# enable debug message
