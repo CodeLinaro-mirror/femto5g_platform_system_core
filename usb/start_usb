@@ -404,6 +404,12 @@ case "$1" in
 		cd /
 	fi
 
+	#Initialize NCM configuration
+	if [ -d /sys/kernel/config/usb_gadget/g1/functions/ncm.0 ]; then
+		cd /sys/kernel/config/usb_gadget/g1/functions/ncm.0
+		echo WINNCM > os_desc/interface.ncm/compatible_id
+	fi
+
 	pid=`cat /etc/usb/boot_hsusb_comp`
 	if [ -e /data/debug_transport.conf ]; then
 		debug_transport=`cat /data/debug_transport.conf`
