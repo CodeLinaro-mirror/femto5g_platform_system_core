@@ -108,6 +108,7 @@ case "$1" in
 		mkdir functions/cser.nmea.1
 		mkdir functions/gser.0
 		mkdir functions/rmnet_bam.rmnet
+		mkdir functions/rmnet_bam.rmnet_bam_demux
 		mkdir functions/gsi.rmnet
 		mkdir functions/gsi.rndis
 		mkdir functions/gsi.ecm
