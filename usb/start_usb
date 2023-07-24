@@ -246,7 +246,7 @@ case "$1" in
 				echo 9104 > /etc/usb/boot_hsusb_comp
 			fi
 			;;
-		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* )
+		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* | *qcs6490* )
 			echo 901D > /etc/usb/boot_hsusb_comp
 		        ;;
 		*sm8150* )
