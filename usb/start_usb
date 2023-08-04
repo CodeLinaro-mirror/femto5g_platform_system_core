@@ -108,6 +108,7 @@ case "$1" in
 		mkdir functions/cser.nmea.1
 		mkdir functions/gser.0
 		mkdir functions/rmnet_bam.rmnet
+		mkdir functions/rmnet_bam.rmnet_bam_demux
 		mkdir functions/gsi.rmnet
 		mkdir functions/gsi.rndis
 		mkdir functions/gsi.ecm
@@ -184,6 +185,9 @@ case "$1" in
 			echo 1 > /sys/devices/virtual/android_usb/android0/f_rndis_qc/max_pkt_per_xfer
 			echo 3 > /sys/module/dwc3/parameters/bulk_ep_xfer_timeout_ms
 			;;
+		*9607* )
+			echo 901D > /etc/usb/boot_hsusb_comp
+                        ;;
 		*8916* )
 			echo 9091 > /etc/usb/boot_hsusb_comp
                         ;;
@@ -243,7 +247,7 @@ case "$1" in
 				echo 9104 > /etc/usb/boot_hsusb_comp
 			fi
 			;;
-		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* )
+		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* | *qcs6490* )
 			echo 901D > /etc/usb/boot_hsusb_comp
 		        ;;
 		*sm8150* )
@@ -399,6 +403,12 @@ case "$1" in
 		ln -s streaming/header/h1 streaming/class/hs/
 		ln -s streaming/header/h streaming/class/ss/
 		cd /
+	fi
+
+	#Initialize NCM configuration
+	if [ -d /sys/kernel/config/usb_gadget/g1/functions/ncm.0 ]; then
+		cd /sys/kernel/config/usb_gadget/g1/functions/ncm.0
+		echo WINNCM > os_desc/interface.ncm/compatible_id
 	fi
 
 	pid=`cat /etc/usb/boot_hsusb_comp`

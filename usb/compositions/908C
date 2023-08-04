@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2012-2014,2019,2021, The Linux Foundation. All rights reserved.
+# Copyright (c) 2018-2021, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -24,47 +24,27 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# DESCRIPTION:  ECM
+#Changes from Qualcomm Innovation Center are provided under the following license:
 
-echo "Switching to composition number 0x90B1" > /dev/kmsg
+#Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+#SPDX-License-Identifier: BSD-3-Clause-Clear
 
-if [ "$1" = "y" ]; then
-	num="1"
+# DESCRIPTION: NCM + ADB
+
+echo "Switching to composition number 0x908C"  > /dev/kmsg
+
+if [ "$#" -ge 3 ]; then
+	from_adb=$3
 else
-	num="0"
+	from_adb="n"
 fi
-
-if [ "$#" -ge 2 ]; then
-	delay=$2
-else
-	delay="0"
-fi
-
-run_9x35() {
-	echo 0 > /sys/class/android_usb/android$num/enable
-	echo 90B1 > /sys/class/android_usb/android$num/idProduct
-	echo 05C6 > /sys/class/android_usb/android$num/idVendor
-	echo ecm > /sys/class/android_usb/android$num/functions
-	echo 1 > /sys/class/android_usb/android$num/remote_wakeup
-	sleep $delay
-	echo 1 > /sys/class/android_usb/android$num/enable
-}
-
-run_9607() {
-	echo 0 > /sys/class/android_usb/android$num/enable
-	echo 90B1 > /sys/class/android_usb/android$num/idProduct
-	echo 05C6 > /sys/class/android_usb/android$num/idVendor
-	echo ecm > /sys/class/android_usb/android$num/functions
-	echo 1 > /sys/class/android_usb/android$num/remote_wakeup
-	sleep $delay
-	echo 1 > /sys/class/android_usb/android$num/enable
-}
 
 run_configfs() {
 	echo start > /tmp/usb_bind_in_progress
 	if [ $from_adb = "n" ]
 	then
 		pkill adbd
+		# Give enough time to restart ADBD and open EP0 file node
 		sleep 1
 	fi
 	cd /sys/kernel/config/usb_gadget/g1
@@ -73,10 +53,12 @@ run_configfs() {
 	rmdir configs/c.2/strings/* configs/c.3/strings/* 2> /dev/null
 	rmdir configs/c.2 configs/c.3 2> /dev/null
 	echo 0x05c6 > idVendor
-	echo 0x90B1 > idProduct
-	echo "ECM" > configs/c.1/strings/0x409/configuration
-	ln -s functions/$2.ecm configs/c.1/f1
-	echo 0xA0 > configs/c.1/bmAttributes
+	echo 0x908C > idProduct
+
+	ln -s functions/ncm.0 configs/c.1/f1
+	ln -s functions/ffs.adb configs/c.1/f2
+
+	echo 0x80 > configs/c.1/bmAttributes
 	rm -f /tmp/usb_bind_in_progress
 	echo "binding UDC with Gadget..." $1
 	echo $1 > UDC
@@ -84,31 +66,11 @@ run_configfs() {
 }
 
 case `source /sbin/usb/target` in
-	*9x35* )
-		run_9x35 &
-		;;
-	*9607* )
-		KERNEL_VER=`uname -r`
-		KERNEL_VER=`echo $KERNEL_VER |cut -d '.' -f 1-2`
-		CHECK=`expr $KERNEL_VER \>= 4.14`
-		if [ $CHECK -eq 1 ]
-		then
-			xport="ecm"
-			udcname=`ls -1 /sys/class/udc | head -n 1`
-			run_configfs $udcname $xport &
-		else
-			run_9607 &
-		fi
-		;;
-	*8909* )
-		run_9607 &
-		;;
-	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sdxnightjar* | *sa410m* | *sa525m* )
-		xport="gsi"
+	*cinder* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
-		run_configfs $udcname $xport &
+		run_configfs $udcname &
 		;;
 	* )
-		run_9x35 &
+		echo "This composition is not supported"
 		;;
 esac
