@@ -134,7 +134,7 @@ run_configfs() {
 	echo 0x05c6 > idVendor
 	echo 0x902d > idProduct
 	echo "RNDIS_DIAG_ADB" > configs/c.1/strings/0x409/configuration
-	ln -s functions/gsi.rndis configs/c.1/f1
+	ln -s functions/$2.rndis configs/c.1/f1
 	if [ -e functions/ffs.diag ]; then
 		ln -s functions/ffs.diag configs/c.1/f2
 	else
@@ -159,7 +159,22 @@ case `source /sbin/usb/target` in
 		run_9x35 &
 		;;
 	*9607* )
-		run_9x25 &
+		kernel_ver=`uname -r`
+		kernel_ver=`echo $kernel_ver |cut -d '.' -f 1-2`
+		check=`expr $kernel_ver \>= 4.14`
+		if [ $check -eq 1 ]
+		then
+			udcname=`ls -1 /sys/class/udc | head -n 1`
+			xport="rndis"
+			# Configure class, subclass, protocol for RNDIS SW path
+			cd /sys/kernel/config/usb_gadget/g1/functions/rndis.rndis
+			echo ef > class
+			echo 4 > subclass
+			echo 1 > protocol
+			run_configfs $udcname $xport &
+		else
+			run_9607 &
+		fi
 		;;
 	*8909* )
 		run_9x25 &
@@ -172,7 +187,8 @@ case `source /sbin/usb/target` in
 		;;
 	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sdxnightjar* | *sa410m* | *sa525m* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
-		run_configfs $udcname &
+		xport="gsi"
+		run_configfs $udcname $xport &
 		;;
 	* )
 		run_9650 &
