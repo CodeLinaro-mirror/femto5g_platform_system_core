@@ -186,7 +186,7 @@ case "$1" in
 			$(which echo) 3 > /sys/module/dwc3/parameters/bulk_ep_xfer_timeout_ms
 			;;
 		*9607* )
-			$(which echo) 901D > /etc/usb/boot_hsusb_comp
+			$(which echo) 9025 > /etc/usb/boot_hsusb_comp
                         ;;
 		*8916* )
 			$(which echo) 9091 > /etc/usb/boot_hsusb_comp
