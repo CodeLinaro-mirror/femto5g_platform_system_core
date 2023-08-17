@@ -113,8 +113,18 @@ run_configfs() {
 	echo 0x9057 > idProduct
 	echo "RNDIS" > configs/c.1/strings/0x409/configuration
 	echo "ECM" > configs/c.2/strings/0x409/configuration
-	ln -s functions/gsi.rndis configs/c.1/f1
-	ln -s functions/gsi.ecm configs/c.2/f1
+	if [ "$2" == "gsi" ]
+	then
+		ln -s functions/gsi.rndis configs/c.1/f1
+	else
+		ln -s functions/rndis.rndis configs/c.1/f1
+	fi
+	if [ "$2" == "gsi" ]
+	then
+		ln -s functions/gsi.ecm configs/c.2/f1
+	else
+		ln -s functions/ecm.ecm configs/c.2/f1
+	fi
 	echo 0xA0 > configs/c.1/bmAttributes
 	echo 0xA0 > configs/c.2/bmAttributes
 	echo "binding UDC with Gadget..." $1
@@ -133,7 +143,16 @@ case `source /sbin/usb/target` in
 		run_9x35 &
 		;;
 	*9607* )
-		run_9607 &
+		kernel_ver=`uname -r`
+		kernel_ver=`echo $kernel_ver |cut -d '.' -f 1-2`
+		check=`expr $kernel_ver \>= 4.14`
+		if [ $check -eq 1 ]
+		then
+			udcname=`ls -1 /sys/class/udc | head -n 1`
+			run_configfs $udcname &
+		else
+			run_9607 &
+		fi
 		;;
 	*8909* )
 		run_9607 &
@@ -146,7 +165,8 @@ case `source /sbin/usb/target` in
 		;;
 	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sdxnightjar* | *sa410m* | *sa525m* )
 		udcname=`ls -1 /sys/class/udc | head -n 1`
-		run_configfs $udcname &
+		xport="gsi"
+		run_configfs $udcname $xport &
 		;;
 	* )
 		run_9650 &

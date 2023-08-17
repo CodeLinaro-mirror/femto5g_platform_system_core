@@ -199,7 +199,12 @@ run_configfs() {
 		ln -s functions/cser.dun.0 configs/c.1/f3
 	fi
 	ln -s functions/cser.nmea.1 configs/c.1/f4
-	ln -s functions/$2.rmnet configs/c.1/f5
+	if [ "$2" == "rmnet_bam" ]
+	then
+		ln -s functions/$2.rmnet_bam_demux configs/c.1/f5
+	else
+		ln -s functions/$2.rmnet configs/c.1/f5
+	fi
 	ln -s functions/mass_storage.0 configs/c.1/f6
 	echo 0xA0 > configs/c.1/bmAttributes
 	rm -f /tmp/usb_bind_in_progress
@@ -229,7 +234,17 @@ case `source /sbin/usb/target` in
 		run_9x35 &
 		;;
 	*9607* )
-		run_9607 &
+		kernel_ver=`uname -r`
+		kernel_ver=`echo $kernel_ver |cut -d '.' -f 1-2`
+		check=`expr $kernel_ver \>= 4.14`
+		if [ $check -eq 1 ]
+		then
+			xport="rmnet_bam"
+			udcname=`ls -1 /sys/class/udc | head -n 1`
+			run_configfs $udcname $xport &
+		else
+			run_9607 &
+		fi
 		;;
 	*8909* )
 		echo "This composition can't be supported on 8909"

@@ -142,7 +142,12 @@ run_configfs() {
 	else
 		ln -s functions/diag.diag configs/c.1/f1
 	fi
-	ln -s functions/gsi.rmnet configs/c.1/f2
+	if [ "$2" == "rmnet_bam" ]
+	then
+		ln -s functions/$2.rmnet_bam_demux configs/c.1/f2
+	else
+		ln -s functions/$2.rmnet configs/c.1/f2
+	fi
 	echo 0xA0 > configs/c.1/bmAttributes
 	echo "binding UDC with Gadget..." $1
 	echo $1 > UDC
@@ -170,7 +175,17 @@ case `source /sbin/usb/target` in
 		run_9x35 &
 		;;
 	*9607* )
-		run_9607 &
+		KERNEL_VER=`uname -r`
+		KERNEL_VER=`echo $KERNEL_VER |cut -d '.' -f 1-2`
+		CHECK=`expr $KERNEL_VER \>= 4.14`
+		if [ $CHECK -eq 1 ]
+		then
+			xport="rmnet_bam"
+			udcname=`ls -1 /sys/class/udc | head -n 1`
+			run_configfs $udcname $xport &
+		else
+			run_9607 &
+		fi
 		;;
 	*8909* )
 		run_9607 &
@@ -182,8 +197,9 @@ case `source /sbin/usb/target` in
 		run_9650 &
 		;;
 	*sdxpoorwills* | *sdxprairie* | *sdxlemur* | *sdxnightjar* | *sa410m* | *sa525m* )
+		xport="gsi"
 		udcname=`ls -1 /sys/class/udc | head -n 1`
-		run_configfs $udcname &
+		run_configfs $udcname $xport &
 		;;
 	* )
 		run_9650 &
