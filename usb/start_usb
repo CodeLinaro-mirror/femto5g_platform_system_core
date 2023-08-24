@@ -31,6 +31,7 @@ export KERNEL=`uname -r`
 export SOFTAP_W_DUN="N"
 export ANDROID_LOG_TAGS="*:d"
 export LS_COLORS="none"
+LOCAL_ECHO=$(which echo)
 
 case "$1" in
   init)
@@ -47,8 +48,8 @@ case "$1" in
 		if [ "$SOFTAP_W_DUN" == "N" ]; then
 			exit 0
 		else
-			$(which echo) "SOFTAP + DUN is enabled, disabling qcom_gadget" > /dev/kmsg
-			$(which echo) 0 > /sys/bus/platform/devices/qcom_gadget/enabled
+			${LOCAL_ECHO} "SOFTAP + DUN is enabled, disabling qcom_gadget" > /dev/kmsg
+			${LOCAL_ECHO} 0 > /sys/bus/platform/devices/qcom_gadget/enabled
 			if [ $(cat /proc/cmdline | grep -c "root=.*ubi\|mtd") -gt 0 ]; then
 				usb_qti_partition=`cat /proc/mtd | grep "usb_qti" | cut -d ":" -f1`
 				if [ "$usb_qti_partition" != "" ]; then
@@ -64,7 +65,7 @@ case "$1" in
 
 	if [ -d /sys/class/android_usb/android0/f_ffs ]
 	then
-		$(which echo) adb > /sys/class/android_usb/android0/f_ffs/aliases
+		${LOCAL_ECHO} adb > /sys/class/android_usb/android0/f_ffs/aliases
 	fi
 
 	# get soc platform to update product related information
@@ -75,15 +76,15 @@ case "$1" in
 	else
 		socplatform=`cat /sys/devices/system/soc/soc0/machine` 2> /dev/null
 	fi
-	$(which echo) "soc:" $socplatform
+	${LOCAL_ECHO} "soc:" $socplatform
 
 	# find serialno from cmdline
 	serialno=`cat /proc/cmdline | grep -o "androidboot.serialno=[A-Za-z0-9]*" | cut -d "=" -f2`
 	if [ "$serialno" == "" ]; then
-		$(which echo) "serialno not found with cmdline, use default"
+		${LOCAL_ECHO} "serialno not found with cmdline, use default"
 		serialno="12345678"
 	fi
-	$(which echo) "serialno:" $serialno
+	${LOCAL_ECHO} "serialno:" $serialno
 
 	msm_serial=`cat /sys/devices/soc0/serial_number`
 	msm_serial_hex=`printf %08X $msm_serial`
@@ -92,7 +93,7 @@ case "$1" in
 	# try to mount configfs, and create instance of USB functions if it goes through
 	mount -t configfs none /sys/kernel/config
 	if [ -d /sys/kernel/config/usb_gadget ]; then
-		$(which echo) "Configuring the USB gadget using ConfigFS..."
+		${LOCAL_ECHO} "Configuring the USB gadget using ConfigFS..."
 		cd /sys/kernel/config/usb_gadget
 		mkdir g1
 		cd g1
@@ -136,14 +137,14 @@ case "$1" in
 
 		if [ ! -s "/etc/adb_devid" ]
 		then
-			$(which echo) $serialno > /etc/adb_devid
+			${LOCAL_ECHO} $serialno > /etc/adb_devid
 			sync
 		fi
-		$(which echo) $serialno > strings/0x409/serialnumber
-		$(which echo) "QCOM" > strings/0x409/manufacturer
-		$(which echo) "$product_string" > strings/0x409/product
+		${LOCAL_ECHO} $serialno > strings/0x409/serialnumber
+		${LOCAL_ECHO} "QCOM" > strings/0x409/manufacturer
+		${LOCAL_ECHO} "$product_string" > strings/0x409/product
 		if [ -e functions/diag.diag/serial ]; then
-			$(which echo) "$serialno" > functions/diag.diag/serial
+			${LOCAL_ECHO} "$serialno" > functions/diag.diag/serial
 		fi
 
 		# correct SELinux labels on new /dev nodes
@@ -157,7 +158,7 @@ case "$1" in
 
 	if [ -d /sys/class/android_usb/android0 ]
 	then
-		$(which echo) "$product_string" > /sys/class/android_usb/android0/iProduct
+		${LOCAL_ECHO} "$product_string" > /sys/class/android_usb/android0/iProduct
 	fi
 
 	# mount functionfs
@@ -176,47 +177,47 @@ case "$1" in
 			# Nothing to do here for 9x15
 			;;
 		*9x25* )
-			$(which echo) "Unbind EHCI HSIC host device driver"
-			$(which echo) msm_hsic_host > /sys/bus/platform/drivers/msm_hsic_host/unbind
+			${LOCAL_ECHO} "Unbind EHCI HSIC host device driver"
+			${LOCAL_ECHO} msm_hsic_host > /sys/bus/platform/drivers/msm_hsic_host/unbind
 			;;
 		*9x35* )
-			$(which echo) "Unbind EHCI HSIC host device driver"
-			$(which echo) f9a15000.hsic_host > /sys/bus/platform/drivers/msm_hsic_host/unbind
-			$(which echo) 1 > /sys/devices/virtual/android_usb/android0/f_rndis_qc/max_pkt_per_xfer
-			$(which echo) 3 > /sys/module/dwc3/parameters/bulk_ep_xfer_timeout_ms
+			${LOCAL_ECHO} "Unbind EHCI HSIC host device driver"
+			${LOCAL_ECHO} f9a15000.hsic_host > /sys/bus/platform/drivers/msm_hsic_host/unbind
+			${LOCAL_ECHO} 1 > /sys/devices/virtual/android_usb/android0/f_rndis_qc/max_pkt_per_xfer
+			${LOCAL_ECHO} 3 > /sys/module/dwc3/parameters/bulk_ep_xfer_timeout_ms
 			;;
 		*9607* )
-			$(which echo) 9025 > /etc/usb/boot_hsusb_comp
+			${LOCAL_ECHO} 9025 > /etc/usb/boot_hsusb_comp
                         ;;
 		*8916* )
-			$(which echo) 9091 > /etc/usb/boot_hsusb_comp
+			${LOCAL_ECHO} 9091 > /etc/usb/boot_hsusb_comp
                         ;;
 		*9640* )
-			$(which echo) 16384 > /sys/module/g_android/parameters/rndis_dl_max_xfer_size
+			${LOCAL_ECHO} 16384 > /sys/module/g_android/parameters/rndis_dl_max_xfer_size
 			;;
 		*9650* )
-			$(which echo) 16384 > /sys/module/g_android/parameters/gsi_in_rndis_aggr_size
+			${LOCAL_ECHO} 16384 > /sys/module/g_android/parameters/gsi_in_rndis_aggr_size
 			if [ -e /dev/mhi_ctrl ]; then
-				$(which echo) 901F > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 901F > /etc/usb/boot_hsusb_comp
 			fi
 			;;
 		*sdx20* )
-			$(which echo) Y > /sys/module/libcomposite/parameters/enable_l1_for_hs
-			$(which echo) Y > /sys/module/dwc3/parameters/enable_dwc3_u1u2
+			${LOCAL_ECHO} Y > /sys/module/libcomposite/parameters/enable_l1_for_hs
+			${LOCAL_ECHO} Y > /sys/module/dwc3/parameters/enable_dwc3_u1u2
 			if [ -e /dev/mhi_ctrl ]; then
-				$(which echo) 901F > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 901F > /etc/usb/boot_hsusb_comp
 			fi
 			;;
 		*sxr2130* )
-			$(which echo) 9060 > /etc/usb/boot_hsusb_comp
+			${LOCAL_ECHO} 9060 > /etc/usb/boot_hsusb_comp
 			;;
 		*sdxpoorwills* )
 			# Check if device is standalone ADP
 			if [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "0" ]; then
-				$(which echo) 90DB > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 90DB > /etc/usb/boot_hsusb_comp
 			# Check if device is ADP with PCIe fusion
 			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "1" ]; then
-				$(which echo) 9104 > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 9104 > /etc/usb/boot_hsusb_comp
 			# Check if device is ADP with USB fusion
 			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "2" ]; then
 				case `cat /etc/usb/boot_hsusb_comp` in
@@ -224,48 +225,48 @@ case "$1" in
 					# Dual RmNet selected by user, no change required
 				    ;;
 				    * )
-					$(which echo) 9106 > /etc/usb/boot_hsusb_comp
+					${LOCAL_ECHO} 9106 > /etc/usb/boot_hsusb_comp
 				    ;;
 				esac
 			# Use this for MTP/TTP in PCIe mode
 			elif [ -e /dev/mhi_ctrl ]; then
-				$(which echo) 901F > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 901F > /etc/usb/boot_hsusb_comp
 			fi
 			;;
 		*sdxprairie* )
 			# Check if device is standalone ADP
 			if [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "0" ]; then
-				$(which echo) 90DB > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 90DB > /etc/usb/boot_hsusb_comp
 			# Check if device is ADP with PCIe fusion
 			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "1" ]; then
-				$(which echo) 9104 > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 9104 > /etc/usb/boot_hsusb_comp
 			# Check if device is ADP with USB fusion
 			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "2" ]; then
-				$(which echo) 9106 > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 9106 > /etc/usb/boot_hsusb_comp
 			# Check if device is ADP with ETH fusion
 			elif [ "$soc_hwplatform" == "ADP" ] && [ "$soc_subtypeid" == "5" ]; then
-				$(which echo) 9104 > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 9104 > /etc/usb/boot_hsusb_comp
 			fi
 			;;
 		*8909* | *8053* | *8017* | *qcs605* | *qcs40x* | *sa2150p* | *qcs610* | *qcs6490* )
-			$(which echo) 901D > /etc/usb/boot_hsusb_comp
+			${LOCAL_ECHO} 901D > /etc/usb/boot_hsusb_comp
 		        ;;
 		*sm8150* )
-			$(which echo) 901D > /etc/usb/boot_hsusb_comp
+			${LOCAL_ECHO} 901D > /etc/usb/boot_hsusb_comp
 			if [ -f /sys/bus/platform/devices/a600000.ssusb/mode ]; then
 				default_mode=`cat /sys/bus/platform/devices/a600000.ssusb/mode`
 				case "$default_mode" in
 				    "none")
-					$(which echo) peripheral > /sys/bus/platform/devices/a600000.ssusb/mode
+					${LOCAL_ECHO} peripheral > /sys/bus/platform/devices/a600000.ssusb/mode
 				    ;;
 				esac
 			fi
 		        ;;
 		*scuba* )
-			$(which echo) 90DB > /etc/usb/boot_hsusb_comp
+			${LOCAL_ECHO} 90DB > /etc/usb/boot_hsusb_comp
 		        ;;
 		*cinder* )
-			$(which echo) 1 > /sys/kernel/config/usb_gadget/g1/functions/acm.0/console
+			${LOCAL_ECHO} 1 > /sys/kernel/config/usb_gadget/g1/functions/acm.0/console
 			;;
 	esac
 
@@ -275,121 +276,121 @@ case "$1" in
 	if [ -d /sys/kernel/config/usb_gadget/g1/functions/uvc.0 ]; then
 		cd /sys/kernel/config/usb_gadget/g1/functions/uvc.0
 
-		$(which echo) 3072 > streaming_maxpacket
-		$(which echo) 10 > streaming_maxburst
+		${LOCAL_ECHO} 3072 > streaming_maxpacket
+		${LOCAL_ECHO} 10 > streaming_maxburst
 		mkdir control/header/h
 		ln -s control/header/h control/class/fs/
 		ln -s control/header/h control/class/ss
 
 		mkdir -p streaming/uncompressed/u/360p
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u/360p/dwFrameInterval
-		$(which echo) 333333 > streaming/uncompressed/u/360p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u/360p/dwFrameInterval
+		${LOCAL_ECHO} 333333 > streaming/uncompressed/u/360p/dwDefaultFrameInterval
 
 		mkdir -p streaming/uncompressed/u/720p
-		$(which echo) 1280 > streaming/uncompressed/u/720p/wWidth
-		$(which echo) 720 > streaming/uncompressed/u/720p/wHeight
-		$(which echo) 29491200 > streaming/uncompressed/u/720p/dwMinBitRate
-		$(which echo) 29491200 > streaming/uncompressed/u/720p/dwMaxBitRate
-		$(which echo) 1843200 > streaming/uncompressed/u/720p/dwMaxVideoFrameBufferSize
-		$(which echo) 333333 > streaming/uncompressed/u/720p/dwDefaultFrameInterval
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u/720p/dwFrameInterval
+		${LOCAL_ECHO} 1280 > streaming/uncompressed/u/720p/wWidth
+		${LOCAL_ECHO} 720 > streaming/uncompressed/u/720p/wHeight
+		${LOCAL_ECHO} 29491200 > streaming/uncompressed/u/720p/dwMinBitRate
+		${LOCAL_ECHO} 29491200 > streaming/uncompressed/u/720p/dwMaxBitRate
+		${LOCAL_ECHO} 1843200 > streaming/uncompressed/u/720p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/uncompressed/u/720p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u/720p/dwFrameInterval
 
 		mkdir -p streaming/uncompressed/u/1080p
-		$(which echo) 1920 > streaming/uncompressed/u/1080p/wWidth
-		$(which echo) 1080 > streaming/uncompressed/u/1080p/wHeight
-		$(which echo) 66355200 > streaming/uncompressed/u/1080p/dwMinBitRate
-		$(which echo) 995328000 > streaming/uncompressed/u/1080p/dwMaxBitRate
-		$(which echo) 4147200 > streaming/uncompressed/u/1080p/dwMaxVideoFrameBufferSize
-		$(which echo) 333333 > streaming/uncompressed/u/1080p/dwDefaultFrameInterval
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u/1080p/dwFrameInterval
+		${LOCAL_ECHO} 1920 > streaming/uncompressed/u/1080p/wWidth
+		${LOCAL_ECHO} 1080 > streaming/uncompressed/u/1080p/wHeight
+		${LOCAL_ECHO} 66355200 > streaming/uncompressed/u/1080p/dwMinBitRate
+		${LOCAL_ECHO} 995328000 > streaming/uncompressed/u/1080p/dwMaxBitRate
+		${LOCAL_ECHO} 4147200 > streaming/uncompressed/u/1080p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/uncompressed/u/1080p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u/1080p/dwFrameInterval
 
 		mkdir -p streaming/uncompressed/u1/360p
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u1/360p/dwFrameInterval
-		$(which echo) 333333 > streaming/uncompressed/u1/360p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u1/360p/dwFrameInterval
+		${LOCAL_ECHO} 333333 > streaming/uncompressed/u1/360p/dwDefaultFrameInterval
 
 		mkdir -p streaming/mjpeg/m1/360p
-		$(which echo) 640 > streaming/mjpeg/m1/360p/wWidth
-		$(which echo) 360 > streaming/mjpeg/m1/360p/wHeight
-		$(which echo) 460800   > streaming/mjpeg/m1/360p/dwMaxVideoFrameBufferSize
-		$(which echo) 18432000  > streaming/mjpeg/m1/360p/dwMinBitRate
-		$(which echo) 55296000 > streaming/mjpeg/m1/360p/dwMaxBitRate
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m1/360p/dwFrameInterval
-		$(which echo) 333333 > streaming/mjpeg/m1/360p/dwDefaultFrameInterval
+		${LOCAL_ECHO} 640 > streaming/mjpeg/m1/360p/wWidth
+		${LOCAL_ECHO} 360 > streaming/mjpeg/m1/360p/wHeight
+		${LOCAL_ECHO} 460800   > streaming/mjpeg/m1/360p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 18432000  > streaming/mjpeg/m1/360p/dwMinBitRate
+		${LOCAL_ECHO} 55296000 > streaming/mjpeg/m1/360p/dwMaxBitRate
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m1/360p/dwFrameInterval
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m1/360p/dwDefaultFrameInterval
 
 		mkdir -p streaming/mjpeg/m1/720p
-		$(which echo) 1280 > streaming/mjpeg/m1/720p/wWidth
-		$(which echo) 720 > streaming/mjpeg/m1/720p/wHeight
-		$(which echo) 29491200 > streaming/mjpeg/m1/720p/dwMinBitRate
-		$(which echo) 29491200 > streaming/mjpeg/m1/720p/dwMaxBitRate
-		$(which echo) 1843200 > streaming/mjpeg/m1/720p/dwMaxVideoFrameBufferSize
-		$(which echo) 333333 > streaming/mjpeg/m1/720p/dwDefaultFrameInterval
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m1/720p/dwFrameInterval
+		${LOCAL_ECHO} 1280 > streaming/mjpeg/m1/720p/wWidth
+		${LOCAL_ECHO} 720 > streaming/mjpeg/m1/720p/wHeight
+		${LOCAL_ECHO} 29491200 > streaming/mjpeg/m1/720p/dwMinBitRate
+		${LOCAL_ECHO} 29491200 > streaming/mjpeg/m1/720p/dwMaxBitRate
+		${LOCAL_ECHO} 1843200 > streaming/mjpeg/m1/720p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m1/720p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m1/720p/dwFrameInterval
 
 		mkdir -p streaming/mjpeg/m1/1080p
-		$(which echo) 1920 > streaming/mjpeg/m1/1080p/wWidth
-		$(which echo) 1080 > streaming/mjpeg/m1/1080p/wHeight
-		$(which echo) 66355200 > streaming/mjpeg/m1/1080p/dwMinBitRate
-		$(which echo) 995328000 > streaming/mjpeg/m1/1080p/dwMaxBitRate
-		$(which echo) 4147200 > streaming/mjpeg/m1/1080p/dwMaxVideoFrameBufferSize
-		$(which echo) 333333 > streaming/mjpeg/m1/1080p/dwDefaultFrameInterval
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m1/1080p/dwFrameInterval
+		${LOCAL_ECHO} 1920 > streaming/mjpeg/m1/1080p/wWidth
+		${LOCAL_ECHO} 1080 > streaming/mjpeg/m1/1080p/wHeight
+		${LOCAL_ECHO} 66355200 > streaming/mjpeg/m1/1080p/dwMinBitRate
+		${LOCAL_ECHO} 995328000 > streaming/mjpeg/m1/1080p/dwMaxBitRate
+		${LOCAL_ECHO} 4147200 > streaming/mjpeg/m1/1080p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m1/1080p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m1/1080p/dwFrameInterval
 
 		mkdir -p streaming/mjpeg/m/360p
-		$(which echo) 640 > streaming/mjpeg/m/360p/wWidth
-		$(which echo) 360 > streaming/mjpeg/m/360p/wHeight
-		$(which echo) 460800   > streaming/mjpeg/m/360p/dwMaxVideoFrameBufferSize
-		$(which echo) 18432000  > streaming/mjpeg/m/360p/dwMinBitRate
-		$(which echo) 55296000 > streaming/mjpeg/m/360p/dwMaxBitRate
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m/360p/dwFrameInterval
-		$(which echo) 333333 > streaming/mjpeg/m/360p/dwDefaultFrameInterval
+		${LOCAL_ECHO} 640 > streaming/mjpeg/m/360p/wWidth
+		${LOCAL_ECHO} 360 > streaming/mjpeg/m/360p/wHeight
+		${LOCAL_ECHO} 460800   > streaming/mjpeg/m/360p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 18432000  > streaming/mjpeg/m/360p/dwMinBitRate
+		${LOCAL_ECHO} 55296000 > streaming/mjpeg/m/360p/dwMaxBitRate
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m/360p/dwFrameInterval
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m/360p/dwDefaultFrameInterval
 
 		mkdir -p streaming/mjpeg/m/720p
-		$(which echo) 1280 > streaming/mjpeg/m/720p/wWidth
-		$(which echo) 720 > streaming/mjpeg/m/720p/wHeight
-		$(which echo) 29491200 > streaming/mjpeg/m/720p/dwMinBitRate
-		$(which echo) 29491200 > streaming/mjpeg/m/720p/dwMaxBitRate
-		$(which echo) 1843200 > streaming/mjpeg/m/720p/dwMaxVideoFrameBufferSize
-		$(which echo) 333333 > streaming/mjpeg/m/720p/dwDefaultFrameInterval
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m/720p/dwFrameInterval
+		${LOCAL_ECHO} 1280 > streaming/mjpeg/m/720p/wWidth
+		${LOCAL_ECHO} 720 > streaming/mjpeg/m/720p/wHeight
+		${LOCAL_ECHO} 29491200 > streaming/mjpeg/m/720p/dwMinBitRate
+		${LOCAL_ECHO} 29491200 > streaming/mjpeg/m/720p/dwMaxBitRate
+		${LOCAL_ECHO} 1843200 > streaming/mjpeg/m/720p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m/720p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m/720p/dwFrameInterval
 
 		mkdir -p streaming/mjpeg/m/1080p
-		$(which echo) 1920 > streaming/mjpeg/m/1080p/wWidth
-		$(which echo) 1080 > streaming/mjpeg/m/1080p/wHeight
-		$(which echo) 66355200 > streaming/mjpeg/m/1080p/dwMinBitRate
-		$(which echo) 995328000 > streaming/mjpeg/m/1080p/dwMaxBitRate
-		$(which echo) 4147200 > streaming/mjpeg/m/1080p/dwMaxVideoFrameBufferSize
-		$(which echo) 333333 > streaming/mjpeg/m/1080p/dwDefaultFrameInterval
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m/1080p/dwFrameInterval
+		${LOCAL_ECHO} 1920 > streaming/mjpeg/m/1080p/wWidth
+		${LOCAL_ECHO} 1080 > streaming/mjpeg/m/1080p/wHeight
+		${LOCAL_ECHO} 66355200 > streaming/mjpeg/m/1080p/dwMinBitRate
+		${LOCAL_ECHO} 995328000 > streaming/mjpeg/m/1080p/dwMaxBitRate
+		${LOCAL_ECHO} 4147200 > streaming/mjpeg/m/1080p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m/1080p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m/1080p/dwFrameInterval
 
 		mkdir -p streaming/mjpeg/m/1440p
-		$(which echo) 2560 > streaming/mjpeg/m/1440p/wWidth
-		$(which echo) 1440 > streaming/mjpeg/m/1440p/wHeight
-		$(which echo) 117964800 > streaming/mjpeg/m/1440p/dwMinBitRate
-		$(which echo) 1769472000 > streaming/mjpeg/m/1440p/dwMaxBitRate
-		$(which echo) 7372800 > streaming/mjpeg/m/1440p/dwMaxVideoFrameBufferSize
-		$(which echo) 333333 > streaming/mjpeg/m/1440p/dwDefaultFrameInterval
-		$(which echo) -e "333333\n" > streaming/mjpeg/m/1440p/dwFrameInterval
+		${LOCAL_ECHO} 2560 > streaming/mjpeg/m/1440p/wWidth
+		${LOCAL_ECHO} 1440 > streaming/mjpeg/m/1440p/wHeight
+		${LOCAL_ECHO} 117964800 > streaming/mjpeg/m/1440p/dwMinBitRate
+		${LOCAL_ECHO} 1769472000 > streaming/mjpeg/m/1440p/dwMaxBitRate
+		${LOCAL_ECHO} 7372800 > streaming/mjpeg/m/1440p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m/1440p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n" > streaming/mjpeg/m/1440p/dwFrameInterval
 
 		mkdir -p streaming/mjpeg/m/2160p
-		$(which echo) 3840 > streaming/mjpeg/m/2160p/wWidth
-		$(which echo) 2160 > streaming/mjpeg/m/2160p/wHeight
-		$(which echo) 265420800 > streaming/mjpeg/m/2160p/dwMinBitRate
-		$(which echo) 3981312000 > streaming/mjpeg/m/2160p/dwMaxBitRate
-		$(which echo) 16588800 > streaming/mjpeg/m/2160p/dwMaxVideoFrameBufferSize
-		$(which echo) 333333 > streaming/mjpeg/m/2160p/dwDefaultFrameInterval
-		$(which echo) -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m/2160p/dwFrameInterval
+		${LOCAL_ECHO} 3840 > streaming/mjpeg/m/2160p/wWidth
+		${LOCAL_ECHO} 2160 > streaming/mjpeg/m/2160p/wHeight
+		${LOCAL_ECHO} 265420800 > streaming/mjpeg/m/2160p/dwMinBitRate
+		${LOCAL_ECHO} 3981312000 > streaming/mjpeg/m/2160p/dwMaxBitRate
+		${LOCAL_ECHO} 16588800 > streaming/mjpeg/m/2160p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m/2160p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m/2160p/dwFrameInterval
 
-		$(which echo) 0x04 > /sys/kernel/config/usb_gadget/g1/functions/uvc.0/streaming/mjpeg/m/bmaControls
-		$(which echo) 0x04 > /sys/kernel/config/usb_gadget/g1/functions/uvc.0/streaming/mjpeg/m1/bmaControls
+		${LOCAL_ECHO} 0x04 > /sys/kernel/config/usb_gadget/g1/functions/uvc.0/streaming/mjpeg/m/bmaControls
+		${LOCAL_ECHO} 0x04 > /sys/kernel/config/usb_gadget/g1/functions/uvc.0/streaming/mjpeg/m1/bmaControls
 
 		mkdir -p streaming/h264/h/960p
-		$(which echo) 1920 > streaming/h264/h/960p/wWidth
-		$(which echo) 960 > streaming/h264/h/960p/wHeight
-		$(which echo) 40 > streaming/h264/h/960p/bLevelIDC
-		$(which echo) -e "333667\n" > streaming/h264/h/960p/dwFrameInterval
+		${LOCAL_ECHO} 1920 > streaming/h264/h/960p/wWidth
+		${LOCAL_ECHO} 960 > streaming/h264/h/960p/wHeight
+		${LOCAL_ECHO} 40 > streaming/h264/h/960p/bLevelIDC
+		${LOCAL_ECHO} -e "333667\n" > streaming/h264/h/960p/dwFrameInterval
 
 		mkdir -p streaming/h264/h/1920p
-		$(which echo) -e "333667\n" > streaming/h264/h/1920p/dwFrameInterval
+		${LOCAL_ECHO} -e "333667\n" > streaming/h264/h/1920p/dwFrameInterval
 
 		mkdir streaming/header/h
 		mkdir streaming/header/h1
@@ -408,7 +409,7 @@ case "$1" in
 	#Initialize NCM configuration
 	if [ -d /sys/kernel/config/usb_gadget/g1/functions/ncm.0 ]; then
 		cd /sys/kernel/config/usb_gadget/g1/functions/ncm.0
-		$(which echo) WINNCM > os_desc/interface.ncm/compatible_id
+		${LOCAL_ECHO} WINNCM > os_desc/interface.ncm/compatible_id
 	fi
 
 	pid=`cat /etc/usb/boot_hsusb_comp`
@@ -423,10 +424,10 @@ case "$1" in
 	if [ "$pid" == "none" ] && [ "$debug_transport" != "pcie" ]; then
 		case `source /sbin/usb/target` in
 			*cinder* )
-				$(which echo) 9060 > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 9060 > /etc/usb/boot_hsusb_comp
 				;;
 			* )
-				$(which echo) 90DB > /etc/usb/boot_hsusb_comp
+				${LOCAL_ECHO} 90DB > /etc/usb/boot_hsusb_comp
 				;;
 		esac
 	fi
@@ -434,7 +435,7 @@ case "$1" in
 	# put USB in LPM and exit with success if device is in mhi mode
 	if [ "$pid" == "none" ] && [ "$debug_transport" == "pcie" ]; then
 		udcname=`ls -1 /sys/bus/platform/devices/ | grep -E 'ssusb|hsusb' | head -n 1`
-		$(which echo) none > /sys/bus/platform/devices/${udcname}/mode
+		${LOCAL_ECHO} none > /sys/bus/platform/devices/${udcname}/mode
 		exit 0
 	fi
 
@@ -489,27 +490,27 @@ case "$1" in
   start)
 	udcname=`ls -1 /sys/class/udc | head -n 1`
 	if [ -d /sys/kernel/config/usb_gadget ]; then
-		$(which echo) "Starting USB Android Gadget"
+		${LOCAL_ECHO} "Starting USB Android Gadget"
 		rm -f /tmp/usb_bind_in_progress
-		$(which echo) $udcname > /sys/kernel/config/usb_gadget/g1/UDC
+		${LOCAL_ECHO} $udcname > /sys/kernel/config/usb_gadget/g1/UDC
 	fi
 	;;
 
   stop)
 	if [ -d /sys/kernel/config/usb_gadget ]; then
-		$(which echo) "Stopping USB Android Gadget"
-		$(which echo) start > /tmp/usb_bind_in_progress
-		$(which echo) none > /sys/kernel/config/usb_gadget/g1/UDC
+		${LOCAL_ECHO} "Stopping USB Android Gadget"
+		${LOCAL_ECHO} start > /tmp/usb_bind_in_progress
+		${LOCAL_ECHO} none > /sys/kernel/config/usb_gadget/g1/UDC
 	fi
         ;;
 
   restart)
-	$(which echo) "Restarting USB Android Gadget"
+	${LOCAL_ECHO} "Restarting USB Android Gadget"
 	$0 stop
 	$0 start
         ;;
   *)
-        $(which echo) "Usage usb { start | stop | restart}" >&2
+        ${LOCAL_ECHO} "Usage usb { start | stop | restart}" >&2
         exit 1
         ;;
 esac
