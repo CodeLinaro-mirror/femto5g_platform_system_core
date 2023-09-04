@@ -2383,7 +2383,10 @@ case "$1" in
 		echo 10 > /sys/class/devfreq/soc:qcom,cpu0-cpu-ddr-lat/polling_interval
 
                 enable_lemur_dcc_config
-                enable_lemur_ftrace_event_tracing
+                out_mode=`cat /sys/bus/coresight/devices/coresight-tmc-etr/out_mode`
+                if [ "$out_mode" == "mem" ]; then
+                    enable_lemur_ftrace_event_tracing
+                fi
 
                 echo "done";
                 ;;
