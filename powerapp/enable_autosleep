@@ -31,6 +31,12 @@
 #IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
 #OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 #IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# Changes from Qualcomm Innovation Center are provided under the following license:
+#
+# Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#
 
 set -e
 
@@ -39,7 +45,7 @@ case "$1" in
         soc_id=`cat /sys/devices/soc0/soc_id`
 
 	case "$soc_id" in
-	"290" | "296" | "297" | "298" | "299" | "322")
+	"290" | "296" | "297" | "298" | "322")
 		echo -n "Enabling autosleep for mdm9607: "
 
 		echo mem > /sys/power/autosleep
@@ -49,14 +55,24 @@ case "$1" in
 	esac
 
         case "$soc_id" in
-        "279" | "284" | "285" | "286" | "283")
-                echo -n "Enabling autosleep for MDM9650: "
+        "299" | "572")
+                echo -n "Enabling autosleep for mdm9607: "
 
                 echo mem > /sys/power/autosleep
-		# Enable Low Power modes
-                echo N > /sys/module/lpm_levels/parameters/sleep_disabled
+                # Enable Low Power modes
+                echo N > /sys/module/lpm_levels_legacy/parameters/sleep_disabled
                 ;;
         esac
+
+	case "$soc_id" in
+	"279" | "284" | "285" | "286" | "283")
+		echo -n "Enabling autosleep for MDM9650: "
+
+		echo mem > /sys/power/autosleep
+		# Enable Low Power modes
+		echo N > /sys/module/lpm_levels/parameters/sleep_disabled
+		;;
+	esac
 
         case "$soc_id" in
         "234" | "235" | "236"| "237" | "238")
