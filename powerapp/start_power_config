@@ -1406,6 +1406,37 @@ config_cinder_dcc_gemnoc()
     echo 0x1 > $DCC_PATH/loop
 }
 
+config_cinder_dcc_prng()
+{
+    echo 0x10C1000 1 > $DCC_PATH/config
+    echo 0x10C1004 1 > $DCC_PATH/config
+    echo 0x10C1010 1 > $DCC_PATH/config
+    echo 0x10C1014 1 > $DCC_PATH/config
+    echo 0x10C1018 1 > $DCC_PATH/config
+    echo 0x10C101C 1 > $DCC_PATH/config
+    echo 0x10C1020 1 > $DCC_PATH/config
+    echo 0x10C1024 1 > $DCC_PATH/config
+    echo 0x10C1028 1 > $DCC_PATH/config
+    echo 0x10C1100 1 > $DCC_PATH/config
+    echo 0x10C1104 1 > $DCC_PATH/config
+    echo 0x10C1108 1 > $DCC_PATH/config
+    echo 0x10C1110 1 > $DCC_PATH/config
+    echo 0x10C1114 1 > $DCC_PATH/config
+    echo 0x10C1118 1 > $DCC_PATH/config
+    echo 0x10C111C 1 > $DCC_PATH/config
+    echo 0x10C1120 1 > $DCC_PATH/config
+    echo 0x10C1124 1 > $DCC_PATH/config
+    echo 0x10C1128 1 > $DCC_PATH/config
+    echo 0x10C1130 1 > $DCC_PATH/config
+    echo 0x10C1134 1 > $DCC_PATH/config
+    echo 0x10C113C 1 > $DCC_PATH/config
+    echo 0x10C1140 1 > $DCC_PATH/config
+    echo 0x10C1148 1 > $DCC_PATH/config
+    echo 0x10C114C 1 > $DCC_PATH/config
+    echo 0x10C1150 1 > $DCC_PATH/config
+
+}
+
 config_cinder_dcc_snoc()
 {
     #snoc_obs
@@ -1943,6 +1974,7 @@ enable_cinder_dcc()
     config_cinder_dcc_epss
     config_cinder_dcc_misc
     config_cinder_dcc_ddr
+    config_cinder_dcc_prng
 
     config_cinder_dcc_gic
     config_cinder_dcc_gcc
@@ -1981,19 +2013,31 @@ case "$1" in
   start)
         soc_id=`cat /sys/devices/soc0/soc_id`
 
-	case "$soc_id" in
-	"290" | "296" | "297" | "298" | "299" | "322")
-		echo -n "Starting powerconfig for mdm9607: "
+        case "$soc_id" in
+        "290" | "296" | "297" | "298" | "322")
+                echo -n "Starting powerconfig for mdm9607: "
 
-		echo "interactive" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
-		echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
-		echo 80 > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
-		echo 998400 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
-		echo "1 806400:80" > /sys/devices/system/cpu/cpufreq/interactive/target_loads
-		echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
-		echo 806400 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-		;;
-	esac
+                echo "interactive" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+                echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay
+                echo 80 > /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load
+                echo 998400 > /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq
+                echo "1 806400:80" > /sys/devices/system/cpu/cpufreq/interactive/target_loads
+                echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
+                echo 806400 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+                ;;
+        esac
+
+        case "$soc_id" in
+        "299" | "572")
+                echo -n "Starting powerconfig for mdm9607: "
+                echo mem > /sys/power/autosleep
+                echo N > /sys/module/lpm_levels_legacy/parameters/sleep_disabled
+                # enable ondemand on bootup
+                echo "ondemand" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+                echo 806400 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+                echo "done"
+                ;;
+        esac
 
         case "$soc_id" in
         "279" | "284" | "285" | "286" | "283")

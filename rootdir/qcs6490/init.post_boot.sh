@@ -296,7 +296,7 @@ function katmai_post_boot() {
     # Core control parameters for gold
     # Prefer CPU4 for isolation based on the thermal characteristics.
     if [ -d "/sys/devices/system/cpu/cpu4/" ]; then
-        if [ $SKUID -eq 2 ]; then
+        if [ $SKUID -eq 2 -o $SKUID -eq 3 -o $SKUID -eq 8 ]; then
             echo 1 0 0 0 > /sys/devices/system/cpu/cpu4/core_ctl/not_preferred
             echo 1 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
         else
@@ -395,14 +395,14 @@ function katmai_post_boot() {
     fi
 
     if [ -d "/sys/devices/system/cpu/cpu6/" ]; then
-        if [ $SKUID -eq 2 ]; then
+        if [ $SKUID -eq 2 -o $SKUID -eq 3 -o $SKUID -eq 8 ]; then
             echo -6 > /sys/devices/system/cpu/cpu6/sched_load_boost
         fi
     fi
 
     # configure governor settings for prime
     if [ -d "/sys/devices/system/cpu/cpufreq/policy7/" ]; then
-        if [ $SKUID -eq 2 ]; then
+        if [ $SKUID -eq 2 -o $SKUID -eq 3 -o $SKUID -eq 8 ]; then
             echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy7/scaling_governor
             echo 100 > /sys/devices/system/cpu/cpufreq/policy7/schedutil/down_rate_limit_us
             echo 0 > /sys/devices/system/cpu/cpufreq/policy7/schedutil/up_rate_limit_us
