@@ -72,6 +72,17 @@ enable_SA525M_debug()
 	echo 0xb251024 > $DCC_PATH/config
 	echo 0xbde1034 > $DCC_PATH/config
 
+	#AOP RSC
+	echo 0xB0D0208 > $DCC_PATH/config
+	echo 0xB0D020C > $DCC_PATH/config
+	echo 0xB0D0228 > $DCC_PATH/config
+	echo 0xB0D022C > $DCC_PATH/config
+	echo 0xB0D0248 > $DCC_PATH/config
+	echo 0xB0D024C > $DCC_PATH/config
+	echo 0xB0D0268 > $DCC_PATH/config
+	echo 0xB0D026C > $DCC_PATH/config
+	echo 0xB0D0408 > $DCC_PATH/config
+
 	#RPMH_PDC_APSS
 	echo 0xb201020 2 > $DCC_PATH/config
 	echo 0xb211020 2 > $DCC_PATH/config
