@@ -186,9 +186,6 @@ case "$1" in
 			${LOCAL_ECHO} 1 > /sys/devices/virtual/android_usb/android0/f_rndis_qc/max_pkt_per_xfer
 			${LOCAL_ECHO} 3 > /sys/module/dwc3/parameters/bulk_ep_xfer_timeout_ms
 			;;
-		*9607* )
-			${LOCAL_ECHO} 9025 > /etc/usb/boot_hsusb_comp
-                        ;;
 		*8916* )
 			${LOCAL_ECHO} 9091 > /etc/usb/boot_hsusb_comp
                         ;;
