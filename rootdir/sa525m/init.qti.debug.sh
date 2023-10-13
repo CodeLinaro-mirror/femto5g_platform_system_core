@@ -72,6 +72,17 @@ enable_SA525M_debug()
 	echo 0xb251024 > $DCC_PATH/config
 	echo 0xbde1034 > $DCC_PATH/config
 
+	#AOP RSC
+	echo 0xB0D0208 > $DCC_PATH/config
+	echo 0xB0D020C > $DCC_PATH/config
+	echo 0xB0D0228 > $DCC_PATH/config
+	echo 0xB0D022C > $DCC_PATH/config
+	echo 0xB0D0248 > $DCC_PATH/config
+	echo 0xB0D024C > $DCC_PATH/config
+	echo 0xB0D0268 > $DCC_PATH/config
+	echo 0xB0D026C > $DCC_PATH/config
+	echo 0xB0D0408 > $DCC_PATH/config
+
 	#RPMH_PDC_APSS
 	echo 0xb201020 2 > $DCC_PATH/config
 	echo 0xb211020 2 > $DCC_PATH/config
@@ -1122,6 +1133,48 @@ enable_SA525M_debug()
 	echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_expire_exit/enable
 	echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_init/enable
 	echo 1 > /sys/kernel/debug/tracing/events/timer/hrtimer_start/enable
+
+	#usb
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_alloc_request/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_event/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_gadget_generic_cmd/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_complete_trb/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_free_request/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_gadget_giveback/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_ctrl_req/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_gadget_ep_cmd/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_prepare_trb/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_ep_dequeue/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_gadget_ep_disable/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_readl/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_ep_queue/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_gadget_ep_enable/enable
+	echo 1 > /sys/kernel/debug/tracing/events/dwc3/dwc3_writel/enable
+
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_alloc_request/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_clear_halt/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_dequeue/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_disable/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_enable/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_fifo_flush/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_fifo_status/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_free_request/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_set_halt/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_set_maxpacket_limit/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_ep_set_wedge/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_activate/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_clear_selfpowered/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_connect/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_deactivate/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_disconnect/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_frame_number/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_giveback_request/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_set_remote_wakeup/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_set_selfpowered/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_vbus_connect/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_vbus_disconnect/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_vbus_draw/enable
+	echo 1 > /sys/kernel/debug/tracing/events/gadget/usb_gadget_wakeup/enable
 
 	#Hot-plug
 	echo 1 > /sys/kernel/debug/tracing/events/cpuhp/enable

@@ -116,13 +116,9 @@ run_configfs() {
 	if [ "$2" == "gsi" ]
 	then
 		ln -s functions/gsi.rndis configs/c.1/f1
-	else
-		ln -s functions/rndis.rndis configs/c.1/f1
-	fi
-	if [ "$2" == "gsi" ]
-	then
 		ln -s functions/gsi.ecm configs/c.2/f1
 	else
+		ln -s functions/rndis.rndis configs/c.1/f1
 		ln -s functions/ecm.ecm configs/c.2/f1
 	fi
 	echo 0xA0 > configs/c.1/bmAttributes
@@ -149,6 +145,11 @@ case `source /sbin/usb/target` in
 		if [ $check -eq 1 ]
 		then
 			udcname=`ls -1 /sys/class/udc | head -n 1`
+			# Configure class, subclass, protocol for RNDIS SW path
+			cd /sys/kernel/config/usb_gadget/g1/functions/rndis.rndis
+			echo ef > class
+			echo 4 > subclass
+			echo 1 > protocol
 			run_configfs $udcname &
 		else
 			run_9607 &

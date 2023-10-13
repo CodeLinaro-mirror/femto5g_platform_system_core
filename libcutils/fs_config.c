@@ -41,6 +41,11 @@
 #define O_BINARY 0
 #endif
 
+#ifdef USE_GLIB
+#include <glib.h>
+#define strlcpy g_strlcpy
+#endif
+
 /* The following structure is stored little endian */
 struct fs_path_config_from_file {
     uint16_t len;
