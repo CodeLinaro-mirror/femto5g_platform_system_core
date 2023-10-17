@@ -26,6 +26,12 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN
 # IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+# Changes from Qualcomm Innovation Center are provided under the following license:
+#
+# Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause-Clear
+#
 
 # PM Configuration
 
@@ -2030,8 +2036,6 @@ case "$1" in
         case "$soc_id" in
         "299" | "572")
                 echo -n "Starting powerconfig for mdm9607: "
-                echo mem > /sys/power/autosleep
-                echo N > /sys/module/lpm_levels_legacy/parameters/sleep_disabled
                 # enable ondemand on bootup
                 echo "ondemand" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
                 echo 806400 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
@@ -2383,7 +2387,10 @@ case "$1" in
 		echo 10 > /sys/class/devfreq/soc:qcom,cpu0-cpu-ddr-lat/polling_interval
 
                 enable_lemur_dcc_config
-                enable_lemur_ftrace_event_tracing
+                out_mode=`cat /sys/bus/coresight/devices/coresight-tmc-etr/out_mode`
+                if [ "$out_mode" == "mem" ]; then
+                    enable_lemur_ftrace_event_tracing
+                fi
 
                 echo "done";
                 ;;
