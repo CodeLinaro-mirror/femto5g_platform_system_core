@@ -574,3 +574,7 @@ esac
 
 echo N > /sys/module/lpm_levels/parameters/sleep_disabled
 configure_memory_parameters
+
+# Disable systemd to open /dev/hvc0
+systemctl stop serial-getty@hvc0.service
+systemctl disable serial-getty@hvc0.service
