@@ -279,7 +279,7 @@ static int device_is_secure() {
     return strcmp(value, "0") ? 1 : 0;
 }
 
-static int device_is_force_encrypted() {
+static int device_is_force_encrypted(void) {
     int ret = -1;
     char value[PROP_VALUE_MAX];
     ret = property_get("ro.vold.forceencryption", value,NULL);

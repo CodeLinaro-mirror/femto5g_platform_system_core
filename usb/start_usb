@@ -186,9 +186,6 @@ case "$1" in
 			${LOCAL_ECHO} 1 > /sys/devices/virtual/android_usb/android0/f_rndis_qc/max_pkt_per_xfer
 			${LOCAL_ECHO} 3 > /sys/module/dwc3/parameters/bulk_ep_xfer_timeout_ms
 			;;
-		*9607* )
-			${LOCAL_ECHO} 9025 > /etc/usb/boot_hsusb_comp
-                        ;;
 		*8916* )
 			${LOCAL_ECHO} 9091 > /etc/usb/boot_hsusb_comp
                         ;;
@@ -308,6 +305,24 @@ case "$1" in
 		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u1/360p/dwFrameInterval
 		${LOCAL_ECHO} 333333 > streaming/uncompressed/u1/360p/dwDefaultFrameInterval
 
+		mkdir -p streaming/uncompressed/u1/720p
+		${LOCAL_ECHO} 1280 > streaming/uncompressed/u1/720p/wWidth
+		${LOCAL_ECHO} 720 > streaming/uncompressed/u1/720p/wHeight
+		${LOCAL_ECHO} 29491200 > streaming/uncompressed/u1/720p/dwMinBitRate
+		${LOCAL_ECHO} 29491200 > streaming/uncompressed/u1/720p/dwMaxBitRate
+		${LOCAL_ECHO} 1843200 > streaming/uncompressed/u1/720p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/uncompressed/u1/720p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u1/720p/dwFrameInterval
+
+		mkdir -p streaming/uncompressed/u1/1080p
+		${LOCAL_ECHO} 1920 > streaming/uncompressed/u1/1080p/wWidth
+		${LOCAL_ECHO} 1080 > streaming/uncompressed/u1/1080p/wHeight
+		${LOCAL_ECHO} 66355200 > streaming/uncompressed/u1/1080p/dwMinBitRate
+		${LOCAL_ECHO} 995328000 > streaming/uncompressed/u1/1080p/dwMaxBitRate
+		${LOCAL_ECHO} 4147200 > streaming/uncompressed/u1/1080p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/uncompressed/u1/1080p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/uncompressed/u1/1080p/dwFrameInterval
+
 		mkdir -p streaming/mjpeg/m1/360p
 		${LOCAL_ECHO} 640 > streaming/mjpeg/m1/360p/wWidth
 		${LOCAL_ECHO} 360 > streaming/mjpeg/m1/360p/wHeight
@@ -334,6 +349,24 @@ case "$1" in
 		${LOCAL_ECHO} 4147200 > streaming/mjpeg/m1/1080p/dwMaxVideoFrameBufferSize
 		${LOCAL_ECHO} 333333 > streaming/mjpeg/m1/1080p/dwDefaultFrameInterval
 		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m1/1080p/dwFrameInterval
+
+		mkdir -p streaming/mjpeg/m1/1440p
+		${LOCAL_ECHO} 2560 > streaming/mjpeg/m1/1440p/wWidth
+		${LOCAL_ECHO} 1440 > streaming/mjpeg/m1/1440p/wHeight
+		${LOCAL_ECHO} 117964800 > streaming/mjpeg/m1/1440p/dwMinBitRate
+		${LOCAL_ECHO} 1769472000 > streaming/mjpeg/m1/1440p/dwMaxBitRate
+		${LOCAL_ECHO} 7372800 > streaming/mjpeg/m1/1440p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m1/1440p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n" > streaming/mjpeg/m1/1440p/dwFrameInterval
+
+		mkdir -p streaming/mjpeg/m1/2160p
+		${LOCAL_ECHO} 3840 > streaming/mjpeg/m1/2160p/wWidth
+		${LOCAL_ECHO} 2160 > streaming/mjpeg/m1/2160p/wHeight
+		${LOCAL_ECHO} 265420800 > streaming/mjpeg/m1/2160p/dwMinBitRate
+		${LOCAL_ECHO} 3981312000 > streaming/mjpeg/m1/2160p/dwMaxBitRate
+		${LOCAL_ECHO} 16588800 > streaming/mjpeg/m1/2160p/dwMaxVideoFrameBufferSize
+		${LOCAL_ECHO} 333333 > streaming/mjpeg/m1/2160p/dwDefaultFrameInterval
+		${LOCAL_ECHO} -e "333333\n666666\n1000000\n5000000\n" > streaming/mjpeg/m1/2160p/dwFrameInterval
 
 		mkdir -p streaming/mjpeg/m/360p
 		${LOCAL_ECHO} 640 > streaming/mjpeg/m/360p/wWidth
