@@ -521,7 +521,11 @@ case "$1" in
 	;;
 
   start)
-	udcname=`ls -1 /sys/class/udc | head -n 1`
+	if [ -f "/etc/usb/usb_udc_config" ]; then
+		udcname=`cat /etc/usb/usb_udc_config`
+	else
+		udcname=`ls -1 /sys/class/udc | head -n 1`
+	fi
 	if [ -d /sys/kernel/config/usb_gadget ]; then
 		${LOCAL_ECHO} "Starting USB Android Gadget"
 		rm -f /tmp/usb_bind_in_progress

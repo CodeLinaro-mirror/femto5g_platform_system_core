@@ -55,7 +55,12 @@ fi
 sync
 sleep 1
 # If UDC is not set up set it up.
-udcname=`ls -1 /sys/class/udc | head -n 1`
+if [ -f "/etc/usb/usb_udc_config" ]; then
+    udcname=`cat /etc/usb/usb_udc_config`
+else
+    udcname=`ls -1 /sys/class/udc | head -n 1`
+fi
+
 echo $udcname > /sys/kernel/config/usb_gadget/g1/UDC
 
 echo -n "Started adbd. " > /dev/kmsg
