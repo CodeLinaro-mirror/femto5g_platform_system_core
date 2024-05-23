@@ -107,7 +107,11 @@ target=`source /sbin/usb/target`
 case $target in
 	* )
 		if [ $configfs_supported = "y" ]; then
-			udcname=`ls -1 /sys/class/udc | head -n 1`
+			if [ -f "/etc/usb/usb_udc_config" ]; then
+				udcname=`cat /etc/usb/usb_udc_config`
+			else
+				udcname=`ls -1 /sys/class/udc | head -n 1`
+			fi
 
 			# Cinder is self-powered, hence set the self-powered bit of bmAttributes
 			if [ $target == "cinder" ]; then
