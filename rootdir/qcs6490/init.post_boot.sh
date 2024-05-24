@@ -269,32 +269,12 @@ function katmai_post_boot() {
     ddr_type4="07"
     ddr_type5="08"
 
-    # Core control parameters for gold
-    # Prefer CPU4 for isolation based on the thermal characteristics.
-    if [ -d "/sys/devices/system/cpu/cpu4/" ]; then
-        if [ $SKUID -eq 2 -o $SKUID -eq 3 -o $SKUID -eq 8 ]; then
-            echo 1 0 0 0 > /sys/devices/system/cpu/cpu4/core_ctl/not_preferred
-            echo 1 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
-        else
-            echo 1 0 > /sys/devices/system/cpu/cpu4/core_ctl/not_preferred
-            echo 1 > /sys/devices/system/cpu/cpu4/core_ctl/min_cpus
-        fi
-        echo 60 > /sys/devices/system/cpu/cpu4/core_ctl/busy_up_thres
-        echo 30 > /sys/devices/system/cpu/cpu4/core_ctl/busy_down_thres
-        echo 100 > /sys/devices/system/cpu/cpu4/core_ctl/offline_delay_ms
-        echo 3 > /sys/devices/system/cpu/cpu4/core_ctl/task_thres
-    elif [ -d "/sys/devices/system/cpu/cpu5/" ]; then
-    # Prefer CPU5 for isolation based on the thermal characteristics.
-        echo 1 0 > /sys/devices/system/cpu/cpu5/core_ctl/not_preferred
-        echo 1 > /sys/devices/system/cpu/cpu5/core_ctl/min_cpus
-        echo 60 > /sys/devices/system/cpu/cpu5/core_ctl/busy_up_thres
-        echo 30 > /sys/devices/system/cpu/cpu5/core_ctl/busy_down_thres
-        echo 100 > /sys/devices/system/cpu/cpu5/core_ctl/offline_delay_ms
-        echo 3 > /sys/devices/system/cpu/cpu5/core_ctl/task_thres
-    fi
-
-    # Disable Core control on silver
+    # Disable Core control on silver/gold/gold_plus
     echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/enable
+    echo 0 > /sys/devices/system/cpu/cpu4/core_ctl/enable
+    if [ -e "/sys/devices/system/cpu/cpu7/core_ctl/enable" ]; then
+        echo 0 > /sys/devices/system/cpu/cpu7/core_ctl/enable
+    fi
 
     # Setting b.L scheduler parameters
     echo 65 85 > /proc/sys/kernel/sched_downmigrate
@@ -508,16 +488,9 @@ function katmai_post_boot() {
             echo 400 > $memlat/mem_latency/ratio_ceil
         done
 
-        # configure compute settings for silver latfloor
-        for latfloor in $device/*cpu0-cpu*latfloor/devfreq/*cpu0-cpu*latfloor
-        do
-            cat $latfloor/available_frequencies | cut -d " " -f 1 > $latfloor/min_freq
-            echo 8 > $latfloor/polling_interval
-        done
-
-        # configure compute settings for gold latfloor
-        for latfloor in $device/*cpu4-cpu*latfloor/devfreq/*cpu4-cpu*latfloor
-        do
+        # configure compute settings for silver/gold/gold_plus latfloor
+        for latfloor in $device/*cpu*latfloor/devfreq/*cpu*latfloor
+	    do
             cat $latfloor/available_frequencies | cut -d " " -f 1 > $latfloor/min_freq
             echo 8 > $latfloor/polling_interval
         done
