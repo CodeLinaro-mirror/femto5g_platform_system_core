@@ -2057,6 +2057,11 @@ enable_cinder_dcc()
     echo "++++ $0 -> ENABLE-DCC END" > /dev/kmsg
 }
 
+set_cinder_pcie_path()
+{
+    echo sw > /sys/bus/coresight/devices/coresight-tmc-etr/pcie_path
+}
+
 enable_cinder_debug()
 {
     echo "++++ $0 -> enable_cinder_debug START" > /dev/kmsg
@@ -2066,6 +2071,7 @@ enable_cinder_debug()
 
     create_cinder_stp_policy
     adjust_cinder_permission
+    set_cinder_pcie_path
     enable_cinder_stm_events
     enable_cinder_ftrace_event_tracing
     enable_cinder_dcc
