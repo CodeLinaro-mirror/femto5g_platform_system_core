@@ -329,7 +329,11 @@ if [ $hsic = "n" ]; then
 			fi
 		fi
 
-		$COMP_DIR/$local_pid n 0.2 $from_adb
+		if [ $from_adb == "y" ]; then
+			nohup $COMP_DIR/$local_pid n 0.2 $from_adb > /dev/null 2>&1
+		else
+			$COMP_DIR/$local_pid n 0.2 $from_adb
+		fi
 	fi
 else
 	echo "Please reboot device for HSIC composition to take effect"
