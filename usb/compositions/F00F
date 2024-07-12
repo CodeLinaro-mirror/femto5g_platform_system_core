@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+#Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
+#SPDX-License-Identifier: BSD-3-Clause-Clear
+
+# DESCRIPTION: Standalone NCM
+
+echo "Switching to composition number 0xF00F"  > /dev/kmsg
+
+if [ "$#" -ge 3 ]; then
+	from_adb=$3
+else
+	from_adb="n"
+fi
+
+run_configfs() {
+	echo start > /tmp/usb_bind_in_progress
+	if [ $from_adb = "n" ]
+	then
+		pkill adbd
+		# Give enough time to restart ADBD and open EP0 file node
+		sleep 1
+	fi
+	cd /sys/kernel/config/usb_gadget/g1
+	rm os_desc/c* 2> /dev/null
+	rm configs/c*/f* 2> /dev/null
+	rmdir configs/c.2/strings/* configs/c.3/strings/* 2> /dev/null
+	rmdir configs/c.2 configs/c.3 2> /dev/null
+	echo 0x05c6 > idVendor
+	echo 0xF00F > idProduct
+	echo "NCM" > configs/c.1/strings/0x409/configuration
+
+	ln -s functions/ncm.0 configs/c.1/f1
+
+	# Cinder is self powered, hence update bmAttributes accordingly
+	echo 0xC0 > configs/c.1/bmAttributes
+	rm -f /tmp/usb_bind_in_progress
+	echo "binding UDC with Gadget..." $1
+	echo $1 > UDC
+	cd /
+}
+
+target=`source /sbin/usb/target`
+case $target in
+	*cinder* )
+		udcname=`ls -1 /sys/class/udc | head -n 1`
+		run_configfs $udcname &
+		;;
+	* )
+		echo "This composition is not supported"
+		;;
+esac
+

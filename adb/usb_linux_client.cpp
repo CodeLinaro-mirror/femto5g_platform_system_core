@@ -464,6 +464,30 @@ err:
 #define USB_COMPOSITION_BIND_LOCK "/tmp/usb_bind_in_progress"
 #define UDC_DIR "/sys/class/udc"
 #define UDC_FILE_PATH "/sys/kernel/config/usb_gadget/g1/UDC"
+#define UDC_CONFIG_FILE_PATH "/etc/usb/usb_udc_config"
+
+static void read_udc_and_write(int fd)
+{
+    char value[32];
+    char udc_path[128];
+    int num = 0;
+
+    num = unix_read(fd, value, 32);
+    unix_close(fd);
+    value[num] = '\0';
+
+    snprintf(udc_path, sizeof(udc_path), "/sys/class/udc/%s", value);
+    if (access(udc_path, F_OK ) == 0) {
+        if ((fd = unix_open(UDC_FILE_PATH, O_RDWR)) != -1) {
+            if (unix_write(fd, value, strlen(value)) == -1) {
+                D("[ usb_thread - failed to bind UDC:%s ]\n", strerror(errno));
+            }
+            unix_close(fd);
+        } else {
+            D("open failed:%s\n", strerror(errno));
+        }
+    }
+}
 
 static void *usb_ffs_open_thread(void *x)
 {
@@ -493,7 +517,9 @@ static void *usb_ffs_open_thread(void *x)
 	// UDC bind explicitly from here. The USB_COMPOSITION_BIND_LOCK check is done to
 	// detect we are running after writing the composition rules from userspace.
 	if (access(USB_COMPOSITION_BIND_LOCK, F_OK ) == -1) {
-		if ((udcdir = opendir(UDC_DIR)) != NULL) {
+		if ((fd = unix_open(UDC_CONFIG_FILE_PATH, O_RDONLY)) != -1) {
+			read_udc_and_write(fd);
+		} else if ((udcdir = opendir(UDC_DIR)) != NULL) {
 			n = scandir(UDC_DIR, &filelist, NULL, alphasort);
 			if (n == -1) {
 				D("[ usb_thread - scandir failed! ]\n");
