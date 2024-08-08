@@ -26,7 +26,7 @@
 
 # DESCRIPTION:  MBIM + GNSS
 
-echo "Switching to composition number 0x90E2"
+echo "Switching to composition number 0x9138"
 
 if [ "$1" = "y" ]; then
 	num="1"
@@ -54,7 +54,7 @@ run_9650() {
 		pkill adbd
 	fi
 	echo 0 > /sys/class/android_usb/android$num/enable
-	echo 90E2 > /sys/class/android_usb/android$num/idProduct
+	echo 9138 > /sys/class/android_usb/android$num/idProduct
 	echo 05C6 > /sys/class/android_usb/android$num/idVendor
 	echo 239 > /sys/class/android_usb/android$num/bDeviceClass
 	echo 2 > /sys/class/android_usb/android$num/bDeviceSubClass
@@ -71,7 +71,7 @@ run_sdx20() {
 		pkill adbd
 	fi
 	echo 0 > /sys/class/android_usb/android$num/enable
-	echo 90E2 > /sys/class/android_usb/android$num/idProduct
+	echo 9138 > /sys/class/android_usb/android$num/idProduct
 	echo 05C6 > /sys/class/android_usb/android$num/idVendor
 	echo 239 > /sys/class/android_usb/android$num/bDeviceClass
 	echo 2 > /sys/class/android_usb/android$num/bDeviceSubClass
@@ -96,7 +96,7 @@ run_configfs() {
 	rmdir configs/c.2/strings/* configs/c.3/strings/* 2> /dev/null
 	rmdir configs/c.2 configs/c.3 2> /dev/null
 	echo 0x05c6 > idVendor
-	echo 0x90E2 > idProduct
+	echo 0x9138 > idProduct
 	echo 239 > bDeviceClass
 	echo 2 > bDeviceSubClass
 	echo 1 > bDeviceProtocol
